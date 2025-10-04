@@ -51,7 +51,7 @@
     "@storybook/angular": "^9.1.8",
     "@types/node": "^24.6.2",
     "@types/react": "^19.1.13",
-    "@types/react-dom": "^19.1.7",
+    "@types/react-dom": "^19.2.0",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "chromatic": "^13.2.0",
