@@ -11,7 +11,6 @@ import {
   NgZone,
   OnInit,
   signal,
-  viewChild,
 } from '@angular/core';
 
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
@@ -34,7 +33,7 @@ import { Color4 } from '@babylonjs/core/Maths/math.color';
 import { Angle } from '@babylonjs/core/Maths/math.path';
 
 @Component({
-  selector: 'app-babylon-jsview',
+  selector: 'canvas[babylonsjsview]',
   templateUrl: './babylon-jsview.component.html',
   styleUrls: ['./babylon-jsview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,7 +43,7 @@ import { Angle } from '@babylonjs/core/Maths/math.path';
 export class BabylonJSViewComponent
   implements AfterViewChecked, OnInit, AfterContentChecked
 {
-  canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>('view3dcanvas');
+  canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);  
   renderers = contentChildren(BabylonConsumer);
   
   updateRenderers = (() => {
@@ -95,21 +94,16 @@ export class BabylonJSViewComponent
 
   @HostListener('window:resize')
   resize(): void {
-    const ne = this.canvasRef().nativeElement;
+    const ne = this.canvasRef.nativeElement;
     const { width, height } = this.elRef.nativeElement.getBoundingClientRect();
-
     ne.width = width;
     ne.height = height;
-
-    ne.style.width = `${width}px`;
-    ne.style.height = `${height}px`;
-
     this.engine.resize(true);
   }
 
   // FIXME: Should this be an effect?
   async ngOnInit(): Promise<void> {
-    await this.initEngine(this.canvasRef());
+    await this.initEngine(this.canvasRef.nativeElement);
     await this.scene()?.whenReadyAsync();
     
     this.engine.beginFrame();
@@ -117,10 +111,10 @@ export class BabylonJSViewComponent
     this.engine.endFrame();
   }
 
-  async initEngine(canvas: ElementRef<HTMLCanvasElement>) {
+  async initEngine(canvas: HTMLCanvasElement) {
     await this.ngZone.runOutsideAngular(async () => {
       if (window.WebGLRenderingContext) {        
-        this.engine = new WebGPUEngine(canvas.nativeElement, {
+        this.engine = new WebGPUEngine(canvas, {
           adaptToDeviceRatio: true,
         });
         await this.engine.initAsync();
@@ -165,7 +159,7 @@ export class BabylonJSViewComponent
     this.resize();
   }
 
-  createScene(canvas: ElementRef<HTMLCanvasElement>) {
+  createScene(canvas: HTMLCanvasElement) {
     ShaderStore.IncludesShadersStoreWGSL['ExcitationBuffer'] =
       excitationBufferInclude as unknown as string;
 
