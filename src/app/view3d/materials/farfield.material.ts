@@ -22,6 +22,7 @@ const vertexSource = /* wgsl */`
   varying r : vec3<f32>;
   varying uvf : vec2<f32>;
   varying absresult : f32;
+  varying globalPos: vec3<f32>;
 
 // ---- Konstanten
 const PI: f32                = 3.1415926535897932384626433832795;
@@ -99,6 +100,7 @@ fn element_factor_uv(uv: vec2<f32>, ka: f32) -> f32 {
     vertexOutputs.r = vertexInputs.position;
     vertexOutputs.uvf = vertexInputs.uv;
     vertexOutputs.absresult = absresult;
+    vertexOutputs.globalPos = direction * absresult * 0.02;
   }
 `;
 const fragmentSource = /* wgsl */`
@@ -119,6 +121,7 @@ const fragmentSource = /* wgsl */`
   varying r : vec3<f32>;
   varying uvf : vec2<f32>;
   varying absresult : f32;
+  varying globalPos: vec3<f32>;
 
   @fragment
   fn main(input : FragmentInputs) -> FragmentOutputs {
@@ -136,7 +139,20 @@ const fragmentSource = /* wgsl */`
     if length(fragmentInputs.uvf) > 1.0 {
       discard;
     }
-    fragmentOutputs.color = textureSample(viridisTexture, viridisSampler, vec2(fragmentInputs.absresult, 0.375)); 
+
+    let lightPos : vec3<f32> = vec3<f32>(-5.0, 5.0, 5.0);
+    let lightDir : vec3<f32> = normalize(lightPos - fragmentInputs.globalPos);
+
+    let b = dpdx(fragmentInputs.globalPos);
+    let a = dpdy(fragmentInputs.globalPos);
+    let normal : vec3<f32> = normalize(cross(b, a));
+
+    let diff = max(dot(normal, lightDir), 0.0);
+    let ambient = 0.1;
+    let intensity = ambient + (1.0 - ambient) * diff;
+    fragmentOutputs.color = textureSample(viridisTexture, viridisSampler, vec2(fragmentInputs.absresult, 0.375)) * 0.5 * (1.0 + intensity);
+    fragmentOutputs.color.a = 1.0;
+    return fragmentOutputs;
   }
 `;
 
