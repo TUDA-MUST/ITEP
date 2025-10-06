@@ -75,7 +75,7 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer
 
     this.farfieldMesh = new Mesh('farfieldMesh', scene);
     uvMesh.applyToMesh(this.farfieldMesh);
-    this.farfieldMesh.increaseVertices(500);
+    this.farfieldMesh.increaseVertices(400);
     this.farfieldMesh.material = this.material;
     this.farfieldMesh.isPickable = false;
     this.farfieldMesh.renderingGroupId = 1;
