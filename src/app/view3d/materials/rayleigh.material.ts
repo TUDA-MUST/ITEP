@@ -56,7 +56,7 @@ const rayleighFragmentShaderCode = /* wgsl*/`
       // elm.phasor.x is a phase shift
       let delay = elm.phasor.x / uniforms.omega;
       
-      let argz = (d*uniforms.k - delay*uniforms.omega - uniforms.t);
+      let argz = (d*uniforms.k + delay*uniforms.omega - uniforms.t);
       elongation += vec2(cos(argz), sin(argz))*amplitude*area*oodd;
     } 
   
