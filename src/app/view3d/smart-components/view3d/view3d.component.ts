@@ -14,7 +14,6 @@ import { BabylonJSViewComponent } from '../babylon-jsview/babylon-jsview.compone
 import { Results } from 'src/app/store/viewportConfig.state';
 import { ExportRendererComponent } from '../../renderers/export/export.component';
 import { ResultValues } from 'src/app/store/export.state';
-import { UraInteractionRendererComponent } from '../../renderers/ura-interaction/ura-interaction-renderer.component';
 import { ArrayConfig, StoreService } from 'src/app/store/store.service';
 
 
@@ -41,6 +40,7 @@ export class View3dComponent {
   rayleighResultSet = this.store.resultSet;
   farfieldEnabled = computed(() => this.store.enabledResults().includes(Results.Farfield));
   k = this.store.k;
+  globalPhase = this.store.globalPhase;
   ura = computed(() => this.store.arrayConfig().config.type === 'ura');
   
   transducers = this.store.transducers;
