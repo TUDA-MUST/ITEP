@@ -212,22 +212,21 @@ export interface Transducer {
 }
 
 const uraPositions = (uraConfig : UraConfig) => {
-    const countX: number = uraConfig.elementsX;
-    const countY: number = uraConfig.elementsY;
-    const pitchX: number = uraConfig.pitchX;
-    const pitchY: number = uraConfig.pitchY;
+    const { elementsX, elementsY, pitchX, pitchY} = uraConfig;
 
-    const sizeXH = (countX - 1) * pitchX / 2.0;
-    const sizeYH = (countY - 1) * pitchY / 2.0;
+    // Should be named step-size
+    const sizeXH = (elementsX - 1) * pitchX / 2.0;
+    const sizeYH = (elementsY - 1) * pitchY / 2.0;
 
     const excitation: Transducer[] = [];
 
-    for (let y = 0; y < countY; y++) {
-      for (let x = 0; x < countX; x++) {
+    // Use reduce or map?
+    for (let y = 0; y < elementsY; y++) {
+      for (let x = 0; x < elementsX; x++) {
         const xpos = -sizeXH + x * pitchX;
         const ypos = -sizeYH + y * pitchY;
         excitation.push({
-          name: `Transducer ${y * countY + x}`,
+          name: `Transducer ${y * elementsY + x}`,
           pos: new Vector3(xpos, ypos),
           enabled: false,
           selected: false
@@ -308,35 +307,37 @@ Array.from(Array(circularConfig.elementCount).keys()).map(i => {
 
 export const StoreService = signalStore(
     { providedIn: 'root' },
-  withState<{arrayConfig: ArrayConfig}>({arrayConfig: presets[0]}),
+  withState<{
+    arrayConfig: ArrayConfig, 
+    globalPhase: number
+  }>({
+    arrayConfig: presets[0], 
+    globalPhase: 0
+  }),
   withBeamforming(),
   withMethods((store) => ({
+    setGlobalPhase: (globalPhase : number) => patchState(store, { globalPhase }),
     setConfig: (newConfig: ArrayConfig) => {
       patchState(store, { arrayConfig: { ...store.arrayConfig(),  ...newConfig} });
     },
-    setTransducerDiameter: (diameter: number | null) => {
-      patchState(store, {
+    setTransducerDiameter: (diameter: number | null) => patchState(store, {
         arrayConfig: { ...store.arrayConfig(),  transducerDiameter: diameter ?? store.arrayConfig().transducerDiameter},
-      });
-    },
+    }),
     setTransducer: (transducer: {
       transducerDiameter?: number,
       transducerModel?: TransducerModel
-    }) => {
-      patchState(store, {
+    }) => patchState(store, {
         arrayConfig: { ...store.arrayConfig(), ...transducer }
-      });
-    },
-    setEnvironment: (environment: Partial<Environment>) => {
-      patchState(store, { 
+    }),
+    setEnvironment: (environment: Partial<Environment>) => patchState(store, { 
         arrayConfig:{
           ...store.arrayConfig(),
           environment: {
             ...store.arrayConfig().environment,
             ...environment,
           },
-        }});
-    }})),
+        }})
+    })),
   withComputed((store) => {
     const k = computed(() => {
         const env = store.arrayConfig().environment;
@@ -450,8 +451,6 @@ export const StoreService = signalStore(
 
     const samplePatternU = computed(() => range(-1, 1, 2 / 180).map((u) => ({x: u, y: Math.abs(patternU()(u)) / transducers().length})));
     const samplePatternV = computed(() => range(-1, 1, 0.001).map((v) => ({x: v, y: Math.abs(patternV()(v)) / transducers().length})));
-
-  
 
     const crossPattern = computed(() => range(-90, 90, 1).map((angle) => {
       const bf = store.beamforming();

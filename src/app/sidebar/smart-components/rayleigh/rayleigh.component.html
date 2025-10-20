@@ -1,13 +1,23 @@
-<mat-checkbox [formControl]="rayleighVisible" class="span-all">Visible</mat-checkbox>
-  Aspect:
-  <mat-button-toggle-group [formControl]="rayleighAspect" hideSingleSelectionIndicator>
-    <mat-button-toggle [value]="ResultAspect.Elongation">Re</mat-button-toggle>
-    <mat-button-toggle [value]="ResultAspect.Amplitude">abs</mat-button-toggle>
-    <mat-button-toggle [value]="ResultAspect.Phase">arg</mat-button-toggle>
-  </mat-button-toggle-group>
-  Result set:
-  <mat-button-toggle-group [formControl]="resultSet" hideSingleSelectionIndicator>
-      <mat-button-toggle [value]="ResultSet.XZPlane">XZ</mat-button-toggle>
-      <mat-button-toggle [value]="ResultSet.YZPlane">YZ</mat-button-toggle>
-      <mat-button-toggle [value]="ResultSet.CutCube">Cube</mat-button-toggle>
-  </mat-button-toggle-group>
+<mat-checkbox [formControl]="rayleighVisible">Visible</mat-checkbox><span></span>
+Result set:
+<mat-button-toggle-group [formControl]="resultSet" hideSingleSelectionIndicator>
+    <mat-button-toggle [value]="'XZPlane'">XZ</mat-button-toggle>
+    <mat-button-toggle [value]="'YZPlane'">YZ</mat-button-toggle>
+    <mat-button-toggle [value]="'CutCube'">Cube</mat-button-toggle>
+</mat-button-toggle-group>
+Aspect:
+<mat-button-toggle-group [formControl]="rayleighAspect" hideSingleSelectionIndicator>
+  <mat-button-toggle [value]="ResultAspect.Elongation">Re</mat-button-toggle>
+  <mat-button-toggle [value]="ResultAspect.Amplitude">abs</mat-button-toggle>
+  <mat-button-toggle [value]="ResultAspect.Phase">arg</mat-button-toggle>
+</mat-button-toggle-group>
+Phase:
+<div style="display:flex; align-items: center">
+  @if(animateTimer()) {
+    <button mat-icon-button (click)="stopTimer()"><mat-icon>stop</mat-icon></button>  
+  } @else {
+    <button mat-icon-button (click)="startTimer()"><mat-icon>play_arrow</mat-icon></button>
+  }
+  <button mat-icon-button (click)="resetPhase()"><mat-icon>replay</mat-icon></button>
+  <input min="0" max="6.28" step="0.01" type="range" [value]="phase()" (input)="setPhase($event)">
+</div>

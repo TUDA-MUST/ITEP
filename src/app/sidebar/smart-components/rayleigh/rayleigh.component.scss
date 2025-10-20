@@ -1,8 +1,8 @@
 :host {
   display: grid;
   grid-template-columns: max-content min-content;
-  align-items: baseline;
   gap: 1ex;
+  justify-items: end;
 }
 
 .span-all {

@@ -10,7 +10,7 @@
   <app-transducer-buffer [transducers]="transducers()" [beamforming]="beamforming()" [k]="k()">
     @if (rayleighEnabled()) {
     <app-rayleigh-integral-renderer [transducers]="transducers()" [environment]="arrayConfig().environment"
-      [aspect]="rayleighAspect()" [resultSet]="rayleighResultSet()" />
+      [aspect]="rayleighAspect()" [resultSet]="rayleighResultSet()" [globalPhase]="globalPhase()" />
     }
 
     @if (farfieldEnabled()) {
