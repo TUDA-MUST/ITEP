@@ -43,7 +43,7 @@
     "@angular-eslint/template-parser": "20.4.0",
     "@angular/cli": "20.3.6",
     "@angular/compiler-cli": "20.3.6",
-    "@babel/core": "^7.28.4",
+    "@babel/core": "^7.28.5",
     "@chromatic-com/storybook": "^4.1.1",
     "@playwright/test": "^1.56.1",
     "@storybook/addon-docs": "^9.1.13",
