@@ -76,6 +76,7 @@ export class RayleighIntegralRendererComponent extends TransducerBufferConsumer 
   environment = input<Environment | null>(null);
   resultSet = input<ResultSet | null>(null);
   aspect = input<ResultAspect | null>(null);
+  globalPhase = input<number | null>(null);
   
   private material: RayleighMaterial;
 
@@ -88,11 +89,15 @@ export class RayleighIntegralRendererComponent extends TransducerBufferConsumer 
 
     const resultSet = this.resultSet();
     if (resultSet !== null) {
-      this.xzPlane.setEnabled(resultSet === ResultSet.XZPlane);
-      this.yzPlane.setEnabled(resultSet === ResultSet.YZPlane);
-      this.cubeCut.setEnabled(resultSet === ResultSet.CutCube);
+      this.xzPlane.setEnabled(resultSet === 'XZPlane');
+      this.yzPlane.setEnabled(resultSet === 'YZPlane');
+      this.cubeCut.setEnabled(resultSet === 'CutCube');
     }
   });
+
+  updatePhase = effect(() => {
+    this.material.setFloat('globalPhase', this.globalPhase() ?? 0);
+  })
 
   private xzPlane : Mesh;
   private yzPlane : Mesh;

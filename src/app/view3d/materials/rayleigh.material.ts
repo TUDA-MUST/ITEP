@@ -32,7 +32,6 @@ const rayleighFragmentShaderCode = /* wgsl*/`
   uniform globalPhase : f32;
 
   uniform k : f32;
-  uniform t : f32;
   uniform omega : f32;
 
   uniform viewmode : i32;
@@ -55,8 +54,8 @@ const rayleighFragmentShaderCode = /* wgsl*/`
       let area = elm.phasor.y;
       // elm.phasor.x is a phase shift
       let delay = elm.phasor.x / uniforms.omega;
-      
-      let argz = (d*uniforms.k - delay*uniforms.omega - uniforms.t);
+
+      let argz = (d*uniforms.k + delay*uniforms.omega - uniforms.globalPhase);
       elongation += vec2(cos(argz), sin(argz))*amplitude*area*oodd;
     } 
   
@@ -96,7 +95,6 @@ export class RayleighMaterial extends ShaderMaterial {
         "worldViewProjection",
         "globalPhase",
         "k",
-        "t",
         "omega",
         "viewmode",
         "dynamicRange",

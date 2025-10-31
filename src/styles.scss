@@ -61,6 +61,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   & {
   --mat-list-list-item-hover-leading-icon-color: var(--mat-pseudo-checkbox-full-selected-icon-color);
   }
+
+  input[type="range"] {
+    accent-color: var(--mat-slide-toggle-selected-handle-color);
+  }
 }
 
 .mat-expansion-panel-body {
