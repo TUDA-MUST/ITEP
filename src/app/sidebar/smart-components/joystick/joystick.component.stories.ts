@@ -18,13 +18,13 @@ type Story = StoryObj<JoystickComponent>;
 export const Enabled: Story = {
   args: {
     disabled: false,
-    positionInput: { u: 0, v: 0 },
+    positionInput: { az: 0, el: 0 },
   },
 };
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-    positionInput: { u: 0, v: 0 },
+    positionInput: { az: 0, el: 0 },
   },
 };
