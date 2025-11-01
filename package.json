@@ -54,7 +54,7 @@
     "@types/react-dom": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
-    "chromatic": "^13.3.2",
+    "chromatic": "^13.3.3",
     "eslint": "^9.39.0",
     "eslint-plugin-storybook": "^10.0.2",
     "jsdom": "^27.0.1",
