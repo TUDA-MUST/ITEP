@@ -25,6 +25,11 @@ export class ApertureViewComponent {
         right: Math.max(acc.right, t.pos.x + this.transducerDiameter() / 2),
         bottom: Math.min(acc.bottom, t.pos.y - this.transducerDiameter() / 2) 
     }), initial);
+
+    if ([rawBB.left, rawBB.top, rawBB.right, rawBB.bottom].some(v => !isFinite(v))) {
+      return '0 0 0 0';
+    }
+
     const bbString = `${rawBB.left} ${-rawBB.top} ${rawBB.right - rawBB.left} ${rawBB.top - rawBB.bottom}`;
     return bbString;
   });
