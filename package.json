@@ -49,7 +49,7 @@
     "@storybook/addon-docs": "^10.1.10",
     "@storybook/addon-links": "^10.1.10",
     "@storybook/angular": "^10.1.10",
-    "@types/node": "^24.10.0",
+    "@types/node": "^25.0.3",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.46.3",
