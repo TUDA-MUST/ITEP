@@ -45,6 +45,20 @@
       </mat-form-field>
       <mat-checkbox [formField]="form.omitCenter" class="span-all">Omit center</mat-checkbox>
     }
+    @case ('free') {
+      <p class="span-all">Copy transducer positions to clipboard and import here.</p>
+      <p class="span-all">Use tab separated numbers.</p>
+      <button matButton class="span-all" (click)="importFromClipboard()">
+        Import from clipboard
+      </button>
+
+      @if (transducerCount() > 0) {
+        <div>
+          {{ transducerCount() }} imported.
+          <button mat-icon-button><mat-icon>clear</mat-icon></button>
+        </div>
+      }
+    }
     @default {
       <mat-form-field>
         <mat-label>Count</mat-label>
