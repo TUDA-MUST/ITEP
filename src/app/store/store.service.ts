@@ -7,7 +7,7 @@ import { presets } from '../presets';
 import { withViewportConfig } from './viewportConfig.state';
 import { withSelection } from './selection.state';
 import { withRayleigh } from './rayleigh.state';
-import { withExport } from './export.state';
+import { Point, withExport } from './export.state';
 import { UVCoordinates, withBeamforming } from './beamforming.state';
 import { azElToUV } from '../utils/uv';
 
@@ -148,12 +148,6 @@ export interface Citation {
   urlTitle: string;
 }
 
-export interface CircularConfig {
-  type: 'circular';
-  diameter: number;
-  elementCount: number;
-}
-
 export type FrequencyMultiplier = 'Hz' | 'kHz' | 'MHz';
 
 const FrequencyMultiplierValue : Record<FrequencyMultiplier, number> = {
@@ -173,6 +167,11 @@ export interface Environment {
   excitationFrequencyMultiplier: FrequencyMultiplier; // rename to frequencyMultiplier
 }
 
+export interface CircularConfig {
+  type: 'circular';
+  diameter: number;
+  elementCount: number;
+}
 export interface SpiralConfig {
   type: 'spiral';
   diameter: number;
@@ -195,11 +194,16 @@ export interface HexagonalConfig {
   omitCenter: boolean;
 }
 
+export interface FreeConfig {
+  type: 'free';
+  positions: Point[];
+}
+
 export interface ArrayConfig {
   name: string;
   environment: Environment;
   citation: Citation | null;
-  config: UraConfig | HexagonalConfig | CircularConfig | SpiralConfig;
+  config: CircularConfig | FreeConfig | HexagonalConfig | SpiralConfig | UraConfig;
   transducerModel: TransducerModel;
   transducerDiameter: number;
 }
@@ -354,39 +358,37 @@ export const StoreService = signalStore(
                 return circularPositions(arrayConfig);
             case 'hex':
                 return hexagonalPositions(arrayConfig);
+            case 'free':
+                return arrayConfig.positions.map((e, idx) => ({
+                    name: `Transducer ${idx}`,
+                    pos: new Vector3(e.x, e.y, 0),
+                    enabled: false,
+                    selected: false
+                }));
             default:
                 return [];
         }
     });
     
-    const patternU = computed(() => 
-        (u : number) => transducers().reduce((acc, t) => {
-            const argv = { x: t.pos.x * u, y: t.pos.y * 0 };
-            //float argument = k*(argv.x+argv.y) + element.delay*omega;
-            const argument = k() * (argv.x+argv.y) //+ element.phasor.x;
-            return acc + Math.cos(argument) 
-    },0));
-
-    const patternV = computed(() => 
-        (v : number) => transducers().reduce((acc, t) => {
-            const argv = { x: t.pos.x * 0, y: t.pos.y * v };
-            //float argument = k*(argv.x+argv.y) + element.delay*omega;
-            const argument = k() * (argv.x+argv.y) //+ element.phasor.x;
-            return acc + Math.cos(argument) 
-    },0));
-
+    // need to return Re and Im parts to search zero crossings
     const patternUV = computed(() => {        
         const kk = k();
         const bf = store.beamforming();
         const bfuv = azElToUV(bf);
 
-          return (uv: UVCoordinates) => transducers().reduce((acc, t) => {
-            const phase = bf?.beamformingEnabled ? (kk ?? 700) * ((bfuv.u ?? 0) * t.pos.x + (bfuv.v ?? 0) * t.pos.y) : 0;
-            const argv = { x: t.pos.x * uv.u, y: t.pos.y * uv.v };
-            //float argument = k*(argv.x+argv.y) + element.delay*omega;
-            const argument = kk * (argv.x + argv.y) - phase;
-            return acc + Math.cos(argument);
-        }, 0);
+        return (uv: UVCoordinates) => {
+          const val = transducers().reduce((acc, t) => {
+          const phase = bf?.beamformingEnabled ? (kk ?? 700) * ((bfuv.u ?? 0) * t.pos.x + (bfuv.v ?? 0) * t.pos.y) : 0;
+          const argv = { x: t.pos.x * uv.u, y: t.pos.y * uv.v };
+          //float argument = k*(argv.x+argv.y) + element.delay*omega;
+          const argument = kk * (argv.x + argv.y) - phase;
+          return {
+            re: acc.re + Math.cos(argument), 
+            im: acc.im + Math.sin(argument)
+          };
+        }, {re: 0, im: 0});
+        return Math.hypot(val.re, val.im);  
+        }
       }
     );
 
@@ -416,41 +418,6 @@ export const StoreService = signalStore(
             return (uv: UVCoordinates) => 0;
         }        
     });
-
-    const derivativeU = computed(() =>  (u : number) =>
-        // Sum up over all transducers at particular position x
-        transducers().reduce((acc, t) => {
-            const argv = { x: t.pos.x * u, y: t.pos.y * 0 };
-            //float argument = k*(argv.x+argv.y) + element.delay*omega;
-            const argument = k() * (argv.x+argv.y) //+ element.phasor.x;
-
-            // We need the derivative of the argument of sin.
-            // As the argument is t.pos.x * x, the derivative is t.pos.x
-            const factor = t.pos.x;
-            const addVal = -factor*k()*Math.sin(argument);
-            const newVal = acc + addVal;
-            return newVal;
-        }, 0)
-    );
-
-    const derivativeV = computed(() =>  (v : number) =>
-    // Sum up over all transducers at particular position x
-        transducers().reduce((acc, t) => {
-            const argv = { x: t.pos.x * 0, y: t.pos.y * v};
-            //float argument = k*(argv.x+argv.y) + element.delay*omega;
-            const argument = k() * (argv.x+argv.y) //+ element.phasor.x;
-
-            // We need the derivative of the argument of sin.
-            // As the argument is t.pos.x * x, the derivative is t.pos.x
-            const factor = t.pos.y;
-            const addVal = -factor*k()*Math.sin(argument);
-            const newVal = acc + addVal;
-            return newVal;
-        }, 0)
-    );
-
-    const samplePatternU = computed(() => range(-1, 1, 2 / 180).map((u) => ({x: u, y: Math.abs(patternU()(u)) / transducers().length})));
-    const samplePatternV = computed(() => range(-1, 1, 0.001).map((v) => ({x: v, y: Math.abs(patternV()(v)) / transducers().length})));
 
     const crossPattern = computed(() => range(-90, 90, 1).map((angle) => {
       const bf = store.beamforming();
@@ -483,51 +450,13 @@ export const StoreService = signalStore(
       return { angle, az, el };
     }));
 
-
     const lowTechKPis = computed(() => {
       const pattern = crossPattern();
       const result = analyzePSF(pattern, transducers().length);
       return result;
     });
 
-
-    // const fnbwU = computed(() => {
-    //     const firstZero = newtonMethod(patternU(), derivativeU(), 0 - 0.001, 1e-7, 100);
-    //     const secondZero = newtonMethod(patternU(), derivativeU(), 0 + 0.001, 1e-7, 100);
-    //     console.log("FNBW: firstZero: ", firstZero, " secondZero: ", secondZero);
-    //     return { firstZero, secondZero };
-    // });
-
-    // const fnbwV = computed(() => {
-    //     const firstZero = newtonMethod(patternV(), derivativeV(), 0 - 0.001, 1e-7, 100);
-    //     const secondZero = newtonMethod(patternV(), derivativeV(), 0 + 0.001, 1e-7, 100);
-    //     console.log("FNBW: firstZero: ", firstZero, " secondZero: ", secondZero);
-    //     return { firstZero, secondZero };
-    // });
-
-    // const hpbwU = computed(() => {
-    //     const max = patternU()(0);
-    //     const hbpwfactor = 1.0 / Math.sqrt(2);
-    //     const ff = (x : number) => patternU()(x) - ((hbpwfactor) * max);
-    //     const firstZero = newtonMethod(ff, derivativeU(), 0 - 0.001, 1e-7, 100);
-    //     const secondZero = newtonMethod(ff, derivativeU(), 0 + 0.001, 1e-7, 100);
-    //     console.log("HPBW: firstZero: ", firstZero, " secondZero: ", secondZero);
-    //     return { firstZero, secondZero };
-    // });
-
-    // const hpbwV = computed(() => {
-    //     const max = patternV()(0);
-    //     const hbpwfactor = 1.0 / Math.sqrt(2);
-    //     const ff = (x : number) => patternV()(x) - ((hbpwfactor) * max);
-    //     const firstZero = newtonMethod(ff, derivativeV(), 0 - 0.001, 1e-7, 100);
-    //     const secondZero = newtonMethod(ff, derivativeV(), 0 + 0.001, 1e-7, 100);
-    //     console.log("HPBW: firstZero: ", firstZero, " secondZero: ", secondZero);
-    //     return { firstZero, secondZero };
-    // });
-
-    return { k, transducers, patternU, patternV, derivativeU, derivativeV, 
-             samplePatternU, samplePatternV,
-             crossPattern, lowTechKPis };
+    return { k, transducers, crossPattern, lowTechKPis };
   }),
   withViewportConfig(),
   withSelection(),

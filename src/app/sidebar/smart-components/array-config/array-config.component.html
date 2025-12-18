@@ -7,10 +7,13 @@
       Hex
     </mat-button-toggle>
     <mat-button-toggle value="circular">
-      Circular
+      Circ.
     </mat-button-toggle>
     <mat-button-toggle value="spiral">
-      Spiral
+      Spir.
+    </mat-button-toggle>
+    <mat-button-toggle value="free">
+      Free
     </mat-button-toggle>
   </mat-button-toggle-group>
   @switch (arrayConfig.controls['type'].value) {
@@ -47,6 +50,18 @@
       <span matSuffix style="margin-right: 1ex">mm</span>
     </mat-form-field>
     <mat-checkbox formControlName="omitCenter" class="span-all">Omit center</mat-checkbox>
+  }
+  @case ('free') {
+    <p class="span-all">Copy transducer positions to clipboard and import here.</p>
+    <p class="span-all">Use tab separated numbers.</p>
+    <button matButton  class="span-all" (click)="importFromClipboard()">Import from clipboard</button>
+
+    @if (transducerCount() > 0) {
+      <div>
+        {{ transducerCount() }} imported.
+        <button mat-icon-button><mat-icon>clear</mat-icon></button>
+      </div>
+    }
   }
   @default {
     <mat-form-field>
