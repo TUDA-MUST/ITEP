@@ -35,6 +35,11 @@ export class ApertureViewComponent {
       }),
       initial,
     );
+
+    if ([rawBB.left, rawBB.top, rawBB.right, rawBB.bottom].some((v) => !Number.isFinite(v))) {
+      return '0 0 0 0';
+    }
+
     const bbString = `${rawBB.left} ${-rawBB.top} ${rawBB.right - rawBB.left} ${rawBB.top - rawBB.bottom}`;
     return bbString;
   });
