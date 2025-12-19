@@ -17,7 +17,7 @@
 
     @switch(transducerModel()) {
         @case ('Point') {
-            @for (point of transducersMapped(); track point) {
+            @for (point of transducersMapped(); track $index) {
                 <use href="#cross" 
                     [attr.x]="point.pos.x - crossSize() / 2" [attr.y]="point.pos.y - crossSize() / 2" 
                     [attr.width]="crossSize()" [attr.height]="crossSize()"
@@ -25,7 +25,7 @@
             }
         }
         @case ('Piston') {
-            @for (point of transducersMapped(); track point) {
+            @for (point of transducersMapped(); track $index) {
                 <circle 
                 [attr.cx]="point.pos.x"
                 [attr.cy]="point.pos.y"
