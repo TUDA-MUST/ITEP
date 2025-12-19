@@ -18,7 +18,8 @@ import { Scene } from '@babylonjs/core/scene';
 import { BabylonConsumer } from '../../interfaces/lifecycle';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Transducer } from 'src/app/store/store.service';
-import { CreateLineSystem, LinesMesh } from '@babylonjs/core';
+import { LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
+import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
 
 @Component({
   selector: 'app-excitation-renderer',
