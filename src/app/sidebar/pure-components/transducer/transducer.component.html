@@ -1,5 +1,4 @@
-<ng-container [formGroup]="transducerConfig">
-<mat-button-toggle-group formControlName="transducerModel" class="span-all small-button-toggle-group" style="align-items: end" hideSingleSelectionIndicator>
+<mat-button-toggle-group [field]="transducerForm.transducerModel" class="span-all small-button-toggle-group" style="align-items: end" hideSingleSelectionIndicator>
 <mat-button-toggle value="Point">
     Point source
 </mat-button-toggle>
@@ -7,16 +6,15 @@
     Piston transducer
 </mat-button-toggle>
 </mat-button-toggle-group>
-@switch (transducerModel()) {
+@switch (transducerModel().transducerModel) {
     @case ('Point') {
        Transducers are point sources.
     }
     @case ('Piston') {
 <mat-form-field>
     <mat-label>Diameter</mat-label>
-    <input matInput type="number" formControlName="transducerDiameter" min="0" max="5000" step="0.01">
+    <input matInput type="number" [field]="transducerForm.transducerDiameter" step="0.01">
     <span matSuffix style="margin-right: 1ex">mm</span>
 </mat-form-field>    
     }
 }
-</ng-container>

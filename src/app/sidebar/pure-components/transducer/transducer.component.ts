@@ -1,7 +1,6 @@
-import { Component, computed, effect, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, effect, inject, signal, untracked } from '@angular/core';
 
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { form, Field, min, max } from '@angular/forms/signals';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 
@@ -14,35 +13,36 @@ import { StoreService, TransducerModel } from 'src/app/store/store.service';
     MatFormField,
     MatSuffix,
     MatLabel,
-    ReactiveFormsModule,
-    MatButtonToggleModule
-  ],
+    MatButtonToggleModule,
+    Field
+],
   templateUrl: './transducer.component.html',
   styleUrl: './transducer.component.scss'
 })
 export class TransducerComponent {
-  store = inject(StoreService);
-  transducerModel = computed(() => this.store.arrayConfig().transducerModel);
+  private store = inject(StoreService);
 
-  public transducerConfig = new FormGroup({
-    transducerModel: new FormControl<TransducerModel>('Point'),
-    transducerDiameter: new FormControl(0)
+  protected transducerModel = signal({
+    transducerModel: 'Point' as TransducerModel,
+    transducerDiameter: 0
   });
-  
-  updateStoreFromForm = this.transducerConfig.valueChanges
-      .pipe(takeUntilDestroyed()).subscribe(val => {
-        this.store.setTransducer({
-          ...val.transducerDiameter ? {transducerDiameter: val.transducerDiameter * 1e-3} : {},
-          ...val.transducerModel ? {transducerModel: val.transducerModel} : {}
-        });
-      });
 
-  updateFormFromStore = effect(() => {
+  protected transducerForm = form(this.transducerModel, (schemaPath) => {
+    min(schemaPath.transducerDiameter, 0);
+    max(schemaPath.transducerDiameter, 5000);
+  });
+
+  updateForm = effect(() => {
       const config = this.store.arrayConfig();
-      this.transducerConfig.patchValue({
+      this.transducerForm().reset({
         transducerModel: config.transducerModel,
         transducerDiameter: config.transducerDiameter * 1e3,
-      }, { emitEvent: false })
-  });  
-}
+      });
+  });
 
+  updateStore = effect(() => this.transducerForm().dirty() && this.store.setTransducer({
+      transducerDiameter: this.transducerForm.transducerDiameter().value() * 1e-3,
+      transducerModel: this.transducerForm.transducerModel().value()
+    })
+  );
+}

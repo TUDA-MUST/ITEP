@@ -36,16 +36,13 @@
   </mat-expansion-panel>
   <mat-expansion-panel hideToggle>
       <mat-expansion-panel-header>
-        @let bfe = beamformingEnabled();
           <mat-panel-title data-testid="section-beamforming">
               Beamforming
           </mat-panel-title>
-          @if (bfe === false) {
+          @if (!beamformingEnabled()) {
               <mat-icon aria-hidden="false" aria-label="hidden-icon" fontIcon="do_not_disturb_on" />
             }
       </mat-expansion-panel-header>
-      <app-beamforming
-        [beamformingEnabled]="bfe"
-      /> 
+      <app-beamforming /> 
   </mat-expansion-panel>
 </mat-accordion>
