@@ -204,6 +204,8 @@ export interface ArrayConfig {
   transducerDiameter: number;
 }
 
+export type ArrayConfigType = ArrayConfig["config"]["type"];
+
 export interface Transducer {
   name: string;
   pos: Vector3;
@@ -317,7 +319,7 @@ export const StoreService = signalStore(
   withBeamforming(),
   withMethods((store) => ({
     setGlobalPhase: (globalPhase : number) => patchState(store, { globalPhase }),
-    setConfig: (newConfig: ArrayConfig) => {
+    setConfig: (newConfig: Partial<ArrayConfig>) => {
       patchState(store, { arrayConfig: { ...store.arrayConfig(),  ...newConfig} });
     },
     setTransducerDiameter: (diameter: number | null) => patchState(store, {
@@ -335,6 +337,8 @@ export const StoreService = signalStore(
           environment: {
             ...store.arrayConfig().environment,
             ...environment,
+            ...(environment.environmentHint === 'Air' ? { speedOfSound: 343 }
+                : environment.environmentHint === 'Water' ? { speedOfSound: 1482 } : {} ),
           },
         }})
     })),

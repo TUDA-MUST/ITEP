@@ -1,31 +1,24 @@
-import { Component, effect, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Component, effect, inject, signal } from '@angular/core';
 
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Results } from 'src/app/store/viewportConfig.state';
 import { StoreService } from 'src/app/store/store.service';
+import { form, Field } from '@angular/forms/signals';
 
 @Component({
     selector: 'app-farfield',
     templateUrl: './farfield.component.html',
     styleUrls: ['./farfield.component.scss'],
-    imports: [MatCheckboxModule, ReactiveFormsModule]
+    imports: [MatCheckboxModule, Field]
 })
 export class FarfieldComponent {
-  store = inject(StoreService);
-  fb = inject(FormBuilder);
+  private store = inject(StoreService);
   
-  public farfieldVisible = this.fb.control(false);
+  protected farfieldModel = signal(false);
+  protected farfieldForm = form(this.farfieldModel);
 
-  constructor() {
-    effect(() => {
-      this.farfieldVisible.setValue(this.store.enabledResults().includes(Results.Farfield), {emitEvent: false});
+  updateForm = effect(() => {
+      this.farfieldForm().reset(this.store.enabledResults().includes(Results.Farfield));
     });
-
-    this.farfieldVisible.valueChanges.pipe(takeUntilDestroyed()).subscribe(val => {
-      this.store.setResultVisible(Results.Farfield, val!);
-    });
-  }
+  updateStore = effect(() => this.farfieldForm().dirty() && this.store.setResultVisible(Results.Farfield, this.farfieldModel()));
 }

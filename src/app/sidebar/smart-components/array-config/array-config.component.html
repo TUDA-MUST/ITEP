@@ -1,5 +1,5 @@
-<form class="config-container" [formGroup]="arrayConfig">
-  <mat-button-toggle-group formControlName="type" class="span-all small-button-toggle-group" style="justify-self: end" hideSingleSelectionIndicator>
+<form class="config-container">
+  <mat-button-toggle-group [field]="form.type" class="span-all small-button-toggle-group" style="justify-self: end" hideSingleSelectionIndicator>
     <mat-button-toggle value="ura">
       URA
     </mat-button-toggle>
@@ -13,53 +13,53 @@
       Spiral
     </mat-button-toggle>
   </mat-button-toggle-group>
-  @switch (arrayConfig.controls['type'].value) {
+  @switch (form.type().value()) {
   @case ('ura') {
     <span class="span-all">Element count:</span>
     <mat-form-field>
       <mat-label>x</mat-label>
-      <input matInput data-test-id="elementsX" type="number" formControlName="elementsX" min="1" max="16">
+      <input matInput data-test-id="elementsX" type="number" [field]="form.elementsX">
     </mat-form-field>
     <mat-form-field>
       <mat-label>y</mat-label>
-      <input matInput data-test-id="elementsY" type="number" formControlName="elementsY" min="1" max="16">
+      <input matInput data-test-id="elementsY" type="number" [field]="form.elementsY">
     </mat-form-field>
     <span class="span-all">Element distance:</span>
     <mat-form-field>
       <mat-label>x</mat-label>
-      <input matInput type="number" data-test-id="pitchX" formControlName="pitchX" min="0" max="100" step="0.01">
+      <input matInput type="number" data-test-id="pitchX" [field]="form.pitchX" step="0.01">
       <span matSuffix style="margin-right: 1ex">mm</span>
     </mat-form-field>
     <mat-form-field>
       <mat-label>y</mat-label>
-      <input matInput type="number" data-test-id="pitchY" formControlName="pitchY" min="0" max="100" step="0.01">
+      <input matInput type="number" data-test-id="pitchY" [field]="form.pitchY" step="0.01">
       <span matSuffix style="margin-right: 1ex">mm</span>
     </mat-form-field>
   }
   @case ('hex') {
     <mat-form-field>
       <mat-label>Elements</mat-label>
-      <input matInput type="number" formControlName="elements" min="1" max="16">
+      <input matInput type="number" [field]="form.elements">
     </mat-form-field>
     <mat-form-field>
       <mat-label>Pitch</mat-label>
-      <input matInput type="number" formControlName="pitch" min="0" max="100" step="0.01">
+      <input matInput type="number" [field]="form.pitch" step="0.01">
       <span matSuffix style="margin-right: 1ex">mm</span>
     </mat-form-field>
-    <mat-checkbox formControlName="omitCenter" class="span-all">Omit center</mat-checkbox>
+    <mat-checkbox [field]="form.omitCenter" class="span-all">Omit center</mat-checkbox>
   }
   @default {
     <mat-form-field>
       <mat-label>Count</mat-label>
-      <input matInput data-test-id="elementCount" type="number" formControlName="elementCount" min="1" max="2048">
+      <input matInput data-test-id="elementCount" type="number" [field]="form.elementCount">
     </mat-form-field>
     <mat-form-field>
       <mat-label>Diameter</mat-label>
-      <input matInput type="number" data-test-id="diameter" formControlName="diameter" min="0" max="10" step="0.01">
+      <input matInput type="number" data-test-id="diameter" [field]="form.diameter" step="0.01">
       <span matSuffix style="margin-right: 1ex">m</span>
     </mat-form-field>
-    @if(arrayConfig.controls['type'].value === 'spiral') {
-    <mat-checkbox class="span-all" formControlName="startWithZero">Start with element 0</mat-checkbox>
+    @if(form.type().value() === 'spiral') {
+    <mat-checkbox class="span-all" [field]="form.startWithZero">Start with element 0</mat-checkbox>
     }
   }
 }

@@ -8,7 +8,6 @@ import {
   ElementRef,
   HostListener,
   inject,
-  NgZone,
   OnInit,
   signal,
 } from '@angular/core';
@@ -67,29 +66,24 @@ export class BabylonJSViewComponent
   public scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
 
-  private ngZone = inject(NgZone);
   private elRef = inject(ElementRef);
   
   ngAfterContentChecked(): void {
-    this.ngZone.runOutsideAngular(() => {
-      const scene = this.scene();
-      if (scene) {
-        this.engine.beginFrame();
-        scene.render();
-        this.engine.endFrame();
-      }
-    });
+    const scene = this.scene();
+    if (scene) {
+      this.engine.beginFrame();
+      scene.render();
+      this.engine.endFrame();
+    }
   }
 
   ngAfterViewChecked(): void {
-    this.ngZone.runOutsideAngular(() => {
-      const scene = this.scene();
-      if (scene) {
-        this.engine.beginFrame();
-        scene.render();
-        this.engine.endFrame();
-      }
-    });
+    const scene = this.scene();
+    if (scene) {
+      this.engine.beginFrame();
+      scene.render();
+      this.engine.endFrame();
+    }
   }
 
   @HostListener('window:resize')
@@ -112,49 +106,47 @@ export class BabylonJSViewComponent
   }
 
   async initEngine(canvas: HTMLCanvasElement) {
-    await this.ngZone.runOutsideAngular(async () => {
-      if (window.WebGLRenderingContext) {        
-        this.engine = new WebGPUEngine(canvas, {
-          adaptToDeviceRatio: true,
-        });
-        await this.engine.initAsync();
-       
-        // this.engine.setStencilBuffer(true);
-        // this.engine.setStencilMask(0xff);
-      } else {
-        this.engine = new NullEngine();
-      }
-
-      const scene = this.createScene(canvas);
-      scene.useRightHandedSystem = true;
-
-      const renderingOrder = [
-        'rayleigh',
-        'farfieldMesh',
-        'excitation',
-        'excitationHidden'
-      ];
-
-      scene.setRenderingOrder(1, (meshA, meshB) => {
-        const indexA = renderingOrder.indexOf(meshA.getMesh().name);
-        const indexB = renderingOrder.indexOf(meshB.getMesh().name);
-        return Math.sign(indexA - indexB);
+    if (window.WebGLRenderingContext) {        
+      this.engine = new WebGPUEngine(canvas, {
+        adaptToDeviceRatio: true,
       });
-
-      scene.onBeforeRenderingGroupObservable.add(groupInfo => 
-        groupInfo.renderingGroupId === 0 && this.engine.setDepthFunction(Engine.LEQUAL));
-
-      scene.onPointerDown = () => this.engine.runRenderLoop(() => this.camera.update());
-      scene.onPointerUp = () => this.engine.stopRenderLoop();
+      await this.engine.initAsync();
       
-      scene.onPointerObservable.add((kbInfo) => {
-        if (kbInfo.type == 8) {
-          //scroll
-          this.camera.update();
-        }
-      });
-      this.scene.set(scene);
+      // this.engine.setStencilBuffer(true);
+      // this.engine.setStencilMask(0xff);
+    } else {
+      this.engine = new NullEngine();
+    }
+
+    const scene = this.createScene(canvas);
+    scene.useRightHandedSystem = true;
+
+    const renderingOrder = [
+      'rayleigh',
+      'farfieldMesh',
+      'excitation',
+      'excitationHidden'
+    ];
+
+    scene.setRenderingOrder(1, (meshA, meshB) => {
+      const indexA = renderingOrder.indexOf(meshA.getMesh().name);
+      const indexB = renderingOrder.indexOf(meshB.getMesh().name);
+      return Math.sign(indexA - indexB);
     });
+
+    scene.onBeforeRenderingGroupObservable.add(groupInfo => 
+      groupInfo.renderingGroupId === 0 && this.engine.setDepthFunction(Engine.LEQUAL));
+
+    scene.onPointerDown = () => this.engine.runRenderLoop(() => this.camera.update());
+    scene.onPointerUp = () => this.engine.stopRenderLoop();
+    
+    scene.onPointerObservable.add((kbInfo) => {
+      if (kbInfo.type == 8) {
+        //scroll
+        this.camera.update();
+      }
+    });
+    this.scene.set(scene);
     //this.scene.debugLayer.show();
     this.resize();
   }

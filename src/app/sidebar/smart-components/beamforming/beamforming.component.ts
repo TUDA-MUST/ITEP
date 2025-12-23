@@ -1,7 +1,5 @@
-import { Component, effect, inject, input } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +10,7 @@ import { StoreService } from 'src/app/store/store.service';
 import { JoystickComponent } from '../joystick/joystick.component';
 import { AzElCoordinates } from 'src/app/store/beamforming.state';
 import { deg2rad } from 'src/app/utils/degrad';
+import { disabled, Field, form, max, min } from '@angular/forms/signals';
 
 const normalizeAngle = (angle: number) => {
   return angle > 180 ? angle - 360 : angle;
@@ -41,44 +40,51 @@ const transformFormPatch = (
       MatFormFieldModule,
       MatIconModule,
       MatInputModule,
-      ReactiveFormsModule,
-      JoystickComponent
+      JoystickComponent,
+      Field
     ],
     templateUrl: './beamforming.component.html',
     styleUrl: './beamforming.component.scss'
 })
 export class BeamformingComponent {
-  beamformingEnabled = input(false);
-
   store = inject(StoreService);
   
-  fb = inject(FormBuilder);
-  fg = this.fb.group({
-    beamformingEnabled: this.fb.control(false),
-    az: this.fb.control({ value: 0, disabled: true }),
-    el: this.fb.control({ value: 0, disabled: true }),
+  formModel = signal({
+    beamformingEnabled: false,
+    az: 0,
+    el: 0
   });
 
-  beamforming = this.store.beamforming;
+  beamformingEnabled = computed(() => this.store.beamforming().beamformingEnabled);
+  beamforming = computed(() => this.store.beamforming());
 
-  propagateBeamformingEnabled = effect(() => {
-    const bfe = this.beamformingEnabled();
-      [
-        this.fg.controls.az,
-        this.fg.controls.el,
-      ].forEach(c => bfe ? c.enable({emitEvent: false}) : c.disable({emitEvent: false}));
-  })
+  form = form(this.formModel, (schemaPath) => {
+    disabled(schemaPath.az, ({valueOf}) => !valueOf(schemaPath.beamformingEnabled));
+    disabled(schemaPath.el, ({valueOf}) => !valueOf(schemaPath.beamformingEnabled));
+    min(schemaPath.az,  -180);
+    max(schemaPath.az,  180);
+    min(schemaPath.el,  -180);
+    max(schemaPath.el,  180);
+  });
 
-  updateStoreFromForm = this.fg.valueChanges.pipe(takeUntilDestroyed()).subscribe(
-    val => this.store.setPartial(transformFormPatch(val)));
-
+  updateStoreFromForm = effect(() => {
+    const formValue = this.formModel();
+    if (this.form().dirty()) {
+      this.store.setPartial({
+        ...formValue,
+        az: deg2rad(formValue.az),
+        el: deg2rad(formValue.el)
+      });
+    }
+  });
+  
   updateFormFromStore = effect(() => {
     const bf = this.store.beamforming();
-    this.fg.patchValue({
+    this.form().reset({
       beamformingEnabled: bf?.beamformingEnabled,
       az: normalizeAngle(Angle.FromRadians(bf.az).degrees()),
       el: normalizeAngle(Angle.FromRadians(bf.el).degrees())
-    }, { emitEvent: false });
+    });
   });
   
   resetBeamforming() {

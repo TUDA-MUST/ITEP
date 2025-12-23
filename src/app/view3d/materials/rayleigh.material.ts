@@ -74,6 +74,7 @@ const rayleighFragmentShaderCode = /* wgsl*/`
   }
 `;
 
+// Do not make type since integers are needed for shader uniforms
 export enum ResultAspect {
   Elongation = 0,
   Amplitude = 1,

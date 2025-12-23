@@ -1,13 +1,16 @@
-import { Component, effect, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-
+import { Component, effect, inject, signal } from '@angular/core';
 
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 
-import { StoreService, Environment, EnvironmentHint } from 'src/app/store/store.service';
+import { StoreService, EnvironmentHint } from 'src/app/store/store.service';
+import { disabled, form, Field, min, max } from '@angular/forms/signals';
 
+const presets : Record<EnvironmentHint, number | null> = {
+  Air: 343,
+  Water: 1482,
+  Custom: null
+};
 
 @Component({
   selector: 'app-environment',
@@ -18,30 +21,27 @@ import { StoreService, Environment, EnvironmentHint } from 'src/app/store/store.
     MatFormField,
     MatSuffix,
     MatLabel,
-    ReactiveFormsModule
+    Field
   ],
   templateUrl: './environment.component.html',
   styleUrl: './environment.component.scss'
 })
 export class EnvironmentComponent {
-  fb = inject(FormBuilder);
   store = inject(StoreService);
 
-  public form = this.fb.group({
-    speedOfSound: [{value: 0, disabled: true}],
-    environmentHint: ['Air' as EnvironmentHint],
+  public environmentModel = signal({
+    speedOfSound: presets.Air as number,
+    environmentHint: 'Air' as EnvironmentHint,
   });
 
-  private formSignal = toSignal(this.form.valueChanges);
-
-  patchForm = effect(() => this.form.patchValue(this.store.arrayConfig().environment, { emitEvent: false }));
-  updateStore = effect(() => {
-    const val = this.formSignal()
-    if (val !== undefined) {
-      this.store.setEnvironment(val as Partial<Environment>);
-      this.form.controls.environmentHint.value === 'Custom' ?
-      this.form.controls.speedOfSound.enable({emitEvent: false}) : 
-      this.form.controls.speedOfSound.disable({emitEvent: false});
-    }
+  public environmentForm = form(this.environmentModel, (schemaPath) => {
+    disabled(schemaPath.speedOfSound, ({ valueOf }) => 
+      valueOf(schemaPath.environmentHint) !== 'Custom'
+    );
+    min(schemaPath.speedOfSound, 0);
+    max(schemaPath.speedOfSound, 5000);
   });
+
+  updateForm = effect(() => this.environmentForm().reset(this.store.arrayConfig().environment));
+  updateStore = effect(() => this.environmentForm().dirty() && this.store.setEnvironment(this.environmentModel()));
 }

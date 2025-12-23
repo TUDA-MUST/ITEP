@@ -1,12 +1,12 @@
-<mat-checkbox [formControl]="rayleighVisible">Visible</mat-checkbox><span></span>
+<mat-checkbox [field]="form.rayleighVisible">Visible</mat-checkbox><span></span>
 Result set:
-<mat-button-toggle-group [formControl]="resultSet" hideSingleSelectionIndicator>
+<mat-button-toggle-group [field]="form.resultSet" hideSingleSelectionIndicator>
     <mat-button-toggle [value]="'XZPlane'">XZ</mat-button-toggle>
     <mat-button-toggle [value]="'YZPlane'">YZ</mat-button-toggle>
     <mat-button-toggle [value]="'CutCube'">Cube</mat-button-toggle>
 </mat-button-toggle-group>
 Aspect:
-<mat-button-toggle-group [formControl]="rayleighAspect" hideSingleSelectionIndicator>
+<mat-button-toggle-group [field]="form.rayleighAspect" hideSingleSelectionIndicator>
   <mat-button-toggle [value]="ResultAspect.Elongation">Re</mat-button-toggle>
   <mat-button-toggle [value]="ResultAspect.Amplitude">abs</mat-button-toggle>
   <mat-button-toggle [value]="ResultAspect.Phase">arg</mat-button-toggle>
@@ -14,10 +14,10 @@ Aspect:
 Phase:
 <div style="display:flex; align-items: center">
   @if(animateTimer()) {
-    <button mat-icon-button (click)="stopTimer()"><mat-icon>stop</mat-icon></button>  
+    <button mat-icon-button (click)="stopTimer()" [disabled]="!phaseEnabled()"><mat-icon>stop</mat-icon></button>  
   } @else {
-    <button mat-icon-button (click)="startTimer()"><mat-icon>play_arrow</mat-icon></button>
+    <button mat-icon-button (click)="startTimer()" [disabled]="!phaseEnabled()"><mat-icon>play_arrow</mat-icon></button>
   }
-  <button mat-icon-button (click)="resetPhase()"><mat-icon>replay</mat-icon></button>
-  <input min="0" max="6.28" step="0.01" type="range" [value]="phase()" (input)="setPhase($event)">
+  <button mat-icon-button (click)="resetPhase()" [disabled]="!phaseEnabled()"><mat-icon>replay</mat-icon></button>
+  <input min="0" max="6.28" step="0.01" type="range" [value]="phase()" (input)="setPhase($event)" [disabled]="!phaseEnabled()">
 </div>
