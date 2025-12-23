@@ -58,7 +58,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-storybook": "^10.1.10",
     "jsdom": "^27.1.0",
-    "ng-mocks": "^14.14.0",
+    "ng-mocks": "^14.15.0",
     "storybook": "^10.1.10",
     "typescript": "^5.9.3",
     "vitest": "^4.0.14"
