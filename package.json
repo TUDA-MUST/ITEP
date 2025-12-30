@@ -57,7 +57,7 @@
     "chromatic": "^13.3.4",
     "eslint": "^9.39.2",
     "eslint-plugin-storybook": "^10.1.10",
-    "jsdom": "^27.3.0",
+    "jsdom": "^27.4.0",
     "ng-mocks": "^14.14.0",
     "storybook": "^10.1.11",
     "typescript": "^5.9.3",
