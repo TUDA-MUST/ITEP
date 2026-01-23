@@ -61,7 +61,7 @@
     "ng-mocks": "^14.14.0",
     "storybook": "^10.2.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.18"
   },
   "overrides": {
     "storybook": "$storybook"
