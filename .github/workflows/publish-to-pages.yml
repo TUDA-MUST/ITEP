@@ -16,7 +16,7 @@ jobs:
           npx ng build --base-href https://TUDA-MUST.github.io/ITEP/
           cp dist/phased/browser/index.html dist/phased/browser/404.html
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "dist/phased/browser"
 
