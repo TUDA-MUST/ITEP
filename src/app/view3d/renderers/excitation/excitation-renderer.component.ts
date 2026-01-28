@@ -10,12 +10,6 @@ import {
 import { TransducerMaterial } from '../../materials/transducer.material';
 import { type Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Plane } from '@babylonjs/core/Maths/math.plane';
-import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
-import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from '../../../utils/webgl.utils';
-
-import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
-import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 
 import '@babylonjs/core/Culling/ray';
 import '@babylonjs/core/Meshes/thinInstanceMesh';

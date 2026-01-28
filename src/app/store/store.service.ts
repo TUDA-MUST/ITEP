@@ -15,8 +15,6 @@ import j1 from '@stdlib/math-base-special-besselj1';
 
 export type TransducerModel = 'Point' | 'Piston';
 
-export type Nullable<T> = { [K in keyof T]: T[K] | null };
-
 ////
 
 type PSFPoint = {

@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   contentChildren,
+  Directive,
   effect,
   ElementRef,
   HostListener,
@@ -12,31 +13,26 @@ import {
   signal,
 } from '@angular/core';
 
+import { excitationBufferInclude } from '../../../utils/excitationbuffer';
+import { BabylonConsumer, implementsOnSceneCreated } from '../../interfaces/lifecycle';
+
+import { Angle } from '@babylonjs/core/Maths/math.path';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { AxesViewer } from '@babylonjs/core/Debug/axesViewer';
+import { Color4 } from '@babylonjs/core/Maths/math.color';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
+import { NullEngine } from '@babylonjs/core/Engines/nullEngine';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { Scene } from '@babylonjs/core/scene';
-import { excitationBufferInclude } from '../../../utils/excitationbuffer';
-
-import { NullEngine } from '@babylonjs/core/Engines/nullEngine';
-import { BabylonConsumer, implementsOnSceneCreated } from '../../interfaces/lifecycle';
+import { ShaderStore } from '@babylonjs/core/Engines/shaderStore';
 import { WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
 
 import '@babylonjs/core/Engines/WebGPU/Extensions/engine.computeShader';
 
-import { ShaderStore } from '@babylonjs/core/Engines/shaderStore';
 import { diff } from 'src/app/utils/utils';
-import { Color4 } from '@babylonjs/core/Maths/math.color';
-import { Angle } from '@babylonjs/core/Maths/math.path';
-
-@Component({
-  // eslint-disable-next-line @angular-eslint/component-selector
+@Directive({
   selector: 'canvas[babylonsjsview]',
-  templateUrl: './babylon-jsview.component.html',
-  styleUrl: './babylon-jsview.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'babylon',
   standalone: true,
 })
