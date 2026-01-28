@@ -21,6 +21,10 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { type Transducer } from 'src/app/store/store.service';
 import { type LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
 import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
+import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
+import { ActionManager } from '@babylonjs/core/Actions/actionManager';
+import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from 'src/app/utils/webgl.utils';
 
 @Component({

@@ -32,6 +32,7 @@ import '@babylonjs/core/Engines/WebGPU/Extensions/engine.computeShader';
 
 import { diff } from 'src/app/utils/utils';
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'canvas[babylonsjsview]',
   exportAs: 'babylon',
   standalone: true,
@@ -134,7 +135,7 @@ export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterCo
     scene.onPointerUp = () => this.engine.stopRenderLoop();
 
     scene.onPointerObservable.add((kbInfo) => {
-      if (kbInfo.type == 8) {
+      if (kbInfo.type === 8) {
         //scroll
         this.camera.update();
       }
