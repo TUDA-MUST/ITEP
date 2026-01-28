@@ -1,24 +1,26 @@
 import { ChangeDetectionStrategy, Component, effect, forwardRef, input, output } from '@angular/core';
 
 import { TransducerMaterial } from '../../materials/transducer.material';
+
+import { ActionManager } from '@babylonjs/core/Actions/actionManager';
+import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
+import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Plane } from '@babylonjs/core/Maths/math.plane';
-import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
-import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from '../../../utils/webgl.utils';
-
-import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
-import { ActionManager } from '@babylonjs/core/Actions/actionManager';
+import { Scene } from '@babylonjs/core/scene';
 
 import '@babylonjs/core/Culling/ray';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
 
+import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from '../../../utils/webgl.utils';
+
 import { SelectionState } from 'src/app/store/selection.state';
-import { Scene } from '@babylonjs/core/scene';
 import { BabylonConsumer } from '../../interfaces/lifecycle';
-import { Engine } from '@babylonjs/core/Engines/engine';
-import { Transducer } from 'src/app/store/store.service';
-import { CreateLineSystem, LinesMesh } from '@babylonjs/core';
+import { Transducer, TransducerModel } from 'src/app/store/store.service';
+import { LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
+import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
 
 @Component({
   selector: 'app-excitation-renderer',
@@ -30,7 +32,7 @@ import { CreateLineSystem, LinesMesh } from '@babylonjs/core';
 export class ExcitationRendererComponent extends BabylonConsumer {
   transducers = input<Transducer[] | null>(null);
   transducerDiameter = input<number | null>(null);
-  transducerModel = input<'Point' | 'Piston'>('Piston');
+  transducerModel = input<TransducerModel>('Piston');
   selection = input<SelectionState | null>(null);
   hovered = output<number>();
 
