@@ -1,4 +1,4 @@
-<mat-button-toggle-group hideSingleSelectionIndicator [field]="environmentForm.environmentHint">
+<mat-button-toggle-group hideSingleSelectionIndicator [formField]="environmentForm.environmentHint">
   <mat-button-toggle value="Air">
     Air
   </mat-button-toggle>
@@ -11,6 +11,6 @@
 </mat-button-toggle-group>
 <mat-form-field>
   <mat-label>Speed of sound</mat-label>
-  <input matInput type="number" [field]="environmentForm.speedOfSound" step="1">
+  <input matInput type="number" [formField]="environmentForm.speedOfSound" step="1">
   <span matSuffix style="margin-right: 1ex">m/s</span>
 </mat-form-field>

@@ -6,7 +6,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckbox } from '@angular/material/checkbox';
 
 import { ArrayConfigType, StoreService } from 'src/app/store/store.service';
-import { form, Field, min, max } from '@angular/forms/signals';
+import { form, FormField, min, max } from '@angular/forms/signals';
 
 @Component({
     selector: 'app-array-config',
@@ -17,7 +17,7 @@ import { form, Field, min, max } from '@angular/forms/signals';
         MatFormFieldModule,
         MatInputModule,
         MatCheckbox,
-        Field
+        FormField
     ]
 })
 export class ArrayConfigComponent {

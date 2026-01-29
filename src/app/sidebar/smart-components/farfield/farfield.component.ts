@@ -3,13 +3,13 @@ import { Component, effect, inject, signal } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Results } from 'src/app/store/viewportConfig.state';
 import { StoreService } from 'src/app/store/store.service';
-import { form, Field } from '@angular/forms/signals';
+import { form, FormField } from '@angular/forms/signals';
 
 @Component({
     selector: 'app-farfield',
     templateUrl: './farfield.component.html',
     styleUrls: ['./farfield.component.scss'],
-    imports: [MatCheckboxModule, Field]
+    imports: [MatCheckboxModule, FormField]
 })
 export class FarfieldComponent {
   private store = inject(StoreService);
