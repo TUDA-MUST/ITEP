@@ -10,7 +10,7 @@ import { StoreService } from 'src/app/store/store.service';
 import { JoystickComponent } from '../joystick/joystick.component';
 import { AzElCoordinates } from 'src/app/store/beamforming.state';
 import { deg2rad } from 'src/app/utils/degrad';
-import { disabled, Field, form, max, min } from '@angular/forms/signals';
+import { disabled, FormField, form, max, min } from '@angular/forms/signals';
 
 const normalizeAngle = (angle: number) => {
   return angle > 180 ? angle - 360 : angle;
@@ -41,7 +41,7 @@ const transformFormPatch = (
       MatIconModule,
       MatInputModule,
       JoystickComponent,
-      Field
+      FormField
     ],
     templateUrl: './beamforming.component.html',
     styleUrl: './beamforming.component.scss'

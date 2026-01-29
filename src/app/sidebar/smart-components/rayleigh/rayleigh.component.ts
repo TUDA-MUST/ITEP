@@ -3,19 +3,19 @@ import { Component, computed, effect, inject, model, signal } from '@angular/cor
 import { ResultAspect } from '../../../view3d/materials/rayleigh.material';
 
 import { Results } from 'src/app/store/viewportConfig.state';
-import { ResultSet } from 'src/app/store/rayleigh.state';
+import { type ResultSet } from 'src/app/store/rayleigh.state';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { StoreService } from 'src/app/store/store.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule, MatIconButton } from "@angular/material/button";
 import { MatIconModule } from '@angular/material/icon';
-import { form, Field, disabled } from '@angular/forms/signals';
+import { form, FormField, disabled } from '@angular/forms/signals';
 
 @Component({
     selector: 'app-rayleigh',
     templateUrl: './rayleigh.component.html',
     styleUrls: ['./rayleigh.component.scss'],
-    imports: [ Field, MatButtonToggle, MatButtonToggleGroup, MatCheckboxModule, MatButtonModule, MatIconButton, MatIconModule ]
+    imports: [ FormField, MatButtonToggle, MatButtonToggleGroup, MatCheckboxModule, MatButtonModule, MatIconButton, MatIconModule ]
 })
 export class RayleighComponent {
   // Publish enums to template

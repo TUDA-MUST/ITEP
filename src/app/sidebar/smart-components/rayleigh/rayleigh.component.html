@@ -1,12 +1,12 @@
-<mat-checkbox [field]="form.rayleighVisible">Visible</mat-checkbox><span></span>
+<mat-checkbox [formField]="form.rayleighVisible">Visible</mat-checkbox><span></span>
 Result set:
-<mat-button-toggle-group [field]="form.resultSet" hideSingleSelectionIndicator>
+<mat-button-toggle-group [formField]="form.resultSet" hideSingleSelectionIndicator>
     <mat-button-toggle [value]="'XZPlane'">XZ</mat-button-toggle>
     <mat-button-toggle [value]="'YZPlane'">YZ</mat-button-toggle>
     <mat-button-toggle [value]="'CutCube'">Cube</mat-button-toggle>
 </mat-button-toggle-group>
 Aspect:
-<mat-button-toggle-group [field]="form.rayleighAspect" hideSingleSelectionIndicator>
+<mat-button-toggle-group [formField]="form.rayleighAspect" hideSingleSelectionIndicator>
   <mat-button-toggle [value]="ResultAspect.Elongation">Re</mat-button-toggle>
   <mat-button-toggle [value]="ResultAspect.Amplitude">abs</mat-button-toggle>
   <mat-button-toggle [value]="ResultAspect.Phase">arg</mat-button-toggle>

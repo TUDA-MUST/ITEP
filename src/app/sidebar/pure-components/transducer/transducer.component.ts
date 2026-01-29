@@ -1,6 +1,6 @@
 import { Component, effect, inject, signal, untracked } from '@angular/core';
 
-import { form, Field, min, max } from '@angular/forms/signals';
+import { form, FormField, min, max } from '@angular/forms/signals';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 
@@ -14,7 +14,7 @@ import { StoreService, TransducerModel } from 'src/app/store/store.service';
     MatSuffix,
     MatLabel,
     MatButtonToggleModule,
-    Field
+    FormField
 ],
   templateUrl: './transducer.component.html',
   styleUrl: './transducer.component.scss'
