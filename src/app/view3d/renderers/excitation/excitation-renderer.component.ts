@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, forwardRef, input, output } from '@angular/core';
 
 import { TransducerMaterial } from '../../materials/transducer.material';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { type Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Plane } from '@babylonjs/core/Maths/math.plane';
 import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
 import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
@@ -13,12 +13,12 @@ import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import '@babylonjs/core/Culling/ray';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
 
-import { SelectionState } from 'src/app/store/selection.state';
-import { Scene } from '@babylonjs/core/scene';
+import { type SelectionState } from 'src/app/store/selection.state';
+import { type Scene } from '@babylonjs/core/scene';
 import { BabylonConsumer } from '../../interfaces/lifecycle';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Transducer } from 'src/app/store/store.service';
-import { LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
+import { type Transducer } from 'src/app/store/store.service';
+import { type LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
 import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
 
 @Component({

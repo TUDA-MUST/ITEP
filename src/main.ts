@@ -4,7 +4,7 @@ import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { provideRouter, Routes, withComponentInputBinding } from '@angular/router';
+import { provideRouter, type Routes, withComponentInputBinding } from '@angular/router';
 import { SetupContainerComponent } from './app/sidebar/smart-components/setup-container/setup-container.component';
 import { LibraryContainerComponent } from './app/sidebar/smart-components/library-container/library-container.component';
 

@@ -1,15 +1,15 @@
 import {
   ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
-import { Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
-import { Point, ResultValues } from 'src/app/store/export.state';
-import { BeamformingState } from 'src/app/store/beamforming.state';
-import { Transducer } from 'src/app/store/store.service';
+import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { type Point, type ResultValues } from 'src/app/store/export.state';
+import { type BeamformingState } from 'src/app/store/beamforming.state';
+import { type Transducer } from 'src/app/store/store.service';
 
 import { ComputeShader } from '@babylonjs/core/Compute/computeShader';
 import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 import { StorageBuffer } from '@babylonjs/core/Buffers/storageBuffer';
-import { Scene } from '@babylonjs/core/scene';
-import { WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
+import { type Scene } from '@babylonjs/core/scene';
+import { type WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
 
 const exportComputeShader = /* wgsl */`
 

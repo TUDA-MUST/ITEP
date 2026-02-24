@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-import { ArrayConfig } from 'src/app/store/store.service';
+import { type ArrayConfig } from 'src/app/store/store.service';
 import { CitationComponent } from '../citation/citation.component';
 
 @Component({

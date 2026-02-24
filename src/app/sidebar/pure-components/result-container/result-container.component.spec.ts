@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import * as menuLeft from '../sidebar-container/sidebar-container.component.metadata' ;
 
 import { describe, beforeEach, it, expect } from 'vitest';

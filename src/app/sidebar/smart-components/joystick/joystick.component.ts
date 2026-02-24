@@ -6,11 +6,11 @@ import {
     signal,
     HostListener,
     viewChild,
-    ElementRef,
+    type ElementRef,
     computed,
     effect,
   } from '@angular/core';
-import { AzElCoordinates } from 'src/app/store/beamforming.state';
+import { type AzElCoordinates } from 'src/app/store/beamforming.state';
   
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,

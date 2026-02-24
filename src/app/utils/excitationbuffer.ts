@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { type Vector3 } from '@babylonjs/core/Maths/math.vector';
 
 export const excitationBufferMaxElements = 2048;
 export const excitationBufferMaxElementsDefine = `#define MAX_ELEMENTS ${excitationBufferMaxElements}`;

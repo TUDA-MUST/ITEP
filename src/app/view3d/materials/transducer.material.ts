@@ -1,4 +1,4 @@
-import { Scene } from '@babylonjs/core/scene';
+import { type Scene } from '@babylonjs/core/scene';
 import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
 
 import '@babylonjs/core/Shaders/ShadersInclude/instancesDeclaration'

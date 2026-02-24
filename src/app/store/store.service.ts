@@ -8,7 +8,7 @@ import { withViewportConfig } from './viewportConfig.state';
 import { withSelection } from './selection.state';
 import { withRayleigh } from './rayleigh.state';
 import { withExport } from './export.state';
-import { UVCoordinates, withBeamforming } from './beamforming.state';
+import { type UVCoordinates, withBeamforming } from './beamforming.state';
 import { azElToUV } from '../utils/uv';
 
 import j1 from '@stdlib/math-base-special-besselj1';

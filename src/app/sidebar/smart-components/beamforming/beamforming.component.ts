@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Angle } from '@babylonjs/core/Maths/math.path';
 import { StoreService } from 'src/app/store/store.service';
 import { JoystickComponent } from '../joystick/joystick.component';
-import { AzElCoordinates } from 'src/app/store/beamforming.state';
+import { type AzElCoordinates } from 'src/app/store/beamforming.state';
 import { deg2rad } from 'src/app/utils/degrad';
 import { disabled, FormField, form, max, min } from '@angular/forms/signals';
 

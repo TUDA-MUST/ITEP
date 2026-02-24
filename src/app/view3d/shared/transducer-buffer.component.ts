@@ -7,12 +7,12 @@ import {
   forwardRef,
   inject,
   input,
-  OnDestroy,
+  type OnDestroy,
   signal,
 } from '@angular/core';
 
 import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
-import { Scene } from '@babylonjs/core/scene';
+import { type Scene } from '@babylonjs/core/scene';
 import {
   createExcitationBuffer,
   excitationBufferMaxElements,
@@ -21,8 +21,8 @@ import {
 import { VEC4_ELEMENT_COUNT } from '../../utils/webgl.utils';
 import { BabylonConsumer } from '../interfaces/lifecycle';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
-import { BeamformingState } from 'src/app/store/beamforming.state';
-import { Transducer } from 'src/app/store/store.service';
+import { type BeamformingState } from 'src/app/store/beamforming.state';
+import { type Transducer } from 'src/app/store/store.service';
 import { diff } from 'src/app/utils/utils';
 import { azElToUV } from 'src/app/utils/uv';
 

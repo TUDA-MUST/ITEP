@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/angular';
+import { type Meta, type StoryObj } from '@storybook/angular';
 import { JoystickComponent } from './joystick.component';
 
 const meta: Meta<JoystickComponent> = {

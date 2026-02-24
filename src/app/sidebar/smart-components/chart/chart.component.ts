@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, effect, inject, viewChild } from '@angular/core';
+  ChangeDetectionStrategy, Component, DestroyRef, type ElementRef, type OnInit, effect, inject, viewChild } from '@angular/core';
 
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -17,7 +17,7 @@ import {
   MarkAreaComponent,
   MarkLineComponent,
 } from 'echarts/components';
-import { ECBasicOption } from 'echarts/types/dist/shared';
+import { type ECBasicOption } from 'echarts/types/dist/shared';
 import { StoreService } from 'src/app/store/store.service';
 
 const degreeFormatter = (value : number) => `${value.toFixed(0)}°`;

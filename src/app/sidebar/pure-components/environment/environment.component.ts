@@ -4,7 +4,7 @@ import {
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 
-import { StoreService, EnvironmentHint } from 'src/app/store/store.service';
+import { StoreService, type EnvironmentHint } from 'src/app/store/store.service';
 import { disabled, form, FormField, min, max } from '@angular/forms/signals';
 
 const presets : Record<EnvironmentHint, number | null> = {

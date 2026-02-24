@@ -3,20 +3,20 @@ import {
   Component,
   effect,
   input,
-  OnDestroy,
+  type OnDestroy,
 } from '@angular/core';
 
-import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
+import { type AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { Scene } from '@babylonjs/core/scene';
-import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
+import { type Scene } from '@babylonjs/core/scene';
+import { type UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 import { FarfieldMaterial } from '../../materials/farfield.material';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
-import { Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
 import { Constants } from '@babylonjs/core/Engines/constants';
-import { Environment, frequencyFromBase, Transducer} from 'src/app/store/store.service';
+import { type Environment, frequencyFromBase, type Transducer} from 'src/app/store/store.service';
 
 const uvMesh: VertexData = (() => {
   const positions = [-1, -1, 0, 1, -1, 0, -1, 1, 0, 1, 1, 0];

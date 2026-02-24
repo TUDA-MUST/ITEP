@@ -1,7 +1,7 @@
 import { BeamformingComponent } from "./beamforming.component";
 import * as componentMetadata from "./beamforming.component.metadata";
 
-import { StoryFn, Meta, moduleMetadata, applicationConfig } from "@storybook/angular";
+import { type StoryFn, type Meta, moduleMetadata, applicationConfig } from "@storybook/angular";
 
 export default {
   title: "Beamforming",

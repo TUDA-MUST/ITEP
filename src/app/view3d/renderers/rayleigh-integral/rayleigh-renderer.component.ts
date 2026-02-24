@@ -1,17 +1,17 @@
-import { ChangeDetectionStrategy, Component, effect, input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, type OnDestroy } from '@angular/core';
 
 import { Plane } from '@babylonjs/core/Maths/math.plane';
 import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { RayleighMaterial, ResultAspect } from '../../materials/rayleigh.material';
-import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
+import { RayleighMaterial, type ResultAspect } from '../../materials/rayleigh.material';
+import { type UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { Scene } from '@babylonjs/core/scene';
-import { Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { type Scene } from '@babylonjs/core/scene';
+import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { ResultSet } from 'src/app/store/rayleigh.state';
-import { Environment, Transducer } from 'src/app/store/store.service';
+import { type ResultSet } from 'src/app/store/rayleigh.state';
+import { type Environment, type Transducer } from 'src/app/store/store.service';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 
 export const cubeCut = (): VertexData => {

@@ -1,8 +1,8 @@
 import {
-  Meta,
+  type Meta,
   moduleMetadata,
   componentWrapperDecorator,
-  StoryObj,
+  type StoryObj,
 } from "@storybook/angular";
 
 import { ExcitationRendererComponent } from "./excitation-renderer.component";

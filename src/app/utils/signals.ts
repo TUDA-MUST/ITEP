@@ -1,4 +1,4 @@
-import { Signal, computed } from '@angular/core';
+import { type Signal, computed } from '@angular/core';
 
 export const nonNullableSignal = <T>(source: Signal<T | undefined>, fallback?: T): Signal<T> =>
     computed(() => {

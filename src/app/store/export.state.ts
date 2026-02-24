@@ -1,5 +1,5 @@
 import { signalStoreFeature, withState, withMethods, patchState } from '@ngrx/signals';
-import { HoveredKpi } from '../sidebar/pure-components/kpi/kpi.component';
+import { type HoveredKpi } from '../sidebar/pure-components/kpi/kpi.component';
 
 export interface Point {
   x: number;

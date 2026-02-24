@@ -1,4 +1,4 @@
-import { AzElCoordinates, UVCoordinates } from "../store/beamforming.state";
+import { type AzElCoordinates, type UVCoordinates } from "../store/beamforming.state";
 
 export const azElToUV = ({az, el}: AzElCoordinates) : UVCoordinates => ({
     u: Math.cos(el) * Math.sin(az),

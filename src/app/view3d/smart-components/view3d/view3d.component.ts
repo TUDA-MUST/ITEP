@@ -13,8 +13,8 @@ import { BabylonJSViewComponent } from '../babylon-jsview/babylon-jsview.compone
 
 import { Results } from 'src/app/store/viewportConfig.state';
 import { ExportRendererComponent } from '../../renderers/export/export.component';
-import { ResultValues } from 'src/app/store/export.state';
-import { ArrayConfig, StoreService } from 'src/app/store/store.service';
+import { type ResultValues } from 'src/app/store/export.state';
+import { type ArrayConfig, StoreService } from 'src/app/store/store.service';
 
 
 @Component({

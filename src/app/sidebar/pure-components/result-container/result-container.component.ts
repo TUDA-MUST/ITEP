@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Results } from 'src/app/store/viewportConfig.state';
 
 import { version } from '../../../../../package.json';
-import { HoveredKpi, KPIComponent } from '../kpi/kpi.component';
+import { type HoveredKpi, KPIComponent } from '../kpi/kpi.component';
 import { ApertureViewComponent } from '../aperture-view/aperture-view.component';
 import { StoreService } from 'src/app/store/store.service';
 import { MatButtonModule } from '@angular/material/button';

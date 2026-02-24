@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckbox } from '@angular/material/checkbox';
 
-import { ArrayConfigType, StoreService } from 'src/app/store/store.service';
+import { type ArrayConfigType, StoreService } from 'src/app/store/store.service';
 import { form, FormField, min, max } from '@angular/forms/signals';
 
 @Component({

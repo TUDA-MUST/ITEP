@@ -1,6 +1,6 @@
 import {
-  AfterContentChecked,
-  AfterViewChecked,
+  type AfterContentChecked,
+  type AfterViewChecked,
   ChangeDetectionStrategy,
   Component,
   contentChildren,
@@ -8,7 +8,7 @@ import {
   ElementRef,
   HostListener,
   inject,
-  OnInit,
+  type OnInit,
   signal,
 } from '@angular/core';
 
