@@ -41,5 +41,5 @@ export class ExcitationComponent {
     excitationFrequencyBase: [0],
   });
 
-  public environment = computed(() => this.store.arrayConfig().environment);
+  public readonly environment = computed(() => this.store.arrayConfig().environment);
 }

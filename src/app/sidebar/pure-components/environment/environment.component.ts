@@ -29,7 +29,7 @@ const presets : Record<EnvironmentHint, number | null> = {
 export class EnvironmentComponent {
   store = inject(StoreService);
 
-  public environmentModel = signal({
+  public readonly environmentModel = signal({
     speedOfSound: presets.Air as number,
     environmentHint: 'Air' as EnvironmentHint,
   });

@@ -7,7 +7,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 @Component({
     selector: 'app-sidebar-container',
     templateUrl: './sidebar-container.component.html',
-    styleUrls: ['./sidebar-container.component.scss'],
+    styleUrl: './sidebar-container.component.scss',
     imports: [        
         MatIcon,
         RouterOutlet,

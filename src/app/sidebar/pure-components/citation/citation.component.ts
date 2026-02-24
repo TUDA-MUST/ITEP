@@ -13,6 +13,6 @@ import { Citation } from 'src/app/store/store.service';
   styleUrl: './citation.component.scss'
 })
 export class CitationComponent {
-  citation = input<Citation | null>();
-  citationIndex = input<number>(0);
+  readonly citation = input<Citation | null>();
+  readonly citationIndex = input<number>(0);
 }

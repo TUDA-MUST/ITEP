@@ -49,14 +49,14 @@ const transformFormPatch = (
 export class BeamformingComponent {
   store = inject(StoreService);
   
-  formModel = signal({
+  readonly formModel = signal({
     beamformingEnabled: false,
     az: 0,
     el: 0
   });
 
-  beamformingEnabled = computed(() => this.store.beamforming().beamformingEnabled);
-  beamforming = computed(() => this.store.beamforming());
+  readonly beamformingEnabled = computed(() => this.store.beamforming().beamformingEnabled);
+  readonly beamforming = computed(() => this.store.beamforming());
 
   form = form(this.formModel, (schemaPath) => {
     disabled(schemaPath.az, ({valueOf}) => !valueOf(schemaPath.beamformingEnabled));

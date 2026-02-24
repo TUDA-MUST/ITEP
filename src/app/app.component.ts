@@ -7,7 +7,7 @@ import { SidebarContainerComponent } from './sidebar/pure-components/sidebar-con
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
+    styleUrl: './app.component.scss',
     imports: [ SidebarContainerComponent, View3dComponent, ResultContainerComponent, MatToolbarModule ]
 })
 export class AppComponent {}

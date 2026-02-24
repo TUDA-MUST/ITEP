@@ -8,13 +8,13 @@ import { form, FormField } from '@angular/forms/signals';
 @Component({
     selector: 'app-farfield',
     templateUrl: './farfield.component.html',
-    styleUrls: ['./farfield.component.scss'],
+    styleUrl: './farfield.component.scss',
     imports: [MatCheckboxModule, FormField]
 })
 export class FarfieldComponent {
   private store = inject(StoreService);
   
-  protected farfieldModel = signal(false);
+  protected readonly farfieldModel = signal(false);
   protected farfieldForm = form(this.farfieldModel);
 
   updateForm = effect(() => {

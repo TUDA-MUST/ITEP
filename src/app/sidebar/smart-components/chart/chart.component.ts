@@ -56,7 +56,7 @@ export class ChartComponent implements OnInit {
   private readonly store = inject(StoreService);
   destroyRef = inject(DestroyRef);
 
-  echartDiv = viewChild.required<ElementRef<HTMLElement>>('echartDiv');
+  readonly echartDiv = viewChild.required<ElementRef<HTMLElement>>('echartDiv');
 
   updateChartEffect =     effect(() => {
     const hoveredKpi = this.store.hoveredKpi();

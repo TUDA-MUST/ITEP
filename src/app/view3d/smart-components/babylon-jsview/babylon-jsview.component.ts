@@ -34,7 +34,7 @@ import { Angle } from '@babylonjs/core/Maths/math.path';
 @Component({
   selector: 'canvas[babylonsjsview]',
   templateUrl: './babylon-jsview.component.html',
-  styleUrls: ['./babylon-jsview.component.scss'],
+  styleUrl: './babylon-jsview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'babylon',
   standalone: true,
@@ -43,7 +43,7 @@ export class BabylonJSViewComponent
   implements AfterViewChecked, OnInit, AfterContentChecked
 {
   canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);  
-  renderers = contentChildren(BabylonConsumer);
+  readonly renderers = contentChildren(BabylonConsumer);
   
   updateRenderers = (() => {
   let prev: BabylonConsumer[] = [];
@@ -63,7 +63,7 @@ export class BabylonJSViewComponent
 })();
 
   engine: WebGPUEngine | NullEngine;
-  public scene = signal<Scene | null>(null);
+  public readonly scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
 
   private elRef = inject(ElementRef);

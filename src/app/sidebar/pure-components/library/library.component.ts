@@ -10,5 +10,5 @@ import { CitationComponent } from '../citation/citation.component';
   styleUrl: './library.component.scss'
 })
 export class LibraryComponent {
-  presets = input<ArrayConfig[]>([]);
+  readonly presets = input<ArrayConfig[]>([]);
 }

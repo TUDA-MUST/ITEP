@@ -22,7 +22,7 @@ import { StoreService, TransducerModel } from 'src/app/store/store.service';
 export class TransducerComponent {
   private store = inject(StoreService);
 
-  protected transducerModel = signal({
+  protected readonly transducerModel = signal({
     transducerModel: 'Point' as TransducerModel,
     transducerDiameter: 0
   });

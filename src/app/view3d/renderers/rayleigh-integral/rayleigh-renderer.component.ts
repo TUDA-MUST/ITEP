@@ -72,11 +72,11 @@ export const cubeCut = (): VertexData => {
 })
 export class RayleighIntegralRendererComponent extends TransducerBufferConsumer implements OnDestroy {
   // Should no longer be needed or changed to a number.
-  transducers = input<Transducer[] | null>(null);
-  environment = input<Environment | null>(null);
-  resultSet = input<ResultSet | null>(null);
-  aspect = input<ResultAspect | null>(null);
-  globalPhase = input<number | null>(null);
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly environment = input<Environment | null>(null);
+  readonly resultSet = input<ResultSet | null>(null);
+  readonly aspect = input<ResultAspect | null>(null);
+  readonly globalPhase = input<number | null>(null);
   
   private material: RayleighMaterial;
 

@@ -11,7 +11,7 @@ import { form, FormField, min, max } from '@angular/forms/signals';
 @Component({
     selector: 'app-array-config',
     templateUrl: './array-config.component.html',
-    styleUrls: ['./array-config.component.scss'],
+    styleUrl: './array-config.component.scss',
     imports: [
         MatButtonToggleModule,
         MatFormFieldModule,
@@ -23,7 +23,7 @@ import { form, FormField, min, max } from '@angular/forms/signals';
 export class ArrayConfigComponent {
   private store = inject(StoreService);
   
-  private model = signal({
+  private readonly model = signal({
     type: 'ura' as ArrayConfigType,
     elementsX: 0,
     elementsY: 0,

@@ -4,15 +4,15 @@ import { Transducer, TransducerModel } from 'src/app/store/store.service';
 @Component({
   selector: 'app-aperture-view',
   templateUrl: './aperture-view.component.html',
-  styleUrls: ['./aperture-view.component.scss'],
+  styleUrl: './aperture-view.component.scss',
 })
 export class ApertureViewComponent {
-  transducers = input<Transducer[]>([]);
-  transducerModel = input<TransducerModel>();
+  readonly transducers = input<Transducer[]>([]);
+  readonly transducerModel = input<TransducerModel>();
 
-  transducerDiameter = input<number>(0);
-  arrayDiameter = input<number | null>(null);
-  bb = computed(() => {
+  readonly transducerDiameter = input<number>(0);
+  readonly arrayDiameter = input<number | null>(null);
+  readonly bb = computed(() => {
     const dia = this.arrayDiameter();
 
     const initial = (dia === null) ?
@@ -28,11 +28,11 @@ export class ApertureViewComponent {
     const bbString = `${rawBB.left} ${-rawBB.top} ${rawBB.right - rawBB.left} ${rawBB.top - rawBB.bottom}`;
     return bbString;
   });
-  transducersMapped = computed(() => this.transducers().map(t => ({
+  readonly transducersMapped = computed(() => this.transducers().map(t => ({
     ...t,
     pos: { x: t.pos.x, y: -t.pos.y }
   })))
-  crossSize = computed(() => {
+  readonly crossSize = computed(() => {
     const initial = { left: Infinity, top: -Infinity, right: -Infinity, bottom: Infinity }; 
 
     const rawBB = this.transducers().reduce((acc, t) => ({

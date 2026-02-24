@@ -21,7 +21,7 @@ export class KPIComponent {
   readonly store = inject(StoreService);
   readonly snackBar = inject(MatSnackBar);
 
-  kpis = input<PSFResult>();
+  readonly kpis = input<PSFResult>();
 
   hoveredKpi = output<HoveredKpi>();
 

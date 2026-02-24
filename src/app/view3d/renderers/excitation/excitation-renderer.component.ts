@@ -29,10 +29,10 @@ import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
   providers: [{ provide: BabylonConsumer, useExisting: forwardRef(() => ExcitationRendererComponent) }],
 })
 export class ExcitationRendererComponent extends BabylonConsumer {
-  transducers = input<Transducer[] | null>(null);
-  transducerDiameter = input<number | null>(null);
-  transducerModel = input<'Point' | 'Piston'>('Piston');
-  selection = input<SelectionState | null>(null);
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly transducerDiameter = input<number | null>(null);
+  readonly transducerModel = input<'Point' | 'Piston'>('Piston');
+  readonly selection = input<SelectionState | null>(null);
   hovered = output<number>();
 
   private pointMesh: LinesMesh;

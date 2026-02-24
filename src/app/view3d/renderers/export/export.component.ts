@@ -73,9 +73,9 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
 export class ExportRendererComponent extends TransducerBufferConsumer {
   results = output<ResultValues>();
   
-  transducers = input<Transducer[] | null>(null);
-  environment = input<number | null>(null);
-  beamforming = input<BeamformingState | null>(null);
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly environment = input<number | null>(null);
+  readonly beamforming = input<BeamformingState | null>(null);
 
   calcDataCall = effect(() => {
     this.calcData();

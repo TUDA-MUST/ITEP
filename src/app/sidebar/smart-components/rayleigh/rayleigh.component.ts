@@ -14,7 +14,7 @@ import { form, FormField, disabled } from '@angular/forms/signals';
 @Component({
     selector: 'app-rayleigh',
     templateUrl: './rayleigh.component.html',
-    styleUrls: ['./rayleigh.component.scss'],
+    styleUrl: './rayleigh.component.scss',
     imports: [ FormField, MatButtonToggle, MatButtonToggleGroup, MatCheckboxModule, MatButtonModule, MatIconButton, MatIconModule ]
 })
 export class RayleighComponent {
@@ -22,13 +22,13 @@ export class RayleighComponent {
   public ResultAspect = ResultAspect;
   private store = inject(StoreService);
   
-  protected formModel = signal({
+  protected readonly formModel = signal({
     rayleighVisible: false,
     rayleighAspect: ResultAspect.Elongation,
     resultSet: 'XZPlane' as ResultSet
   })
 
-  protected phaseEnabled = computed(() => 
+  protected readonly phaseEnabled = computed(() => 
     [ResultAspect.Phase, ResultAspect.Elongation].includes(this.store.aspect()) && 
       this.store.enabledResults().includes(Results.RayleighIntegral));
 
@@ -53,8 +53,8 @@ export class RayleighComponent {
   });
 
   //// 
-  public animateTimer = signal<number | undefined>(undefined);
-  public phase = model(0);
+  public readonly animateTimer = signal<number | undefined>(undefined);
+  public readonly phase = model(0);
 
   updateGlobalPhase = effect(() => this.store.setGlobalPhase(this.phase()));
   startTimer() {

@@ -16,7 +16,7 @@ import { Scene } from '@babylonjs/core/scene';
     providers: [{ provide: BabylonConsumer, useExisting: forwardRef(() => UraInteractionRendererComponent) }]
 })
 export class UraInteractionRendererComponent extends BabylonConsumer implements OnDestroy, OnChanges {
-  arrayConfig = input<ArrayConfig | null>();
+  readonly arrayConfig = input<ArrayConfig | null>();
   arrayConfigChange = output<ArrayConfig>();
   
   private pitchHandle: Mesh;

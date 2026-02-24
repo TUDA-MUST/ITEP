@@ -37,10 +37,10 @@ const uvMesh: VertexData = (() => {
 export class FarfieldRendererComponent extends TransducerBufferConsumer
   implements OnDestroy
 {
-  transducers = input<Transducer[] | null>(null);
-  environment = input<Environment | null>(null);
-  diameter = input(0);
-  transducerModel = input<'Point' | 'Piston'>('Piston');
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly environment = input<Environment | null>(null);
+  readonly diameter = input(0);
+  readonly transducerModel = input<'Point' | 'Piston'>('Piston');
 
   upload = effect(() => {
     const env = this.environment();

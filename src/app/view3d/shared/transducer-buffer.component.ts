@@ -58,15 +58,15 @@ export const implementsOnTransducerBufferCreated = (
 export class TransducerBufferComponent extends BabylonConsumer implements OnDestroy {
   destroyRef = inject(DestroyRef);
 
-  transducers = input<Transducer[] | null>(null);
-  beamforming = input<BeamformingState | null>(null);
-  k = input<number | null>(null);
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly beamforming = input<BeamformingState | null>(null);
+  readonly k = input<number | null>(null);
 
-  consumers = contentChildren(TransducerBufferConsumer);
+  readonly consumers = contentChildren(TransducerBufferConsumer);
 
   private uniformExcitationBuffer: UniformBuffer;
   private textures: Textures;
-  public scene = signal<Scene | null>(null);
+  public readonly scene = signal<Scene | null>(null);
 
   async ngxSceneCreated(scene: Scene): Promise<void> {
     this.uniformExcitationBuffer = new UniformBuffer(scene.getEngine());

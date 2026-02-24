@@ -14,7 +14,7 @@ import { presets } from '../../../presets'
 export class LibraryContainerComponent {
   public presets = presets.sort((a, b) => a.citation!.year < b.citation!.year ? 1 : -1);
   private store = inject(StoreService);
-  public libraryIndex = input<number | null>();
+  public readonly libraryIndex = input<number | null>();
 
   oldIndex = -1
 
@@ -30,5 +30,5 @@ export class LibraryContainerComponent {
       this.store.setConfig(preset);
     }
   });
-  public citation = computed(() => this.store.arrayConfig().citation);
+  public readonly citation = computed(() => this.store.arrayConfig().citation);
 }
