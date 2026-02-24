@@ -1,4 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
 import { ArrayConfigComponent } from '../../smart-components/array-config/array-config.component';
 import { BeamformingComponent } from '../../smart-components/beamforming/beamforming.component';
@@ -10,6 +11,7 @@ import { TransducerComponent } from '../../pure-components/transducer/transducer
 import { StoreService } from 'src/app/store/store.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-setup-container',
   imports: [
     ArrayConfigComponent,

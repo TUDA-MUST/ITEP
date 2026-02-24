@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   effect,
   input,
@@ -29,6 +30,7 @@ const uvMesh: VertexData = (() => {
 })();
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-farfield-renderer',
     template: '<ng-content/>',
     standalone: true,
@@ -45,8 +47,8 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer
   upload = effect(() => {
     const env = this.environment();
     const transducers = this.transducers();
-    const dia = this.diameter();
-    const model = this.transducerModel();
+    const _dia = this.diameter();
+    const _model = this.transducerModel();
 
     if (this.material) {
       this.uploadEnvironment(env);
@@ -80,7 +82,7 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer
     this.farfieldMesh.isPickable = false;
     this.farfieldMesh.renderingGroupId = 1;
 
-    this.material.onBind = (mesh: AbstractMesh) => {
+    this.material.onBind = (_mesh: AbstractMesh) => {
       this.material
         .getEffect()
         .bindUniformBuffer(buffer.getBuffer()!, 'excitation');

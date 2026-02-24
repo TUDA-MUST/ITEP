@@ -1,4 +1,5 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
@@ -13,6 +14,7 @@ const presets : Record<EnvironmentHint, number | null> = {
 };
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-environment',
   imports: [
     MatButtonToggle,

@@ -1,4 +1,3 @@
-import { importProvidersFrom } from "@angular/core";
 import { BeamformingComponent } from "./beamforming.component";
 import * as componentMetadata from "./beamforming.component.metadata";
 

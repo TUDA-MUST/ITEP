@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +10,7 @@ import { PSFResult, StoreService } from 'src/app/store/store.service';
 export type HoveredKpi = '' | 'HpbwAz' | 'FnbwAz' | 'SlrAz' | 'HpbwEl' | 'FnbwEl' | 'SlrEl';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-kpi',
   imports: [ 
     ReactiveFormsModule,
@@ -23,7 +25,7 @@ export class KPIComponent {
 
   readonly kpis = input<PSFResult>();
 
-  hoveredKpi = output<HoveredKpi>();
+  readonly hoveredKpi = output<HoveredKpi>();
 
     copyToClipboard(value: number|null) {
     if (value !== null) {

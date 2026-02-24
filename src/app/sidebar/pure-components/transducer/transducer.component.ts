@@ -1,4 +1,5 @@
-import { Component, effect, inject, signal, untracked } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { form, FormField, min, max } from '@angular/forms/signals';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -7,6 +8,7 @@ import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/i
 import { StoreService, TransducerModel } from 'src/app/store/store.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-transducer',
   imports: [
     MatInput,

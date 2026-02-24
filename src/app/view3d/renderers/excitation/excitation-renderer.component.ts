@@ -33,7 +33,7 @@ export class ExcitationRendererComponent extends BabylonConsumer {
   readonly transducerDiameter = input<number | null>(null);
   readonly transducerModel = input<'Point' | 'Piston'>('Piston');
   readonly selection = input<SelectionState | null>(null);
-  hovered = output<number>();
+  readonly hovered = output<number>();
 
   private pointMesh: LinesMesh;
 
@@ -117,7 +117,7 @@ export class ExcitationRendererComponent extends BabylonConsumer {
         {
           trigger: ActionManager.OnPointerOutTrigger,
         },
-        (event) => this.hovered.emit(-1)
+        (_event) => this.hovered.emit(-1)
       )
     )
 

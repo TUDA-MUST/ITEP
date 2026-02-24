@@ -1,4 +1,5 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +10,7 @@ import { ArrayConfigType, StoreService } from 'src/app/store/store.service';
 import { form, FormField, min, max } from '@angular/forms/signals';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-array-config',
     templateUrl: './array-config.component.html',
     styleUrl: './array-config.component.scss',

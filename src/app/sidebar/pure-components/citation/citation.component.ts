@@ -1,9 +1,11 @@
-import { Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { Citation } from 'src/app/store/store.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-citation',
   imports: [
     MatIcon,

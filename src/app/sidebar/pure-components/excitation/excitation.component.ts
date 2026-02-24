@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +10,7 @@ import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/i
 import { StoreService, Environment, FrequencyMultiplier } from 'src/app/store/store.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-excitation',
   imports: [  
         MatButtonToggle,

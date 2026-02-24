@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
     Component,
     input,
     output,
@@ -12,6 +13,7 @@ import {
 import { AzElCoordinates } from 'src/app/store/beamforming.state';
   
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-joystick',
   standalone: true,
   templateUrl: './joystick.component.html',
@@ -32,7 +34,7 @@ export class JoystickComponent {
     });
   });
 
-  position = output<AzElCoordinates>();
+  readonly position = output<AzElCoordinates>();
 
 
   radius = 100;

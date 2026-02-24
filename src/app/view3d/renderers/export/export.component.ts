@@ -1,4 +1,5 @@
-import { Component, effect, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
 import { Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import { Point, ResultValues } from 'src/app/store/export.state';
 import { BeamformingState } from 'src/app/store/beamforming.state';
@@ -65,13 +66,14 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
 }`
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-export-renderer',
     imports: [],
     template: '<ng-content />',
     providers: [{ provide: TransducerBufferConsumer, useExisting: ExportRendererComponent }]
 })
 export class ExportRendererComponent extends TransducerBufferConsumer {
-  results = output<ResultValues>();
+  readonly results = output<ResultValues>();
   
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<number | null>(null);
@@ -89,7 +91,7 @@ export class ExportRendererComponent extends TransducerBufferConsumer {
  
   numPoints = 200;
 
-  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void {
+  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, _textures: Textures): void {
     this.cs = new ComputeShader("myCompute", scene.getEngine(), 
       { 
         computeSource: exportComputeShader 

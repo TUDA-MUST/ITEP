@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, effect, inject, model, signal } from '@angular/core';
 
 import { ResultAspect } from '../../../view3d/materials/rayleigh.material';
 
@@ -12,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { form, FormField, disabled } from '@angular/forms/signals';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-rayleigh',
     templateUrl: './rayleigh.component.html',
     styleUrl: './rayleigh.component.scss',

@@ -1,4 +1,5 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Results } from 'src/app/store/viewportConfig.state';
@@ -6,6 +7,7 @@ import { StoreService } from 'src/app/store/store.service';
 import { form, FormField } from '@angular/forms/signals';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-farfield',
     templateUrl: './farfield.component.html',
     styleUrl: './farfield.component.scss',

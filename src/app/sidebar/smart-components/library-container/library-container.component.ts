@@ -1,9 +1,11 @@
-import { Component, computed, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { LibraryComponent } from '../../pure-components/library/library.component';
 import { StoreService } from 'src/app/store/store.service';
 import { presets } from '../../../presets'
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-library-container',
   imports: [
     LibraryComponent,

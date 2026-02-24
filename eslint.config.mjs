@@ -1,12 +1,12 @@
 // @ts-check
-const angularPlugin = require('@angular-eslint/eslint-plugin');
-const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
-const typescriptEslintPlugin = require('@typescript-eslint/eslint-plugin');
-const typescriptParser = require('@typescript-eslint/parser');
-const templateParser = require('@angular-eslint/template-parser');
-const storybookPlugin = require('eslint-plugin-storybook');
+import angularPlugin from '@angular-eslint/eslint-plugin';
+import angularTemplatePlugin from '@angular-eslint/eslint-plugin-template';
+import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
+import templateParser from '@angular-eslint/template-parser';
+import storybookPlugin from 'eslint-plugin-storybook';
 
-module.exports = [
+export default [
   {
     ignores: ['projects/**/*'],
   },
@@ -42,12 +42,12 @@ module.exports = [
       // Modern Angular: prefer signals and inject() API
       '@angular-eslint/no-async-lifecycle-method': 'error',
       '@angular-eslint/prefer-output-readonly': 'error',
-      '@angular-eslint/prefer-on-push-component-change-detection': 'warn',
+      '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@angular-eslint/no-pipe-impure': 'warn',
       '@angular-eslint/consistent-component-styles': 'error',
       '@angular-eslint/no-uncalled-signals': 'error',
-      '@angular-eslint/prefer-signals': 'warn',
-      '@angular-eslint/prefer-output-emitter-ref': 'warn',
+      '@angular-eslint/prefer-signals': 'error',
+      '@angular-eslint/prefer-output-emitter-ref': 'error',
 
       // TypeScript recommended rules
       ...typescriptEslintPlugin.configs.recommended.rules,

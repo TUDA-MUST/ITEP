@@ -1,9 +1,11 @@
-import { Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { ArrayConfig } from 'src/app/store/store.service';
 import { CitationComponent } from '../citation/citation.component';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-library',
   imports: [CitationComponent],
   templateUrl: './library.component.html',

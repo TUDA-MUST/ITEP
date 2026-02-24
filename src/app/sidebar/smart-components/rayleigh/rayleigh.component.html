@@ -14,10 +14,10 @@ Aspect:
 Phase:
 <div style="display:flex; align-items: center">
   @if(animateTimer()) {
-    <button mat-icon-button (click)="stopTimer()" [disabled]="!phaseEnabled()"><mat-icon>stop</mat-icon></button>  
+    <button type="button" mat-icon-button (click)="stopTimer()" [disabled]="!phaseEnabled()"><mat-icon>stop</mat-icon></button>  
   } @else {
-    <button mat-icon-button (click)="startTimer()" [disabled]="!phaseEnabled()"><mat-icon>play_arrow</mat-icon></button>
+    <button type="button" mat-icon-button (click)="startTimer()" [disabled]="!phaseEnabled()"><mat-icon>play_arrow</mat-icon></button>
   }
-  <button mat-icon-button (click)="resetPhase()" [disabled]="!phaseEnabled()"><mat-icon>replay</mat-icon></button>
+  <button type="button" mat-icon-button (click)="resetPhase()" [disabled]="!phaseEnabled()"><mat-icon>replay</mat-icon></button>
   <input min="0" max="6.28" step="0.01" type="range" [value]="phase()" (input)="setPhase($event)" [disabled]="!phaseEnabled()">
 </div>

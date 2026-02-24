@@ -260,7 +260,7 @@ const hexagonalPositions = (hexagonalConfig: HexagonalConfig) => {
     const rMin = Math.max(-k, -q - k);
     const rMax = Math.min(k, -q + k);
     for (let r = rMin; r <= rMax; r++) {
-      const s = -q - r;
+      const _s = -q - r;
 
       // Zentrum ggf. weglassen
       if (omitCenter && q === 0 && r === 0) continue;
@@ -398,7 +398,7 @@ export const StoreService = signalStore(
       const model = store.arrayConfig.transducerModel();
       switch (model) {
         case "Point":
-          return (uv: UVCoordinates) => 1;
+          return (_uv: UVCoordinates) => 1;
         case "Piston":
           const kl = k();
           const a = store.arrayConfig.transducerDiameter() / 2;
@@ -417,7 +417,7 @@ export const StoreService = signalStore(
           }
           default: 
             console.error("Unknown transducer model: ", model);
-            return (uv: UVCoordinates) => 0;
+            return (_uv: UVCoordinates) => 0;
         }        
     });
 

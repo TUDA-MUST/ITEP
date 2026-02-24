@@ -1,4 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FarfieldComponent } from '../../smart-components/farfield/farfield.component';
 import { RayleighComponent } from '../../smart-components/rayleigh/rayleigh.component';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -14,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-result-container',
     templateUrl: './result-container.component.html',
     styleUrl: './result-container.component.scss',

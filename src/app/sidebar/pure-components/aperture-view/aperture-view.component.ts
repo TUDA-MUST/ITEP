@@ -1,7 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Transducer, TransducerModel } from 'src/app/store/store.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-aperture-view',
   templateUrl: './aperture-view.component.html',
   styleUrl: './aperture-view.component.scss',

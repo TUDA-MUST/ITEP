@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-toolbar',
     templateUrl: './toolbar.component.html',
     styleUrl: './toolbar.component.scss',

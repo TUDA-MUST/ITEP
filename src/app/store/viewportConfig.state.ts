@@ -1,4 +1,4 @@
-import { signalStoreFeature, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
+import { signalStoreFeature, withState, withMethods, patchState } from '@ngrx/signals';
 
 export enum Results {
     Farfield,

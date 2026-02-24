@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   contentChildren,
   DestroyRef,
@@ -50,6 +51,7 @@ export const implementsOnTransducerBufferCreated = (
   'ngxSceneAndBufferCreated' in candidate;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-transducer-buffer',
   template: '<ng-content/>',
   standalone: true,
@@ -83,7 +85,7 @@ export class TransducerBufferComponent extends BabylonConsumer implements OnDest
     const textures = ['assets/viridis.png', 'assets/coolwarm.png'];
     const tex = await Promise.all(
       textures.map((txpath) => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
           const tex = new Texture(
             txpath,
             scene,

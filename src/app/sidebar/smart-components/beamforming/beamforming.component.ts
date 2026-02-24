@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -21,7 +22,7 @@ const cleanNullish = <T extends object>(obj: T): Partial<T> =>
     Object.entries(obj).filter(([_, v]) => v != null)
   ) as Partial<T>;
 
-const transformFormPatch = (
+const _transformFormPatch = (
   patch: Partial<{ beamformingEnabled: boolean | null; az: number | null; el: number | null; }>
 ) => {
   const clean = cleanNullish(patch) as { beamformingEnabled?: boolean; az?: number; el?: number; };
@@ -33,6 +34,7 @@ const transformFormPatch = (
 };
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-beamforming',
     imports: [
       MatButtonModule,

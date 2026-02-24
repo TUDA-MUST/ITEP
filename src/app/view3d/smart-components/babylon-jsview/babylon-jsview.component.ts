@@ -32,6 +32,7 @@ import { Color4 } from '@babylonjs/core/Maths/math.color';
 import { Angle } from '@babylonjs/core/Maths/math.path';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'canvas[babylonsjsview]',
   templateUrl: './babylon-jsview.component.html',
   styleUrl: './babylon-jsview.component.scss',
@@ -96,13 +97,14 @@ export class BabylonJSViewComponent
   }
 
   // FIXME: Should this be an effect?
-  async ngOnInit(): Promise<void> {
-    await this.initEngine(this.canvasRef.nativeElement);
-    await this.scene()?.whenReadyAsync();
-    
-    this.engine.beginFrame();
-    this.scene()?.render();
-    this.engine.endFrame();
+  ngOnInit(): void {
+    void this.initEngine(this.canvasRef.nativeElement)
+      .then(() => this.scene()?.whenReadyAsync())
+      .then(() => {
+        this.engine.beginFrame();
+        this.scene()?.render();
+        this.engine.endFrame();
+      });
   }
 
   async initEngine(canvas: HTMLCanvasElement) {
@@ -178,9 +180,8 @@ export class BabylonJSViewComponent
       this.engine.endFrame();
     });
 
-    let light = new HemisphericLight('light1', new Vector3(0, 1, 0), scene);
+    new HemisphericLight('light1', new Vector3(0, 1, 0), scene);
 
-    let phase = 0;
     scene.registerBeforeRender(() => {
       // this.transducerMaterial.setFloat(
       //   'globalPhase',
@@ -191,8 +192,6 @@ export class BabylonJSViewComponent
       //   Angle.FromDegrees(phase).radians()
       // );
       // this.rayleighMaterial.setFloat('t', Angle.FromDegrees(phase).radians());
-      phase += 6;
-      phase %= 360;
     });
 
     
