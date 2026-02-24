@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy, Component, OnChanges, OnDestroy, SimpleChanges, forwardRef, input, output } from '@angular/core';
+  ChangeDetectionStrategy, Component, OnChanges, OnDestroy, forwardRef, input, output } from '@angular/core';
 
 import { PositionGizmo } from '@babylonjs/core/Gizmos/positionGizmo';
 import { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilder';
@@ -132,7 +132,7 @@ export class UraInteractionRendererComponent extends BabylonConsumer implements 
     this.numGizmo?.dispose();
   }
 
-  ngOnChanges(_changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.prepareHandles();
   }
 
