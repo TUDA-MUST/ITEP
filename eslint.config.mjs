@@ -73,8 +73,8 @@ export default [
       // Disable ESLint formatting rules that conflict with Prettier
       ...prettierConfig.rules,
 
-      // Prettier formatting as ESLint errors
-      'prettier/prettier': 'error',
+      // Prettier formatting as warnings (auto-fixed on save, no need to block)
+      'prettier/prettier': 'warn',
     },
   },
 
