@@ -8,6 +8,34 @@ import storybookPlugin from 'eslint-plugin-storybook';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
+// @angular-eslint/template-parser creates a module scope (not a GlobalScope).
+// ESLint v10 (eslint-scope v9) calls scopeManager.addGlobals() — a method only
+// present on GlobalScope — which crashes because the template scope manager has
+// globalScope === null.  Since Angular templates are type-checked by the
+// Angular compiler (not ESLint scope analysis), we override addGlobals to
+// simply register placeholder variable entries so that ESLint v10's
+// addDeclaredGlobals() helper can safely annotate them afterwards.
+// Track upstream fix: https://github.com/angular-eslint/angular-eslint/issues/2896
+const templateParserEslint10Compatible = {
+  ...templateParser,
+  parseForESLint(code, options) {
+    const result = templateParser.parseForESLint(code, options);
+    const sm = result.scopeManager;
+    if (sm && !sm.globalScope) {
+      sm.addGlobals = (names) => {
+        const scope = sm.scopes[0];
+        if (!scope) return;
+        for (const name of names) {
+          if (!scope.set.has(name)) {
+            scope.set.set(name, { name, references: [], defs: [] });
+          }
+        }
+      };
+    }
+    return result;
+  },
+};
+
 export default [
   {
     ignores: ['projects/**/*'],
@@ -93,7 +121,7 @@ export default [
       '@angular-eslint/template': angularTemplatePlugin,
     },
     languageOptions: {
-      parser: templateParser,
+      parser: templateParserEslint10Compatible,
     },
     rules: {
       // Angular template recommended rules
