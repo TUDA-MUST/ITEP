@@ -1,13 +1,13 @@
 :host {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 1ex;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1ex;
 }
 
 .text {
-    color: var(--mat-card-subtitle-text-color);
-    font-style: italic; // Doesnt work
-    font-size: 12pt;
+  color: var(--mat-card-subtitle-text-color);
+  font-style: italic; // Doesnt work
+  font-size: 12pt;
 }

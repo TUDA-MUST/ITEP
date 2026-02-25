@@ -1,6 +1,3 @@
 {
-  "eslint.validate": [
-    "typescript",
-    "html"
-  ]
+  "eslint.validate": ["typescript", "html"]
 }

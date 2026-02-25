@@ -1,51 +1,48 @@
 <mat-accordion multi>
-    <mat-expansion-panel hideToggle>
-        <mat-expansion-panel-header>
-            <mat-panel-title data-testid="section-environment">
-                Aperture
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <app-aperture-view 
-          [transducers]="transducers()" 
-          [transducerDiameter]="diameter()"
-          [arrayDiameter]="arrayDiameter()"
-          [transducerModel]="transducerModel()" />
-          <mat-action-row>
-           <button type="button" mat-icon-button color="primary" (click)="exportAperture()"><mat-icon>content_copy</mat-icon></button>
-          </mat-action-row>
-    </mat-expansion-panel>
-    <mat-expansion-panel hideToggle expanded>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Results
-          </mat-panel-title>
-        </mat-expansion-panel-header>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title data-testid="section-environment"> Aperture </mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-aperture-view
+      [transducers]="transducers()"
+      [transducerDiameter]="diameter()"
+      [arrayDiameter]="arrayDiameter()"
+      [transducerModel]="transducerModel()"
+    />
+    <mat-action-row>
+      <button type="button" mat-icon-button color="primary" (click)="exportAperture()">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </mat-action-row>
+  </mat-expansion-panel>
+  <mat-expansion-panel hideToggle expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title> Results </mat-panel-title>
+    </mat-expansion-panel-header>
     <app-kpi [kpis]="kpis()" (hoveredKpi)="setHoveredKpi($event)" />
     <app-chart />
     <mat-action-row>
-      <button type="button" mat-icon-button color="primary" (click)="exportChart()"><mat-icon>content_copy</mat-icon></button>
+      <button type="button" mat-icon-button color="primary" (click)="exportChart()">
+        <mat-icon>content_copy</mat-icon>
+      </button>
     </mat-action-row>
-</mat-expansion-panel>
-<mat-expansion-panel hideToggle>
+  </mat-expansion-panel>
+  <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header>
-      <mat-panel-title>
-        Far field 3D
-      </mat-panel-title>
+      <mat-panel-title> Far field 3D </mat-panel-title>
       @if (farfieldVisible() === false) {
-        <mat-icon  aria-hidden="false" aria-label="hidden-icon" fontIcon="visibility_off" />
+        <mat-icon aria-hidden="false" aria-label="hidden-icon" fontIcon="visibility_off" />
       }
     </mat-expansion-panel-header>
     <app-farfield />
-</mat-expansion-panel>
-<mat-expansion-panel hideToggle>
+  </mat-expansion-panel>
+  <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header>
-      <mat-panel-title>
-        Rayleigh integral
-      </mat-panel-title>
+      <mat-panel-title> Rayleigh integral </mat-panel-title>
       @if (rayleighVisible() === false) {
         <mat-icon aria-hidden="false" aria-label="hidden-icon" fontIcon="visibility_off" />
       }
     </mat-expansion-panel-header>
-<app-rayleigh />        
-</mat-expansion-panel>
+    <app-rayleigh />
+  </mat-expansion-panel>
 </mat-accordion>

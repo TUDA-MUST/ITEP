@@ -12,11 +12,8 @@ describe('KPIComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [KPIComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(KPIComponent);
     component = fixture.componentInstance;

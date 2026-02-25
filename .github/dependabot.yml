@@ -5,36 +5,36 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: 'npm' # See documentation for possible values
+    directory: '/' # Location of package manifests
     schedule:
-      interval: "weekly"
-      day: "tuesday"
-      time: "03:00"
+      interval: 'weekly'
+      day: 'tuesday'
+      time: '03:00'
     groups:
       storybook:
         patterns:
-            - "storybook"
-            - "@storybook/*"
-            - "chromatic"
+          - 'storybook'
+          - '@storybook/*'
+          - 'chromatic'
       angular:
         patterns:
-            - "@angular/*"
-            - "@angular-devkit/*"
+          - '@angular/*'
+          - '@angular-devkit/*'
       babylonjs:
         patterns:
-            - "@babylonjs/*"
+          - '@babylonjs/*'
       eslint:
         patterns:
-            - "@typescript-eslint/*"
-            - "eslint"
-            - "@angular-eslint/*"
+          - '@typescript-eslint/*'
+          - 'eslint'
+          - '@angular-eslint/*'
       ngrx:
         patterns:
-            - "@ngrx/*"
-  - package-ecosystem: "github-actions"
-    directory: "/"
+          - '@ngrx/*'
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "tuesday"
-      time: "03:00"
+      interval: 'weekly'
+      day: 'tuesday'
+      time: '03:00'

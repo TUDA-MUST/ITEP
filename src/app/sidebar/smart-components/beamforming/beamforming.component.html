@@ -1,13 +1,26 @@
-  <mat-checkbox [formField]="form.beamformingEnabled" class="span-all">Enabled</mat-checkbox>
-  <app-joystick (position)="setAzEl($event)" [disabled]="!beamformingEnabled()" [positionInput]="beamforming()" class="span-all"/>
-  <mat-form-field>
-    <mat-label>AZ</mat-label>
-    <input matInput type="number" step="0.1" [formField]="form.az">
-    <span matTextSuffix>°</span>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>EL</mat-label>
-    <input matInput type="number" step="0.1" [formField]="form.el">
-    <span matTextSuffix>°</span>
-  </mat-form-field>
-<button type="button" mat-raised-button color="primary" (click)="resetBeamforming()" class="span-all">Reset</button>
+<mat-checkbox [formField]="form.beamformingEnabled" class="span-all">Enabled</mat-checkbox>
+<app-joystick
+  (position)="setAzEl($event)"
+  [disabled]="!beamformingEnabled()"
+  [positionInput]="beamforming()"
+  class="span-all"
+/>
+<mat-form-field>
+  <mat-label>AZ</mat-label>
+  <input matInput type="number" step="0.1" [formField]="form.az" />
+  <span matTextSuffix>°</span>
+</mat-form-field>
+<mat-form-field>
+  <mat-label>EL</mat-label>
+  <input matInput type="number" step="0.1" [formField]="form.el" />
+  <span matTextSuffix>°</span>
+</mat-form-field>
+<button
+  type="button"
+  mat-raised-button
+  color="primary"
+  (click)="resetBeamforming()"
+  class="span-all"
+>
+  Reset
+</button>

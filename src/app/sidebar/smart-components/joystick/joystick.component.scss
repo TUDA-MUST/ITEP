@@ -1,15 +1,15 @@
 :host {
-    --joystick-bg: transparent;
-    --joystick-axis: var(--mat-expansion-container-text-color, var(--mat-sys-on-surface));
-    --joystick-axis-active: var(--mat-stepper-header-edit-state-icon-background-color);
-    --joystick-knob: var(--mat-stepper-header-edit-state-icon-background-color);
-    --joystick-knob-border: #333;
-  
+  --joystick-bg: transparent;
+  --joystick-axis: var(--mat-expansion-container-text-color, var(--mat-sys-on-surface));
+  --joystick-axis-active: var(--mat-stepper-header-edit-state-icon-background-color);
+  --joystick-knob: var(--mat-stepper-header-edit-state-icon-background-color);
+  --joystick-knob-border: #333;
+
   svg {
     user-select: none;
     touch-action: none;
     cursor: crosshair;
-  
+
     &.disabled {
       opacity: 0.4;
       pointer-events: none;
@@ -38,4 +38,3 @@
     }
   }
 }
-  

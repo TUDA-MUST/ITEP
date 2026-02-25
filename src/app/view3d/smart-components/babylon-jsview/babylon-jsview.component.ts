@@ -24,7 +24,7 @@ import { NullEngine } from '@babylonjs/core/Engines/nullEngine';
 import { BabylonConsumer, implementsOnSceneCreated } from '../../interfaces/lifecycle';
 import { WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
 
-import "@babylonjs/core/Engines/WebGPU/Extensions/engine.computeShader";
+import '@babylonjs/core/Engines/WebGPU/Extensions/engine.computeShader';
 
 import { ShaderStore } from '@babylonjs/core/Engines/shaderStore';
 import { diff } from 'src/app/utils/utils';
@@ -40,35 +40,33 @@ import { Angle } from '@babylonjs/core/Maths/math.path';
   exportAs: 'babylon',
   standalone: true,
 })
-export class BabylonJSViewComponent
-  implements AfterViewChecked, OnInit, AfterContentChecked
-{
-  canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);  
+export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterContentChecked {
+  canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);
   readonly renderers = contentChildren(BabylonConsumer);
-  
+
   updateRenderers = (() => {
-  let prev: BabylonConsumer[] = [];
-  return effect(() => {
-    const next = this.renderers();
-    const scene = this.scene();
-    if (scene) {
-      const { added } = diff(prev, next);
-      for (const renderer of added) {
-        if (implementsOnSceneCreated(renderer)) {
-          renderer.ngxSceneCreated(scene);
+    let prev: BabylonConsumer[] = [];
+    return effect(() => {
+      const next = this.renderers();
+      const scene = this.scene();
+      if (scene) {
+        const { added } = diff(prev, next);
+        for (const renderer of added) {
+          if (implementsOnSceneCreated(renderer)) {
+            renderer.ngxSceneCreated(scene);
+          }
         }
+        prev = [...next];
       }
-      prev = [...next];
-    }
-  });
-})();
+    });
+  })();
 
   engine: WebGPUEngine | NullEngine;
   public readonly scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
 
   private elRef = inject(ElementRef);
-  
+
   ngAfterContentChecked(): void {
     const scene = this.scene();
     if (scene) {
@@ -108,12 +106,12 @@ export class BabylonJSViewComponent
   }
 
   async initEngine(canvas: HTMLCanvasElement) {
-    if (window.WebGLRenderingContext) {        
+    if (window.WebGLRenderingContext) {
       this.engine = new WebGPUEngine(canvas, {
         adaptToDeviceRatio: true,
       });
       await this.engine.initAsync();
-      
+
       // this.engine.setStencilBuffer(true);
       // this.engine.setStencilMask(0xff);
     } else {
@@ -123,12 +121,7 @@ export class BabylonJSViewComponent
     const scene = this.createScene(canvas);
     scene.useRightHandedSystem = true;
 
-    const renderingOrder = [
-      'rayleigh',
-      'farfieldMesh',
-      'excitation',
-      'excitationHidden'
-    ];
+    const renderingOrder = ['rayleigh', 'farfieldMesh', 'excitation', 'excitationHidden'];
 
     scene.setRenderingOrder(1, (meshA, meshB) => {
       const indexA = renderingOrder.indexOf(meshA.getMesh().name);
@@ -136,12 +129,14 @@ export class BabylonJSViewComponent
       return Math.sign(indexA - indexB);
     });
 
-    scene.onBeforeRenderingGroupObservable.add(groupInfo => 
-      groupInfo.renderingGroupId === 0 && this.engine.setDepthFunction(Engine.LEQUAL));
+    scene.onBeforeRenderingGroupObservable.add(
+      (groupInfo) =>
+        groupInfo.renderingGroupId === 0 && this.engine.setDepthFunction(Engine.LEQUAL),
+    );
 
     scene.onPointerDown = () => this.engine.runRenderLoop(() => this.camera.update());
     scene.onPointerUp = () => this.engine.stopRenderLoop();
-    
+
     scene.onPointerObservable.add((kbInfo) => {
       if (kbInfo.type == 8) {
         //scroll
@@ -165,7 +160,7 @@ export class BabylonJSViewComponent
       Math.PI / 4,
       0.1,
       Vector3.Zero(),
-      scene
+      scene,
     );
     this.camera.lowerRadiusLimit = 0.01;
     this.camera.attachControl(canvas, true);
@@ -174,7 +169,7 @@ export class BabylonJSViewComponent
     this.camera.wheelDeltaPercentage = 0.1;
     this.camera.zoomToMouseLocation = true;
 
-    this.camera.onViewMatrixChangedObservable.add(() => { 
+    this.camera.onViewMatrixChangedObservable.add(() => {
       this.engine.beginFrame();
       scene.render();
       this.engine.endFrame();
@@ -194,7 +189,6 @@ export class BabylonJSViewComponent
       // this.rayleighMaterial.setFloat('t', Angle.FromDegrees(phase).radians());
     });
 
-    
     const xAxis = new Vector3(1, 0, 0).normalize();
     const yAxis = new Vector3(0, 1, 0).normalize();
 

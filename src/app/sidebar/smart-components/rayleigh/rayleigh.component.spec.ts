@@ -5,19 +5,15 @@ import { RayleighComponent } from './rayleigh.component';
 import { describe, beforeEach, it, expect } from 'vitest';
 import { provideZonelessChangeDetection } from '@angular/core';
 
-
 describe('RayleighComponent', () => {
   let component: RayleighComponent;
   let fixture: ComponentFixture<RayleighComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ RayleighComponent ],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      imports: [RayleighComponent],
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(RayleighComponent);
     component = fixture.componentInstance;

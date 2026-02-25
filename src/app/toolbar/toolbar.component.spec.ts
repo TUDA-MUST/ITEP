@@ -5,19 +5,15 @@ import { ToolbarComponent } from './toolbar.component';
 import { describe, beforeEach, it, expect } from 'vitest';
 import { provideZonelessChangeDetection } from '@angular/core';
 
-
 describe('ToolbarComponent', () => {
   let component: ToolbarComponent;
   let fixture: ComponentFixture<ToolbarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ ToolbarComponent ],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      imports: [ToolbarComponent],
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
   });
 
   beforeEach(() => {

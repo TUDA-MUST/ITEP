@@ -3,19 +3,12 @@ import { TestBed } from '@angular/core/testing';
 
 import { describe, beforeEach, it } from 'vitest';
 
-
 describe('FarfieldRendererEffects', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
+      providers: [provideZonelessChangeDetection()],
     });
   });
 
-  it('should be created', () => {
-    
-
-
-  });
+  it('should be created', () => {});
 });

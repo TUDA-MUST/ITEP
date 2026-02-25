@@ -1,6 +1,3 @@
 {
-  "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "angular.ng-template"
-  ]
+  "recommendations": ["dbaeumer.vscode-eslint", "angular.ng-template"]
 }

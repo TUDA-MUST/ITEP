@@ -1,5 +1,4 @@
-import {
-  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
@@ -7,14 +6,14 @@ import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/i
 import { StoreService, type EnvironmentHint } from 'src/app/store/store.service';
 import { disabled, form, FormField, min, max } from '@angular/forms/signals';
 
-const presets : Record<EnvironmentHint, number | null> = {
+const presets: Record<EnvironmentHint, number | null> = {
   Air: 343,
   Water: 1482,
-  Custom: null
+  Custom: null,
 };
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-environment',
   imports: [
     MatButtonToggle,
@@ -23,10 +22,10 @@ const presets : Record<EnvironmentHint, number | null> = {
     MatFormField,
     MatSuffix,
     MatLabel,
-    FormField
+    FormField,
   ],
   templateUrl: './environment.component.html',
-  styleUrl: './environment.component.scss'
+  styleUrl: './environment.component.scss',
 })
 export class EnvironmentComponent {
   store = inject(StoreService);
@@ -37,13 +36,16 @@ export class EnvironmentComponent {
   });
 
   public environmentForm = form(this.environmentModel, (schemaPath) => {
-    disabled(schemaPath.speedOfSound, ({ valueOf }) => 
-      valueOf(schemaPath.environmentHint) !== 'Custom'
+    disabled(
+      schemaPath.speedOfSound,
+      ({ valueOf }) => valueOf(schemaPath.environmentHint) !== 'Custom',
     );
     min(schemaPath.speedOfSound, 0);
     max(schemaPath.speedOfSound, 5000);
   });
 
   updateForm = effect(() => this.environmentForm().reset(this.store.arrayConfig().environment));
-  updateStore = effect(() => this.environmentForm().dirty() && this.store.setEnvironment(this.environmentModel()));
+  updateStore = effect(
+    () => this.environmentForm().dirty() && this.store.setEnvironment(this.environmentModel()),
+  );
 }

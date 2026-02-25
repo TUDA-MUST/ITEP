@@ -1,24 +1,21 @@
-import {
-  ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { LibraryComponent } from '../../pure-components/library/library.component';
 import { StoreService } from 'src/app/store/store.service';
-import { presets } from '../../../presets'
+import { presets } from '../../../presets';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-library-container',
-  imports: [
-    LibraryComponent,
-  ],
+  imports: [LibraryComponent],
   templateUrl: './library-container.component.html',
-  styleUrl: './library-container.component.scss'
+  styleUrl: './library-container.component.scss',
 })
 export class LibraryContainerComponent {
-  public presets = presets.sort((a, b) => a.citation!.year < b.citation!.year ? 1 : -1);
+  public presets = presets.sort((a, b) => (a.citation!.year < b.citation!.year ? 1 : -1));
   private store = inject(StoreService);
   public readonly libraryIndex = input<number | null>();
 
-  oldIndex = -1
+  oldIndex = -1;
 
   public loadPresetEffect = effect(() => {
     const index = this.libraryIndex();

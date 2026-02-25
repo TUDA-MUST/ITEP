@@ -6,7 +6,7 @@ app-sidebar-container {
   top: 1ex;
   width: 37ex;
 }
-  
+
 app-view3d {
   position: absolute;
   top: 0;
@@ -14,7 +14,7 @@ app-view3d {
   left: 0;
   right: 0;
 }
-  
+
 app-result-container {
   position: absolute;
   top: 1ex;
@@ -22,7 +22,9 @@ app-result-container {
   bottom: 1ex;
 }
 
-a, a:visited, a:active {
+a,
+a:visited,
+a:active {
   color: #e6e1e6;
   text-decoration: none;
 }

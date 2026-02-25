@@ -12,11 +12,8 @@ describe('TransducerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TransducerComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TransducerComponent);
     component = fixture.componentInstance;

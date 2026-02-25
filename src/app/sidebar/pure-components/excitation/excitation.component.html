@@ -1,19 +1,17 @@
 <ng-container [formGroup]="form">
-    <mat-button-toggle-group hideSingleSelectionIndicator formControlName="excitationFrequencyMultiplier">
-        <mat-button-toggle value="Hz">
-          Hz
-        </mat-button-toggle>
-        <mat-button-toggle value="kHz">
-          kHz
-        </mat-button-toggle>
-        <mat-button-toggle value="MHz">
-          MHz
-        </mat-button-toggle>
-      </mat-button-toggle-group>
-      <mat-form-field>
-        <mat-label>Frequency</mat-label>
-        <input matInput type="number" formControlName="excitationFrequencyBase" min="0" step="1">
-        <span matSuffix style="margin-right: 1ex; min-width: 3ex;">{{ environment().excitationFrequencyMultiplier }}</span>
-    </mat-form-field>
+  <mat-button-toggle-group
+    hideSingleSelectionIndicator
+    formControlName="excitationFrequencyMultiplier"
+  >
+    <mat-button-toggle value="Hz"> Hz </mat-button-toggle>
+    <mat-button-toggle value="kHz"> kHz </mat-button-toggle>
+    <mat-button-toggle value="MHz"> MHz </mat-button-toggle>
+  </mat-button-toggle-group>
+  <mat-form-field>
+    <mat-label>Frequency</mat-label>
+    <input matInput type="number" formControlName="excitationFrequencyBase" min="0" step="1" />
+    <span matSuffix style="margin-right: 1ex; min-width: 3ex">{{
+      environment().excitationFrequencyMultiplier
+    }}</span>
+  </mat-form-field>
 </ng-container>
-

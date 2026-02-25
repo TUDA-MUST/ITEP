@@ -7,6 +7,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "e2e": "ng e2e",
     "storybook": "ng run phased:storybook",
     "build-storybook": "ng run phased:build-storybook",

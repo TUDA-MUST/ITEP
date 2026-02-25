@@ -2,24 +2,26 @@
 
 @import '@angular/material/prebuilt-themes/cyan-orange.css';
 
-$theme: mat.define-theme((
-  color: (
-    theme-type: dark,
-    primary: mat.$violet-palette,
-  ),
-  typography: (
-    brand-family: 'Roboto, sans-serif',
-    bold-weight: 900
-  ),
-  density: (
-    scale: -1
+$theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$violet-palette,
+    ),
+    typography: (
+      brand-family: 'Roboto, sans-serif',
+      bold-weight: 900,
+    ),
+    density: (
+      scale: -1,
+    ),
   )
-));
+);
 
 html {
-    scrollbar-color: rgb(36, 36, 36) transparent;
-    scrollbar-width: thin;
-    @include mat.all-component-themes($theme);
+  scrollbar-color: rgb(36, 36, 36) transparent;
+  scrollbar-width: thin;
+  @include mat.all-component-themes($theme);
 }
 
 html::-webkit-scrollbar {
@@ -36,11 +38,17 @@ html::-webkit-scrollbar-thumb {
   border-radius: 10px;
 }
 
-html, body { height: 100%; }
+html,
 body {
-    overflow: hidden;
+  height: 100%;
 }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  overflow: hidden;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
 
 .mat-drawer-inner-container {
   scrollbar-gutter: stable;
@@ -54,15 +62,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 :root {
-  @include mat.card-overrides((
-    elevated-container-color: var(--mat-sys-surface),
-  ));
+  @include mat.card-overrides(
+    (
+      elevated-container-color: var(--mat-sys-surface),
+    )
+  );
 
   & {
-  --mat-list-list-item-hover-leading-icon-color: var(--mat-pseudo-checkbox-full-selected-icon-color);
+    --mat-list-list-item-hover-leading-icon-color: var(
+      --mat-pseudo-checkbox-full-selected-icon-color
+    );
   }
 
-  input[type="range"] {
+  input[type='range'] {
     accent-color: var(--mat-slide-toggle-selected-handle-color);
   }
 }

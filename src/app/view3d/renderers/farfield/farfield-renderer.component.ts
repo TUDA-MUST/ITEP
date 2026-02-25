@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  input,
-  type OnDestroy,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, type OnDestroy } from '@angular/core';
 
 import { type AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
@@ -16,7 +10,7 @@ import { type Textures, TransducerBufferConsumer } from '../../shared/transducer
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
 import { Constants } from '@babylonjs/core/Engines/constants';
-import { type Environment, frequencyFromBase, type Transducer} from 'src/app/store/store.service';
+import { type Environment, frequencyFromBase, type Transducer } from 'src/app/store/store.service';
 
 const uvMesh: VertexData = (() => {
   const positions = [-1, -1, 0, 1, -1, 0, -1, 1, 0, 1, 1, 0];
@@ -30,15 +24,13 @@ const uvMesh: VertexData = (() => {
 })();
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-farfield-renderer',
-    template: '<ng-content/>',
-    standalone: true,
-    providers: [{provide: TransducerBufferConsumer, useExisting: FarfieldRendererComponent}],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-farfield-renderer',
+  template: '<ng-content/>',
+  standalone: true,
+  providers: [{ provide: TransducerBufferConsumer, useExisting: FarfieldRendererComponent }],
 })
-export class FarfieldRendererComponent extends TransducerBufferConsumer
-  implements OnDestroy
-{
+export class FarfieldRendererComponent extends TransducerBufferConsumer implements OnDestroy {
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
   readonly diameter = input(0);
@@ -68,7 +60,7 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer
     sampler.setParameters(); // use the default values
     sampler.samplingMode = Constants.TEXTURE_NEAREST_SAMPLINGMODE;
 
-    this.material.setTextureSampler("viridisSampler", sampler);
+    this.material.setTextureSampler('viridisSampler', sampler);
 
     this.material.stencil.enabled = true;
     this.material.stencil.funcRef = 1;
@@ -83,9 +75,7 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer
     this.farfieldMesh.renderingGroupId = 1;
 
     this.material.onBind = (_mesh: AbstractMesh) => {
-      this.material
-        .getEffect()
-        .bindUniformBuffer(buffer.getBuffer()!, 'excitation');
+      this.material.getEffect().bindUniformBuffer(buffer.getBuffer()!, 'excitation');
     };
 
     this.material.setFloat('dynamicRange', 50.0);
@@ -100,11 +90,20 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer
 
   private uploadEnvironment(environment: Environment | null): void {
     if (environment) {
-      const omega = 2.0 * Math.PI * frequencyFromBase(environment.excitationFrequencyBase, environment.excitationFrequencyMultiplier);
+      const omega =
+        2.0 *
+        Math.PI *
+        frequencyFromBase(
+          environment.excitationFrequencyBase,
+          environment.excitationFrequencyMultiplier,
+        );
 
       this.material.setFloat('omega', omega);
       this.material.setFloat('k', omega / environment.speedOfSound);
-      const ka = this.transducerModel() === 'Piston' ? (this.diameter() * omega / environment.speedOfSound) : 0;
+      const ka =
+        this.transducerModel() === 'Piston'
+          ? (this.diameter() * omega) / environment.speedOfSound
+          : 0;
       this.material.setFloat('ka', ka);
     }
   }

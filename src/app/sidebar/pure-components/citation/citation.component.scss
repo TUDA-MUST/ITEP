@@ -1,33 +1,33 @@
 :host {
-    border-width: 0;
-    background-color: var(--mat-card-elevated-container-color, var(--mat-sys-surface-container-low));
-    border-color: var(--mat-card-elevated-container-color, var(--mat-sys-surface-container-low));
-    border-radius: var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium));
-    box-shadow: var(--mat-card-elevated-container-elevation, var(--mat-sys-level1));
-    display: flex;
-    flex-direction: column;
-    padding: 1ex;
+  border-width: 0;
+  background-color: var(--mat-card-elevated-container-color, var(--mat-sys-surface-container-low));
+  border-color: var(--mat-card-elevated-container-color, var(--mat-sys-surface-container-low));
+  border-radius: var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium));
+  box-shadow: var(--mat-card-elevated-container-elevation, var(--mat-sys-level1));
+  display: flex;
+  flex-direction: column;
+  padding: 1ex;
 }
 
 .authors {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: .5ex;
-    color: #e6e1e6;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5ex;
+  color: #e6e1e6;
 }
 
 .title {
-    color: var(--mat-card-subtitle-text-color);
-    font-size: 16px;
-    line-height: normal;
-    font-style: italic;
+  color: var(--mat-card-subtitle-text-color);
+  font-size: 16px;
+  line-height: normal;
+  font-style: italic;
 }
 
 .title {
   position: relative;
   cursor: pointer;
-  padding-right: 1.5em;   /* Platz für das Icon in der Box */
+  padding-right: 1.5em; /* Platz für das Icon in der Box */
 }
 
 .title:hover {
@@ -36,11 +36,11 @@
 }
 
 .title::after {
-  content: "folder_open";
+  content: 'folder_open';
   font-family: 'Material Icons';
   font-style: normal;
   position: absolute;
-  right: 0.2em;            /* innerhalb der Box platzieren */
+  right: 0.2em; /* innerhalb der Box platzieren */
   top: 50%;
   transform: translateY(-50%);
   opacity: 0;
@@ -52,10 +52,12 @@
   opacity: 1;
 }
 
-a, a:visited, a:active {
-    color: #e6e1e6;
-    text-decoration: underline;
-    display: flex;
-    align-items: center;
-    text-overflow: ellipsis;
+a,
+a:visited,
+a:active {
+  color: #e6e1e6;
+  text-decoration: underline;
+  display: flex;
+  align-items: center;
+  text-overflow: ellipsis;
 }

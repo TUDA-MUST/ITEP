@@ -1,70 +1,72 @@
 @use '@angular/material' as mat;
 
 :host {
-    display: grid;
-    grid-template-rows: 1fr min-content  min-content;
-    gap: 2ex;
+  display: grid;
+  grid-template-rows: 1fr min-content min-content;
+  gap: 2ex;
 }
 
 nav {
-    display: flex;
-    justify-content: space-evenly;
-    a {
+  display: flex;
+  justify-content: space-evenly;
+  a {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1ex 1ex;
     background-color: var(--mat-sys-surface);
-    }
-    a:hover {
-        background-color: #222222;
-    }
+  }
+  a:hover {
+    background-color: #222222;
+  }
 
-    a:first-child {
-        border-top-left-radius: var(--mat-expansion-container-shape, 12px);
-        border-bottom-left-radius: var(--mat-expansion-container-shape, 12px);
-    }
+  a:first-child {
+    border-top-left-radius: var(--mat-expansion-container-shape, 12px);
+    border-bottom-left-radius: var(--mat-expansion-container-shape, 12px);
+  }
 
-    a:last-child {
-        border-top-right-radius: var(--mat-expansion-container-shape, 12px);
-        border-bottom-right-radius: var(--mat-expansion-container-shape, 12px);
-    }
+  a:last-child {
+    border-top-right-radius: var(--mat-expansion-container-shape, 12px);
+    border-bottom-right-radius: var(--mat-expansion-container-shape, 12px);
+  }
 
-    a.active {
-        background-color: var(--mat-slide-toggle-selected-handle-color);
-    }
+  a.active {
+    background-color: var(--mat-slide-toggle-selected-handle-color);
+  }
 }
 
 .mat-headline-small {
-    margin-top: 2ex;
-    margin-left: .5ex;
+  margin-top: 2ex;
+  margin-left: 0.5ex;
 }
 
 .mat-expansion-panel-header-description {
-    justify-content: space-between;
-    align-items: center;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .github-section {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: .5ex;
-    text-decoration: none;
-    background-color: var(--mat-sys-surface);
-    border-radius: var(--mat-expansion-container-shape, 12px);
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    padding: 1ex 2ex 2ex;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5ex;
+  text-decoration: none;
+  background-color: var(--mat-sys-surface);
+  border-radius: var(--mat-expansion-container-shape, 12px);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 1ex 2ex 2ex;
 }
 
-a, a:visited, a:active {
-    color: #e6e1e6;
-    text-decoration: none;
-  }
+a,
+a:visited,
+a:active {
+  color: #e6e1e6;
+  text-decoration: none;
+}
 
 router-outlet {
-    display: contents;
+  display: contents;
 }

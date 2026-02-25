@@ -1,6 +1,6 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarContainerComponent } from './sidebar-container.component';
-import * as menuLeft from './sidebar-container.component.metadata' ;
+import * as menuLeft from './sidebar-container.component.metadata';
 
 import { describe, beforeEach, it, expect } from 'vitest';
 
@@ -9,8 +9,7 @@ describe('SidebarContainerComponent', () => {
   let fixture: ComponentFixture<SidebarContainerComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule(menuLeft.moduleMetaData)
-    .compileComponents();
+    await TestBed.configureTestingModule(menuLeft.moduleMetaData).compileComponents();
   });
 
   beforeEach(() => {

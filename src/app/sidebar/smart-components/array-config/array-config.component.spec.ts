@@ -11,12 +11,9 @@ describe('ArrayConfigComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ ArrayConfigComponent ],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      imports: [ArrayConfigComponent],
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ArrayConfigComponent);
     component = fixture.componentInstance;
