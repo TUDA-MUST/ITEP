@@ -10,7 +10,7 @@ export interface AzElCoordinates {
   el: number;
 }
 
-type NullPartial<T> = {
+type _NullPartial<T> = {
   [K in keyof T]?: T[K] | null;
 };
 

@@ -1,9 +1,10 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 
-import { StoreService, EnvironmentHint } from 'src/app/store/store.service';
+import { StoreService, type EnvironmentHint } from 'src/app/store/store.service';
 import { disabled, form, FormField, min, max } from '@angular/forms/signals';
 
 const presets : Record<EnvironmentHint, number | null> = {
@@ -13,6 +14,7 @@ const presets : Record<EnvironmentHint, number | null> = {
 };
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-environment',
   imports: [
     MatButtonToggle,
@@ -29,7 +31,7 @@ const presets : Record<EnvironmentHint, number | null> = {
 export class EnvironmentComponent {
   store = inject(StoreService);
 
-  public environmentModel = signal({
+  public readonly environmentModel = signal({
     speedOfSound: presets.Air as number,
     environmentHint: 'Air' as EnvironmentHint,
   });

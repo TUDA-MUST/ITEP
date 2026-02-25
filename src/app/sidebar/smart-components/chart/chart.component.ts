@@ -1,4 +1,5 @@
-import { Component, DestroyRef, ElementRef, OnInit, effect, inject, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, DestroyRef, type ElementRef, type OnInit, effect, inject, viewChild } from '@angular/core';
 
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -16,13 +17,13 @@ import {
   MarkAreaComponent,
   MarkLineComponent,
 } from 'echarts/components';
-import { ECBasicOption } from 'echarts/types/dist/shared';
+import { type ECBasicOption } from 'echarts/types/dist/shared';
 import { StoreService } from 'src/app/store/store.service';
 
 const degreeFormatter = (value : number) => `${value.toFixed(0)}°`;
 const dBFormatter = (value: number) => 20 * Math.log10(Math.abs(value));
 
-const seriesTemplate = {
+const _seriesTemplate = {
 name: 'u',
 type: 'line',
 showSymbol: false,
@@ -47,6 +48,7 @@ markArea: {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-chart',
     templateUrl: './chart.component.html',
     styleUrl: './chart.component.scss',
@@ -56,7 +58,7 @@ export class ChartComponent implements OnInit {
   private readonly store = inject(StoreService);
   destroyRef = inject(DestroyRef);
 
-  echartDiv = viewChild.required<ElementRef<HTMLElement>>('echartDiv');
+  readonly echartDiv = viewChild.required<ElementRef<HTMLElement>>('echartDiv');
 
   updateChartEffect =     effect(() => {
     const hoveredKpi = this.store.hoveredKpi();

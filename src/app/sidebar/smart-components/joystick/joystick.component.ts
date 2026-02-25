@@ -1,28 +1,30 @@
 import {
+  ChangeDetectionStrategy,
     Component,
     input,
     output,
     signal,
     HostListener,
     viewChild,
-    ElementRef,
+    type ElementRef,
     computed,
     effect,
   } from '@angular/core';
-import { AzElCoordinates } from 'src/app/store/beamforming.state';
+import { type AzElCoordinates } from 'src/app/store/beamforming.state';
   
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-joystick',
   standalone: true,
   templateUrl: './joystick.component.html',
-  styleUrls: ['./joystick.component.scss'],
+  styleUrl: './joystick.component.scss',
 })
 export class JoystickComponent {
-  svgRef = viewChild.required<ElementRef<SVGSVGElement>>('svgContainer');
-  disabled = input(false);
+  readonly svgRef = viewChild.required<ElementRef<SVGSVGElement>>('svgContainer');
+  readonly disabled = input(false);
 
-  screenPosition = signal({ x: 0, y: 0 });
-  positionInput = input({ az: 0, el: 0 });
+  readonly screenPosition = signal({ x: 0, y: 0 });
+  readonly positionInput = input({ az: 0, el: 0 });
 
   setInput = effect(() => {
     const azel = this.positionInput() ?? { az: 0, el: 0 };
@@ -32,7 +34,7 @@ export class JoystickComponent {
     });
   });
 
-  position = output<AzElCoordinates>();
+  readonly position = output<AzElCoordinates>();
 
 
   radius = 100;
@@ -47,8 +49,8 @@ export class JoystickComponent {
   dragging = false;
   dragOffset = { x: 0, y: 0 };
   
-  shiftPressed = signal(false);
-  dominantAxis = computed(() => {
+  readonly shiftPressed = signal(false);
+  readonly dominantAxis = computed(() => {
     const {x, y} = this.screenPosition();
     if (!this.shiftPressed()) {
       return null;

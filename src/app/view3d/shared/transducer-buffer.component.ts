@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   contentChildren,
   DestroyRef,
@@ -6,12 +7,12 @@ import {
   forwardRef,
   inject,
   input,
-  OnDestroy,
+  type OnDestroy,
   signal,
 } from '@angular/core';
 
 import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
-import { Scene } from '@babylonjs/core/scene';
+import { type Scene } from '@babylonjs/core/scene';
 import {
   createExcitationBuffer,
   excitationBufferMaxElements,
@@ -20,8 +21,8 @@ import {
 import { VEC4_ELEMENT_COUNT } from '../../utils/webgl.utils';
 import { BabylonConsumer } from '../interfaces/lifecycle';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
-import { BeamformingState } from 'src/app/store/beamforming.state';
-import { Transducer } from 'src/app/store/store.service';
+import { type BeamformingState } from 'src/app/store/beamforming.state';
+import { type Transducer } from 'src/app/store/store.service';
 import { diff } from 'src/app/utils/utils';
 import { azElToUV } from 'src/app/utils/uv';
 
@@ -50,6 +51,7 @@ export const implementsOnTransducerBufferCreated = (
   'ngxSceneAndBufferCreated' in candidate;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-transducer-buffer',
   template: '<ng-content/>',
   standalone: true,
@@ -58,15 +60,15 @@ export const implementsOnTransducerBufferCreated = (
 export class TransducerBufferComponent extends BabylonConsumer implements OnDestroy {
   destroyRef = inject(DestroyRef);
 
-  transducers = input<Transducer[] | null>(null);
-  beamforming = input<BeamformingState | null>(null);
-  k = input<number | null>(null);
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly beamforming = input<BeamformingState | null>(null);
+  readonly k = input<number | null>(null);
 
-  consumers = contentChildren(TransducerBufferConsumer);
+  readonly consumers = contentChildren(TransducerBufferConsumer);
 
   private uniformExcitationBuffer: UniformBuffer;
   private textures: Textures;
-  public scene = signal<Scene | null>(null);
+  public readonly scene = signal<Scene | null>(null);
 
   async ngxSceneCreated(scene: Scene): Promise<void> {
     this.uniformExcitationBuffer = new UniformBuffer(scene.getEngine());
@@ -83,7 +85,7 @@ export class TransducerBufferComponent extends BabylonConsumer implements OnDest
     const textures = ['assets/viridis.png', 'assets/coolwarm.png'];
     const tex = await Promise.all(
       textures.map((txpath) => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
           const tex = new Texture(
             txpath,
             scene,

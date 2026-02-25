@@ -1,23 +1,25 @@
-import { Component, OnChanges, OnDestroy, SimpleChanges, forwardRef, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, type OnChanges, type OnDestroy, forwardRef, input, output } from '@angular/core';
 
 import { PositionGizmo } from '@babylonjs/core/Gizmos/positionGizmo';
 import { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilder';
-import { PointerDragBehavior } from '@babylonjs/core/Behaviors/Meshes/pointerDragBehavior';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { type PointerDragBehavior } from '@babylonjs/core/Behaviors/Meshes/pointerDragBehavior';
+import { type Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { BabylonConsumer } from '../../interfaces/lifecycle';
-import { ArrayConfig } from 'src/app/store/store.service';
-import { Scene } from '@babylonjs/core/scene';
+import { type ArrayConfig } from 'src/app/store/store.service';
+import { type Scene } from '@babylonjs/core/scene';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-ura-interaction',
     imports: [],
     template: '<ng-content />',
     providers: [{ provide: BabylonConsumer, useExisting: forwardRef(() => UraInteractionRendererComponent) }]
 })
 export class UraInteractionRendererComponent extends BabylonConsumer implements OnDestroy, OnChanges {
-  arrayConfig = input<ArrayConfig | null>();
-  arrayConfigChange = output<ArrayConfig>();
+  readonly arrayConfig = input<ArrayConfig | null>();
+  readonly arrayConfigChange = output<ArrayConfig>();
   
   private pitchHandle: Mesh;
   private pitchGizmo: PositionGizmo;
@@ -29,7 +31,7 @@ export class UraInteractionRendererComponent extends BabylonConsumer implements 
   private pointerDragBehavior: PointerDragBehavior;
   private offset: Vector3;
 
-  async ngxSceneCreated(scene: Scene): Promise<void> {
+  async ngxSceneCreated(_scene: Scene): Promise<void> {
     
     this.pitchHandle = CreateIcoSphere('arrayPitchHandle', {
       radius: 0.00025,
@@ -130,7 +132,7 @@ export class UraInteractionRendererComponent extends BabylonConsumer implements 
     this.numGizmo?.dispose();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.prepareHandles();
   }
 

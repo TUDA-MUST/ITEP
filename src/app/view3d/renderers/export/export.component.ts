@@ -1,14 +1,15 @@
-import { Component, effect, input, output } from '@angular/core';
-import { Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
-import { Point, ResultValues } from 'src/app/store/export.state';
-import { BeamformingState } from 'src/app/store/beamforming.state';
-import { Transducer } from 'src/app/store/store.service';
+import {
+  ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
+import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { type Point, type ResultValues } from 'src/app/store/export.state';
+import { type BeamformingState } from 'src/app/store/beamforming.state';
+import { type Transducer } from 'src/app/store/store.service';
 
 import { ComputeShader } from '@babylonjs/core/Compute/computeShader';
 import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 import { StorageBuffer } from '@babylonjs/core/Buffers/storageBuffer';
-import { Scene } from '@babylonjs/core/scene';
-import { WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
+import { type Scene } from '@babylonjs/core/scene';
+import { type WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
 
 const exportComputeShader = /* wgsl */`
 
@@ -65,17 +66,18 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
 }`
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-export-renderer',
     imports: [],
     template: '<ng-content />',
     providers: [{ provide: TransducerBufferConsumer, useExisting: ExportRendererComponent }]
 })
 export class ExportRendererComponent extends TransducerBufferConsumer {
-  results = output<ResultValues>();
+  readonly results = output<ResultValues>();
   
-  transducers = input<Transducer[] | null>(null);
-  environment = input<number | null>(null);
-  beamforming = input<BeamformingState | null>(null);
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly environment = input<number | null>(null);
+  readonly beamforming = input<BeamformingState | null>(null);
 
   calcDataCall = effect(() => {
     this.calcData();
@@ -89,7 +91,7 @@ export class ExportRendererComponent extends TransducerBufferConsumer {
  
   numPoints = 200;
 
-  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void {
+  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, _textures: Textures): void {
     this.cs = new ComputeShader("myCompute", scene.getEngine(), 
       { 
         computeSource: exportComputeShader 

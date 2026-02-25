@@ -1,6 +1,6 @@
 import {
-  AfterContentChecked,
-  AfterViewChecked,
+  type AfterContentChecked,
+  type AfterViewChecked,
   ChangeDetectionStrategy,
   Component,
   contentChildren,
@@ -8,7 +8,7 @@ import {
   ElementRef,
   HostListener,
   inject,
-  OnInit,
+  type OnInit,
   signal,
 } from '@angular/core';
 
@@ -32,9 +32,10 @@ import { Color4 } from '@babylonjs/core/Maths/math.color';
 import { Angle } from '@babylonjs/core/Maths/math.path';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'canvas[babylonsjsview]',
   templateUrl: './babylon-jsview.component.html',
-  styleUrls: ['./babylon-jsview.component.scss'],
+  styleUrl: './babylon-jsview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'babylon',
   standalone: true,
@@ -43,7 +44,7 @@ export class BabylonJSViewComponent
   implements AfterViewChecked, OnInit, AfterContentChecked
 {
   canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);  
-  renderers = contentChildren(BabylonConsumer);
+  readonly renderers = contentChildren(BabylonConsumer);
   
   updateRenderers = (() => {
   let prev: BabylonConsumer[] = [];
@@ -63,7 +64,7 @@ export class BabylonJSViewComponent
 })();
 
   engine: WebGPUEngine | NullEngine;
-  public scene = signal<Scene | null>(null);
+  public readonly scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
 
   private elRef = inject(ElementRef);
@@ -96,13 +97,14 @@ export class BabylonJSViewComponent
   }
 
   // FIXME: Should this be an effect?
-  async ngOnInit(): Promise<void> {
-    await this.initEngine(this.canvasRef.nativeElement);
-    await this.scene()?.whenReadyAsync();
-    
-    this.engine.beginFrame();
-    this.scene()?.render();
-    this.engine.endFrame();
+  ngOnInit(): void {
+    void this.initEngine(this.canvasRef.nativeElement)
+      .then(() => this.scene()?.whenReadyAsync())
+      .then(() => {
+        this.engine.beginFrame();
+        this.scene()?.render();
+        this.engine.endFrame();
+      });
   }
 
   async initEngine(canvas: HTMLCanvasElement) {
@@ -178,9 +180,8 @@ export class BabylonJSViewComponent
       this.engine.endFrame();
     });
 
-    let light = new HemisphericLight('light1', new Vector3(0, 1, 0), scene);
+    new HemisphericLight('light1', new Vector3(0, 1, 0), scene);
 
-    let phase = 0;
     scene.registerBeforeRender(() => {
       // this.transducerMaterial.setFloat(
       //   'globalPhase',
@@ -191,8 +192,6 @@ export class BabylonJSViewComponent
       //   Angle.FromDegrees(phase).radians()
       // );
       // this.rayleighMaterial.setFloat('t', Angle.FromDegrees(phase).radians());
-      phase += 6;
-      phase %= 360;
     });
 
     

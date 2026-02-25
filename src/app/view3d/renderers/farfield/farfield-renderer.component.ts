@@ -1,21 +1,22 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   effect,
   input,
-  OnDestroy,
+  type OnDestroy,
 } from '@angular/core';
 
-import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
+import { type AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { Scene } from '@babylonjs/core/scene';
-import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
+import { type Scene } from '@babylonjs/core/scene';
+import { type UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 import { FarfieldMaterial } from '../../materials/farfield.material';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
-import { Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
 import { Constants } from '@babylonjs/core/Engines/constants';
-import { Environment, frequencyFromBase, Transducer} from 'src/app/store/store.service';
+import { type Environment, frequencyFromBase, type Transducer} from 'src/app/store/store.service';
 
 const uvMesh: VertexData = (() => {
   const positions = [-1, -1, 0, 1, -1, 0, -1, 1, 0, 1, 1, 0];
@@ -29,6 +30,7 @@ const uvMesh: VertexData = (() => {
 })();
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-farfield-renderer',
     template: '<ng-content/>',
     standalone: true,
@@ -37,16 +39,16 @@ const uvMesh: VertexData = (() => {
 export class FarfieldRendererComponent extends TransducerBufferConsumer
   implements OnDestroy
 {
-  transducers = input<Transducer[] | null>(null);
-  environment = input<Environment | null>(null);
-  diameter = input(0);
-  transducerModel = input<'Point' | 'Piston'>('Piston');
+  readonly transducers = input<Transducer[] | null>(null);
+  readonly environment = input<Environment | null>(null);
+  readonly diameter = input(0);
+  readonly transducerModel = input<'Point' | 'Piston'>('Piston');
 
   upload = effect(() => {
     const env = this.environment();
     const transducers = this.transducers();
-    const dia = this.diameter();
-    const model = this.transducerModel();
+    const _dia = this.diameter();
+    const _model = this.transducerModel();
 
     if (this.material) {
       this.uploadEnvironment(env);
@@ -80,7 +82,7 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer
     this.farfieldMesh.isPickable = false;
     this.farfieldMesh.renderingGroupId = 1;
 
-    this.material.onBind = (mesh: AbstractMesh) => {
+    this.material.onBind = (_mesh: AbstractMesh) => {
       this.material
         .getEffect()
         .bindUniformBuffer(buffer.getBuffer()!, 'excitation');

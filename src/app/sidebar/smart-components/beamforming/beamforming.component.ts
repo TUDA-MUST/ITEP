@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -8,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Angle } from '@babylonjs/core/Maths/math.path';
 import { StoreService } from 'src/app/store/store.service';
 import { JoystickComponent } from '../joystick/joystick.component';
-import { AzElCoordinates } from 'src/app/store/beamforming.state';
+import { type AzElCoordinates } from 'src/app/store/beamforming.state';
 import { deg2rad } from 'src/app/utils/degrad';
 import { disabled, FormField, form, max, min } from '@angular/forms/signals';
 
@@ -21,7 +22,7 @@ const cleanNullish = <T extends object>(obj: T): Partial<T> =>
     Object.entries(obj).filter(([_, v]) => v != null)
   ) as Partial<T>;
 
-const transformFormPatch = (
+const _transformFormPatch = (
   patch: Partial<{ beamformingEnabled: boolean | null; az: number | null; el: number | null; }>
 ) => {
   const clean = cleanNullish(patch) as { beamformingEnabled?: boolean; az?: number; el?: number; };
@@ -33,6 +34,7 @@ const transformFormPatch = (
 };
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-beamforming',
     imports: [
       MatButtonModule,
@@ -49,14 +51,14 @@ const transformFormPatch = (
 export class BeamformingComponent {
   store = inject(StoreService);
   
-  formModel = signal({
+  readonly formModel = signal({
     beamformingEnabled: false,
     az: 0,
     el: 0
   });
 
-  beamformingEnabled = computed(() => this.store.beamforming().beamformingEnabled);
-  beamforming = computed(() => this.store.beamforming());
+  readonly beamformingEnabled = computed(() => this.store.beamforming().beamformingEnabled);
+  readonly beamforming = computed(() => this.store.beamforming());
 
   form = form(this.formModel, (schemaPath) => {
     disabled(schemaPath.az, ({valueOf}) => !valueOf(schemaPath.beamformingEnabled));

@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from "@storybook/angular";
+import { type StoryFn, type Meta } from "@storybook/angular";
 import { ToolbarComponent } from "./toolbar.component";
 
 // More on default export: https://storybook.js.org/docs/angular/writing-stories/introduction#default-export

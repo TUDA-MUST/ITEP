@@ -1,12 +1,14 @@
-import { Component, effect, inject, signal, untracked } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { form, FormField, min, max } from '@angular/forms/signals';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 
-import { StoreService, TransducerModel } from 'src/app/store/store.service';
+import { StoreService, type TransducerModel } from 'src/app/store/store.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-transducer',
   imports: [
     MatInput,
@@ -22,7 +24,7 @@ import { StoreService, TransducerModel } from 'src/app/store/store.service';
 export class TransducerComponent {
   private store = inject(StoreService);
 
-  protected transducerModel = signal({
+  protected readonly transducerModel = signal({
     transducerModel: 'Point' as TransducerModel,
     transducerDiameter: 0
   });

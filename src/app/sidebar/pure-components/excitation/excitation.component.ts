@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -6,9 +7,10 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 
-import { StoreService, Environment, FrequencyMultiplier } from 'src/app/store/store.service';
+import { StoreService, type Environment, type FrequencyMultiplier } from 'src/app/store/store.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-excitation',
   imports: [  
         MatButtonToggle,
@@ -41,5 +43,5 @@ export class ExcitationComponent {
     excitationFrequencyBase: [0],
   });
 
-  public environment = computed(() => this.store.arrayConfig().environment);
+  public readonly environment = computed(() => this.store.arrayConfig().environment);
 }

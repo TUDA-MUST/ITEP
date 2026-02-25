@@ -1,9 +1,11 @@
-import { Component, computed, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { LibraryComponent } from '../../pure-components/library/library.component';
 import { StoreService } from 'src/app/store/store.service';
 import { presets } from '../../../presets'
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-library-container',
   imports: [
     LibraryComponent,
@@ -14,7 +16,7 @@ import { presets } from '../../../presets'
 export class LibraryContainerComponent {
   public presets = presets.sort((a, b) => a.citation!.year < b.citation!.year ? 1 : -1);
   private store = inject(StoreService);
-  public libraryIndex = input<number | null>();
+  public readonly libraryIndex = input<number | null>();
 
   oldIndex = -1
 
@@ -30,5 +32,5 @@ export class LibraryContainerComponent {
       this.store.setConfig(preset);
     }
   });
-  public citation = computed(() => this.store.arrayConfig().citation);
+  public readonly citation = computed(() => this.store.arrayConfig().citation);
 }

@@ -1,4 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FarfieldComponent } from '../../smart-components/farfield/farfield.component';
 import { RayleighComponent } from '../../smart-components/rayleigh/rayleigh.component';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -7,16 +8,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { Results } from 'src/app/store/viewportConfig.state';
 
 import { version } from '../../../../../package.json';
-import { HoveredKpi, KPIComponent } from '../kpi/kpi.component';
+import { type HoveredKpi, KPIComponent } from '../kpi/kpi.component';
 import { ApertureViewComponent } from '../aperture-view/aperture-view.component';
 import { StoreService } from 'src/app/store/store.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-result-container',
     templateUrl: './result-container.component.html',
-    styleUrls: ['./result-container.component.scss'],
+    styleUrl: './result-container.component.scss',
     imports: [
         ChartComponent,
         FarfieldComponent,
@@ -33,21 +35,21 @@ export class ResultContainerComponent {
     private readonly store = inject(StoreService);
     private readonly snackBar = inject(MatSnackBar);
 
-    kpis = computed(() => this.store.lowTechKPis());
+    readonly kpis = computed(() => this.store.lowTechKPis());
 
-    public farfieldVisible = computed(() => this.store.enabledResults().includes(Results.Farfield));
+    public readonly farfieldVisible = computed(() => this.store.enabledResults().includes(Results.Farfield));
     public transducers = this.store.transducers;
-    public diameter = computed(() => this.store.arrayConfig().transducerDiameter);
-    public arrayDiameter = computed(() => {
+    public readonly diameter = computed(() => this.store.arrayConfig().transducerDiameter);
+    public readonly arrayDiameter = computed(() => {
         const config = this.store.arrayConfig().config;
         if (config.type === 'circular' || config.type === 'spiral') {
             return config.diameter
         }
         return null;
     });
-    public transducerModel = computed(() => this.store.arrayConfig().transducerModel);
-    public transducersCount = computed(() => this.transducers().length);
-    public rayleighVisible = computed(() => this.store.enabledResults().includes(Results.RayleighIntegral));
+    public readonly transducerModel = computed(() => this.store.arrayConfig().transducerModel);
+    public readonly transducersCount = computed(() => this.transducers().length);
+    public readonly rayleighVisible = computed(() => this.store.enabledResults().includes(Results.RayleighIntegral));
     public setHoveredKpi(hoveredKpi: HoveredKpi) {
         this.store.setHoveredKpi(hoveredKpi);
     }
@@ -62,7 +64,7 @@ export class ResultContainerComponent {
     });
   }
 
-  private chartsString = computed(() => this.store.crossPattern().reduce((acc, line) => {
+  private readonly chartsString = computed(() => this.store.crossPattern().reduce((acc, line) => {
     const values = [
       line.angle,
       line.az,

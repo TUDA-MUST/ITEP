@@ -1,17 +1,19 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckbox } from '@angular/material/checkbox';
 
-import { ArrayConfigType, StoreService } from 'src/app/store/store.service';
+import { type ArrayConfigType, StoreService } from 'src/app/store/store.service';
 import { form, FormField, min, max } from '@angular/forms/signals';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-array-config',
     templateUrl: './array-config.component.html',
-    styleUrls: ['./array-config.component.scss'],
+    styleUrl: './array-config.component.scss',
     imports: [
         MatButtonToggleModule,
         MatFormFieldModule,
@@ -23,7 +25,7 @@ import { form, FormField, min, max } from '@angular/forms/signals';
 export class ArrayConfigComponent {
   private store = inject(StoreService);
   
-  private model = signal({
+  private readonly model = signal({
     type: 'ura' as ArrayConfigType,
     elementsX: 0,
     elementsY: 0,

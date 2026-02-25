@@ -1,4 +1,4 @@
-import { Scene } from '@babylonjs/core/scene';
+import { type Scene } from '@babylonjs/core/scene';
 import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { excitationBufferMaxElementsDefine } from '../../utils/excitationbuffer';
@@ -6,7 +6,7 @@ import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
 
 import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
 import { Constants } from '@babylonjs/core/Engines/constants';
-import { BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
+import { type BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
 
 const rayleighVertexShaderCode = /* wgsl*/ `
   #include<sceneUboDeclaration>
