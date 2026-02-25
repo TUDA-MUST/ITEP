@@ -25,7 +25,7 @@ import {
   MarkAreaComponent,
   MarkLineComponent,
 } from 'echarts/components';
-import { type ECBasicOption } from 'echarts/types/dist/shared';
+import { type CallbackDataParams, type ECBasicOption } from 'echarts/types/dist/shared';
 import { StoreService } from 'src/app/store/store.service';
 
 const degreeFormatter = (value: number) => `${value.toFixed(0)}°`;
@@ -368,7 +368,7 @@ export class ChartComponent implements OnInit {
     const option: ECBasicOption = {
       tooltip: {
         trigger: 'item',
-        formatter: (params: any) =>
+        formatter: (params: CallbackDataParams) =>
           `${params.seriesName} <br> ${params.name} : ${params.value.toFixed(2)}`,
       },
       // legend: {
