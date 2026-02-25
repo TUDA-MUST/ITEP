@@ -12,7 +12,6 @@
     "e2e": "ng e2e",
     "storybook": "ng run phased:storybook",
     "build-storybook": "ng run phased:build-storybook",
-    "chromatic": "npx chromatic --project-token=137f9b2a9d87",
     "playwright": "npx playwright test",
     "size": "ng build --stats-json",
     "display": "npx esbuild-visualizer --metadata=dist/phased/stats.json --open=true"
