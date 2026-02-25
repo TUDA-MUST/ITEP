@@ -369,7 +369,7 @@ export class ChartComponent implements OnInit {
       tooltip: {
         trigger: 'item',
         formatter: (params: CallbackDataParams) =>
-          `${params.seriesName} <br> ${params.name} : ${params.value.toFixed(2)}`,
+          `${params.seriesName} <br> ${params.name} : ${params.value ?? '?'}`,
       },
       // legend: {
       //   left: 'left'
