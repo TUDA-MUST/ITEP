@@ -5,7 +5,6 @@ import { BabylonJSViewComponent } from './babylon-jsview.component';
 import { describe, beforeEach, it, expect } from 'vitest';
 import { provideZonelessChangeDetection } from '@angular/core';
 
-
 describe('BabylonJSViewComponent', () => {
   let component: BabylonJSViewComponent;
   let fixture: ComponentFixture<BabylonJSViewComponent>;
@@ -13,9 +12,7 @@ describe('BabylonJSViewComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [BabylonJSViewComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
+      providers: [provideZonelessChangeDetection()],
     });
     fixture = TestBed.createComponent(BabylonJSViewComponent);
     component = fixture.componentInstance;

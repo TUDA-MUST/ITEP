@@ -12,12 +12,9 @@ describe('BeamformingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BeamformingComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
-    
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(BeamformingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

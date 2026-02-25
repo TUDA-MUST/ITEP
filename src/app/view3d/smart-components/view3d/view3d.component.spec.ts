@@ -11,12 +11,9 @@ describe('View3dComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ View3dComponent ],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      imports: [View3dComponent],
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
   });
 
   beforeEach(() => {

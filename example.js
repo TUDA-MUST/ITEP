@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 
 (async () => {
   const browser = await chromium.launch({
-    headless: false
+    headless: false,
   });
   const context = await browser.newContext();
 

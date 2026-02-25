@@ -32,11 +32,7 @@ export interface Textures {
 }
 
 export interface OnTransducerBufferCreated {
-  ngxSceneAndBufferCreated(
-    scene: Scene,
-    buffer: UniformBuffer,
-    textures: Textures
-  ): void;
+  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void;
 }
 
 export abstract class TransducerBufferConsumer implements OnTransducerBufferCreated {
@@ -44,18 +40,18 @@ export abstract class TransducerBufferConsumer implements OnTransducerBufferCrea
 }
 
 export const implementsOnTransducerBufferCreated = (
-  candidate: unknown
+  candidate: unknown,
 ): candidate is OnTransducerBufferCreated =>
-  typeof candidate === 'object' &&
-  candidate !== null &&
-  'ngxSceneAndBufferCreated' in candidate;
+  typeof candidate === 'object' && candidate !== null && 'ngxSceneAndBufferCreated' in candidate;
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-transducer-buffer',
   template: '<ng-content/>',
   standalone: true,
-  providers: [{provide: BabylonConsumer, useExisting: forwardRef(() => TransducerBufferComponent)}],
+  providers: [
+    { provide: BabylonConsumer, useExisting: forwardRef(() => TransducerBufferComponent) },
+  ],
 })
 export class TransducerBufferComponent extends BabylonConsumer implements OnDestroy {
   destroyRef = inject(DestroyRef);
@@ -79,26 +75,20 @@ export class TransducerBufferComponent extends BabylonConsumer implements OnDest
     this.uniformExcitationBuffer.addUniform(
       'elements',
       VEC4_ELEMENT_COUNT /* *2 */,
-      excitationBufferMaxElements * 2
+      excitationBufferMaxElements * 2,
     );
 
     const textures = ['assets/viridis.png', 'assets/coolwarm.png'];
     const tex = await Promise.all(
-      textures.map((txpath) => {
-        return new Promise((resolve, _reject) => {
-          const tex = new Texture(
-            txpath,
-            scene,
-            undefined,
-            undefined,
-            undefined,
-            () => {
+      textures.map(
+        (txpath) =>
+          new Promise((resolve, _reject) => {
+            const tex = new Texture(txpath, scene, undefined, undefined, undefined, () => {
               tex.wrapU = Texture.CLAMP_ADDRESSMODE;
               resolve(tex);
-            }
-          );
-        });
-      })
+            });
+          }),
+      ),
     );
 
     this.textures = {
@@ -117,14 +107,10 @@ export class TransducerBufferComponent extends BabylonConsumer implements OnDest
       const next = this.consumers();
       const scene = this.scene();
       if (scene) {
-      const { added } = diff(prev, next);
+        const { added } = diff(prev, next);
         added.forEach((consumer) => {
           if (implementsOnTransducerBufferCreated(consumer)) {
-            consumer.ngxSceneAndBufferCreated(
-              scene,
-              this.uniformExcitationBuffer,
-              this.textures
-            );
+            consumer.ngxSceneAndBufferCreated(scene, this.uniformExcitationBuffer, this.textures);
           }
         });
         prev = [...next];
@@ -150,19 +136,19 @@ export class TransducerBufferComponent extends BabylonConsumer implements OnDest
     if (this.uniformExcitationBuffer) {
       const bfuv = azElToUV(bf ?? { az: 0, el: 0 });
 
-      const excitationBuffer = transducers.reduce(
-        (buffer, transducer, index) => {
-          const phase = bf?.beamformingEnabled ? (this.k() ?? 700) * ((bfuv.u ?? 0) * transducer.pos.x + (bfuv.v ?? 0) * transducer.pos.y) : 0;
-          setExcitationElement(transducer.pos, phase, buffer, index);
-          return buffer;
-        },
-        createExcitationBuffer()
-      );
+      const excitationBuffer = transducers.reduce((buffer, transducer, index) => {
+        const phase = bf?.beamformingEnabled
+          ? (this.k() ?? 700) *
+            ((bfuv.u ?? 0) * transducer.pos.x + (bfuv.v ?? 0) * transducer.pos.y)
+          : 0;
+        setExcitationElement(transducer.pos, phase, buffer, index);
+        return buffer;
+      }, createExcitationBuffer());
 
       this.uniformExcitationBuffer.updateUniformArray(
         'elements',
         excitationBuffer,
-        excitationBuffer.length
+        excitationBuffer.length,
       );
       this.uniformExcitationBuffer.update();
     }

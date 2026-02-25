@@ -12,38 +12,38 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 export const initialState = {
-    arrayConfig: {
-      arrayType: 'ura',
-      uraConfig: {
-        elementsX: 2,
-        elementsY: 2,
-        pitchX: 0.0043,
-        pitchY: 0.0043
-      },
-      circularConfig: {
-        radius: 2,
-        elements: 2,
-      }
-    }
-  }; 
+  arrayConfig: {
+    arrayType: 'ura',
+    uraConfig: {
+      elementsX: 2,
+      elementsY: 2,
+      pitchX: 0.0043,
+      pitchY: 0.0043,
+    },
+    circularConfig: {
+      radius: 2,
+      elements: 2,
+    },
+  },
+};
 
 export const moduleMetaData = {
-    imports: [
-      SidebarContainerComponent,
-      MatExpansionModule,
-      MatButtonToggleModule,
-      MatFormFieldModule,
-      MatIconModule,
-      MatInputModule,
-      MatListModule,
-      ReactiveFormsModule,
-    ],
-    providers: [
-      FormBuilder,
-      provideZonelessChangeDetection(),
-      {
-        provide: ActivatedRoute,
-        useValue: {},
-      }
-    ]
+  imports: [
+    SidebarContainerComponent,
+    MatExpansionModule,
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    ReactiveFormsModule,
+  ],
+  providers: [
+    FormBuilder,
+    provideZonelessChangeDetection(),
+    {
+      provide: ActivatedRoute,
+      useValue: {},
+    },
+  ],
 };

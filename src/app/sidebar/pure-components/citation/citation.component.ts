@@ -1,18 +1,14 @@
-import {
-  ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { type Citation } from 'src/app/store/store.service';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-citation',
-  imports: [
-    MatIcon,
-    RouterLink
-  ],
+  imports: [MatIcon, RouterLink],
   templateUrl: './citation.component.html',
-  styleUrl: './citation.component.scss'
+  styleUrl: './citation.component.scss',
 })
 export class CitationComponent {
   readonly citation = input<Citation | null>();

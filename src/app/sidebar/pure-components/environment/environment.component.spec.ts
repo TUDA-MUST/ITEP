@@ -12,11 +12,8 @@ describe('EnvironmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EnvironmentComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EnvironmentComponent);
     component = fixture.componentInstance;

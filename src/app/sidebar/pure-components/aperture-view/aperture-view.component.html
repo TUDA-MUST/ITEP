@@ -1,37 +1,53 @@
 <svg [attr.viewBox]="bb()">
-   <defs>
+  <defs>
     <symbol id="cross" viewBox="-1 -1 2 2">
-      <line x1="-1" y1="-1" x2="1" y2="1"
-            stroke="crimson" [attr.stroke-width]="2"
-            vector-effect="non-scaling-stroke"/>
-      <line x1="1" y1="-1" x2="-1" y2="1"
-            stroke="crimson" [attr.stroke-width]="2"
-            vector-effect="non-scaling-stroke"/>
+      <line
+        x1="-1"
+        y1="-1"
+        x2="1"
+        y2="1"
+        stroke="crimson"
+        [attr.stroke-width]="2"
+        vector-effect="non-scaling-stroke"
+      />
+      <line
+        x1="1"
+        y1="-1"
+        x2="-1"
+        y2="1"
+        stroke="crimson"
+        [attr.stroke-width]="2"
+        vector-effect="non-scaling-stroke"
+      />
     </symbol>
   </defs>
 
-    @let arrayDia = arrayDiameter();
-    @if (arrayDia !== null) {
-        <circle class="outline" [attr.r]="arrayDia / 2" />
-    }
+  @let arrayDia = arrayDiameter();
+  @if (arrayDia !== null) {
+    <circle class="outline" [attr.r]="arrayDia / 2" />
+  }
 
-    @switch(transducerModel()) {
-        @case ('Point') {
-            @for (point of transducersMapped(); track $index) {
-                <use href="#cross" 
-                    [attr.x]="point.pos.x - crossSize() / 2" [attr.y]="point.pos.y - crossSize() / 2" 
-                    [attr.width]="crossSize()" [attr.height]="crossSize()"
-                />
-            }
-        }
-        @case ('Piston') {
-            @for (point of transducersMapped(); track $index) {
-                <circle 
-                [attr.cx]="point.pos.x"
-                [attr.cy]="point.pos.y"
-                [attr.r]="transducerDiameter() / 2"
-                fill="#888888"/>
-            }
-        }
+  @switch (transducerModel()) {
+    @case ('Point') {
+      @for (point of transducersMapped(); track $index) {
+        <use
+          href="#cross"
+          [attr.x]="point.pos.x - crossSize() / 2"
+          [attr.y]="point.pos.y - crossSize() / 2"
+          [attr.width]="crossSize()"
+          [attr.height]="crossSize()"
+        />
+      }
     }
+    @case ('Piston') {
+      @for (point of transducersMapped(); track $index) {
+        <circle
+          [attr.cx]="point.pos.x"
+          [attr.cy]="point.pos.y"
+          [attr.r]="transducerDiameter() / 2"
+          fill="#888888"
+        />
+      }
+    }
+  }
 </svg>

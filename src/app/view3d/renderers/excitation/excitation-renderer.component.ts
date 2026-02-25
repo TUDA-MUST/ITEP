@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, effect, forwardRef, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  forwardRef,
+  input,
+  output,
+} from '@angular/core';
 
 import { TransducerMaterial } from '../../materials/transducer.material';
 import { type Mesh } from '@babylonjs/core/Meshes/mesh';
@@ -26,7 +33,9 @@ import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
   template: '<ng-content/>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  providers: [{ provide: BabylonConsumer, useExisting: forwardRef(() => ExcitationRendererComponent) }],
+  providers: [
+    { provide: BabylonConsumer, useExisting: forwardRef(() => ExcitationRendererComponent) },
+  ],
 })
 export class ExcitationRendererComponent extends BabylonConsumer {
   readonly transducers = input<Transducer[] | null>(null);
@@ -53,7 +62,7 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     if (this.pistonTransducerMaterial) {
       this.uploadArrayConfig(transducers, selection);
     }
-  })
+  });
 
   public initialize3D(scene: Scene): void {
     const origin = new Vector3(0, 0, 0);
@@ -64,7 +73,7 @@ export class ExcitationRendererComponent extends BabylonConsumer {
       sourcePlane: aperturePlane,
       size: 1,
     };
-    
+
     this.pistonTransducerMaterial = new TransducerMaterial(scene);
     this.pistonTransducerMaterial.depthFunction = Engine.ALWAYS;
     this.pistonTransducerMaterial.stencil.enabled = true;
@@ -82,12 +91,16 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     const segments = 64;
     const points = Array.from({ length: segments + 1 }, (_, i) => {
       const a = (i / segments) * Math.PI * 2;
-      return new Vector3(Math.cos(a) * .5, Math.sin(a) *.5, 0);
+      return new Vector3(Math.cos(a) * 0.5, Math.sin(a) * 0.5, 0);
     });
 
-    this.pistonTransducerLineMeshHidden = CreateLineSystem('hiddenLines', {
-      lines: [points]
-    }, scene);
+    this.pistonTransducerLineMeshHidden = CreateLineSystem(
+      'hiddenLines',
+      {
+        lines: [points],
+      },
+      scene,
+    );
     this.pistonTransducerLineMeshHidden.renderingGroupId = 1;
 
     const hiddenLinesMaterial = this.pistonTransducerLineMeshHidden.material!;
@@ -109,64 +122,63 @@ export class ExcitationRendererComponent extends BabylonConsumer {
         (event) => {
           const pickingResult = scene.pick(event.pointerX, scene.pointerY);
           this.hovered.emit(pickingResult.thinInstanceIndex);
-        }
-      )
-    )
+        },
+      ),
+    );
     actionManager.registerAction(
       new ExecuteCodeAction(
         {
           trigger: ActionManager.OnPointerOutTrigger,
         },
-        (_event) => this.hovered.emit(-1)
-      )
-    )
+        (_event) => this.hovered.emit(-1),
+      ),
+    );
 
     const options = {
-      lines: [[
-        new Vector3(-.5, -.5, 0),
-        new Vector3(.5, .5, 0)
-      ], [
-        new Vector3(-.5, .5, 0),
-        new Vector3(.5, -.5, 0)
-      ]],
-    }
+      lines: [
+        [new Vector3(-0.5, -0.5, 0), new Vector3(0.5, 0.5, 0)],
+        [new Vector3(-0.5, 0.5, 0), new Vector3(0.5, -0.5, 0)],
+      ],
+    };
 
-    this.pointMesh = CreateLineSystem("point", options, scene);
+    this.pointMesh = CreateLineSystem('point', options, scene);
     this.pointMesh.renderingGroupId = 1;
     this.pointMesh.material!.alpha = 0.99;
 
     this.uploadArrayConfig(this.transducers(), this.selection());
   }
 
-  private uploadArrayConfig(transducersx: Transducer[] | null, selectionx: SelectionState | null): void {
-    const transducers = transducersx ?? []
+  private uploadArrayConfig(
+    transducersx: Transducer[] | null,
+    selectionx: SelectionState | null,
+  ): void {
+    const transducers = transducersx ?? [];
     const selection: SelectionState = selectionx ?? { hovered: [], selected: [] };
 
     const initial = { left: Infinity, top: -Infinity, right: -Infinity, bottom: Infinity };
 
-    const rawBB = (transducers ?? []).reduce((acc, t) => ({
-      left: Math.min(acc.left, t.pos.x),
-      top: Math.max(acc.top, t.pos.y),
-      right: Math.max(acc.right, t.pos.x),
-      bottom: Math.min(acc.bottom, t.pos.y)
-    }), initial);
+    const rawBB = (transducers ?? []).reduce(
+      (acc, t) => ({
+        left: Math.min(acc.left, t.pos.x),
+        top: Math.max(acc.top, t.pos.y),
+        right: Math.max(acc.right, t.pos.x),
+        bottom: Math.min(acc.bottom, t.pos.y),
+      }),
+      initial,
+    );
 
     const maxDim = Math.max(rawBB.right - rawBB.left, rawBB.top - rawBB.bottom);
     const pointCrossSize = Math.max(maxDim * 0.005, 0.0001);
 
     const buffers = (transducers ?? []).reduce(
       (buffers, transducer, index) => {
-        Matrix.Scaling(this.transducerDiameter()!, this.transducerDiameter()!, 1).multiply(Matrix.Translation(
-          transducer.pos.x,
-          transducer.pos.y,
-          transducer.pos.z
-        )).copyToArray(buffers.matrices, index * MAT4_ELEMENT_COUNT);
+        Matrix.Scaling(this.transducerDiameter()!, this.transducerDiameter()!, 1)
+          .multiply(Matrix.Translation(transducer.pos.x, transducer.pos.y, transducer.pos.z))
+          .copyToArray(buffers.matrices, index * MAT4_ELEMENT_COUNT);
 
-        Matrix.Scaling(pointCrossSize, pointCrossSize, 1).multiply(Matrix.Translation(
-          transducer.pos.x,
-          transducer.pos.y,
-          transducer.pos.z
-        )).copyToArray(buffers.pointMatrices, index * MAT4_ELEMENT_COUNT);
+        Matrix.Scaling(pointCrossSize, pointCrossSize, 1)
+          .multiply(Matrix.Translation(transducer.pos.x, transducer.pos.y, transducer.pos.z))
+          .copyToArray(buffers.pointMatrices, index * MAT4_ELEMENT_COUNT);
 
         buffers.selection[index] = selection.hovered.includes(index) ? 1 : 0;
 
@@ -175,11 +187,15 @@ export class ExcitationRendererComponent extends BabylonConsumer {
       {
         matrices: new Float32Array(MAT4_ELEMENT_COUNT * transducers.length),
         pointMatrices: new Float32Array(MAT4_ELEMENT_COUNT * transducers.length),
-        selection: new Float32Array(SCALAR_ELEMENT_COUNT * transducers.length)
-      }
+        selection: new Float32Array(SCALAR_ELEMENT_COUNT * transducers.length),
+      },
     );
-      
-    const allMeshes = [this.pointMesh, this.pistonTransducerMesh, this.pistonTransducerLineMeshHidden];
+
+    const allMeshes = [
+      this.pointMesh,
+      this.pistonTransducerMesh,
+      this.pistonTransducerLineMeshHidden,
+    ];
     if (transducers.length > 0) {
       const pistonMeshes = [this.pistonTransducerMesh, this.pistonTransducerLineMeshHidden];
       switch (this.transducerModel()) {
@@ -188,35 +204,25 @@ export class ExcitationRendererComponent extends BabylonConsumer {
             'matrix',
             buffers.pointMatrices,
             MAT4_ELEMENT_COUNT,
-            false
+            false,
           );
           this.pointMesh.setEnabled(true);
-          pistonMeshes.forEach(mesh => {
+          pistonMeshes.forEach((mesh) => {
             mesh.setEnabled(false);
           });
           break;
         case 'Piston':
           this.pointMesh.setEnabled(false);
-          pistonMeshes.forEach(mesh => {
+          pistonMeshes.forEach((mesh) => {
             mesh.setEnabled(true);
-            mesh.thinInstanceSetBuffer(
-              'matrix',
-              buffers.matrices,
-              MAT4_ELEMENT_COUNT,
-              false
-            );
+            mesh.thinInstanceSetBuffer('matrix', buffers.matrices, MAT4_ELEMENT_COUNT, false);
 
-            mesh.thinInstanceSetBuffer(
-              'selected',
-              buffers.selection,
-              SCALAR_ELEMENT_COUNT,
-              false
-            );
+            mesh.thinInstanceSetBuffer('selected', buffers.selection, SCALAR_ELEMENT_COUNT, false);
           });
           break;
       }
     } else {
-      allMeshes.forEach(mesh => {
+      allMeshes.forEach((mesh) => {
         mesh.setEnabled(false);
       });
     }

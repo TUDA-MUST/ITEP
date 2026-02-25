@@ -1,20 +1,21 @@
-<mat-button-toggle-group [formField]="transducerForm.transducerModel" class="span-all small-button-toggle-group" style="align-items: end" hideSingleSelectionIndicator>
-<mat-button-toggle value="Point">
-    Point source
-</mat-button-toggle>
-<mat-button-toggle value="Piston">
-    Piston transducer
-</mat-button-toggle>
+<mat-button-toggle-group
+  [formField]="transducerForm.transducerModel"
+  class="span-all small-button-toggle-group"
+  style="align-items: end"
+  hideSingleSelectionIndicator
+>
+  <mat-button-toggle value="Point"> Point source </mat-button-toggle>
+  <mat-button-toggle value="Piston"> Piston transducer </mat-button-toggle>
 </mat-button-toggle-group>
 @switch (transducerModel().transducerModel) {
-    @case ('Point') {
-       Transducers are point sources.
-    }
-    @case ('Piston') {
-<mat-form-field>
-    <mat-label>Diameter</mat-label>
-    <input matInput type="number" [formField]="transducerForm.transducerDiameter" step="0.01">
-    <span matSuffix style="margin-right: 1ex">mm</span>
-</mat-form-field>    
-    }
+  @case ('Point') {
+    Transducers are point sources.
+  }
+  @case ('Piston') {
+    <mat-form-field>
+      <mat-label>Diameter</mat-label>
+      <input matInput type="number" [formField]="transducerForm.transducerDiameter" step="0.01" />
+      <span matSuffix style="margin-right: 1ex">mm</span>
+    </mat-form-field>
+  }
 }

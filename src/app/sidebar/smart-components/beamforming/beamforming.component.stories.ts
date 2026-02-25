@@ -1,34 +1,32 @@
-import { BeamformingComponent } from "./beamforming.component";
-import * as componentMetadata from "./beamforming.component.metadata";
+import { BeamformingComponent } from './beamforming.component';
+import * as componentMetadata from './beamforming.component.metadata';
 
-import { type StoryFn, type Meta, moduleMetadata, applicationConfig } from "@storybook/angular";
+import { type StoryFn, type Meta, moduleMetadata, applicationConfig } from '@storybook/angular';
 
 export default {
-  title: "Beamforming",
+  title: 'Beamforming',
   component: BeamformingComponent,
   argTypes: {},
-  decorators: [moduleMetadata(componentMetadata.moduleMetaData), 
+  decorators: [
+    moduleMetadata(componentMetadata.moduleMetaData),
     applicationConfig({
-      providers: []
-    })
+      providers: [],
+    }),
   ],
   parameters: {
     viewport: {
-      defaultViewport: "sidebarPanel",
+      defaultViewport: 'sidebarPanel',
     },
     backgrounds: {
       default: 'dark',
     },
-    layout: 'centered'
+    layout: 'centered',
   },
 } as Meta<BeamformingComponent>;
 
-const Template: StoryFn<BeamformingComponent> = (
-  args,
-) => ({
+const Template: StoryFn<BeamformingComponent> = (args) => ({
   props: args,
 });
 
 export const Default: StoryFn<BeamformingComponent> = Template.bind({});
 Default.args = {};
-

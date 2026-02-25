@@ -32,11 +32,9 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent,
         MockComponent(SidebarContainerComponent),
-        MockComponent(View3dComponent)
+        MockComponent(View3dComponent),
       ],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

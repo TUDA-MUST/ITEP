@@ -1,29 +1,29 @@
 {
-    // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
-    // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
-    // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "vscode-edge-devtools.debug",
-            "request": "launch",
-            "name": "Launch Microsoft Edge and open the Edge DevTools",
-            "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "name": "Launch Edge",
-            "request": "launch",
-            "type": "msedge",
-            "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Chrome mit \"localhost\" starten",
-            "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}"
-        }
-    ]
+  // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+  // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+  // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "vscode-edge-devtools.debug",
+      "request": "launch",
+      "name": "Launch Microsoft Edge and open the Edge DevTools",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Launch Edge",
+      "request": "launch",
+      "type": "msedge",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Chrome mit \"localhost\" starten",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
 }

@@ -5,6 +5,8 @@ import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import templateParser from '@angular-eslint/template-parser';
 import storybookPlugin from 'eslint-plugin-storybook';
+import prettierPlugin from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   {
@@ -17,6 +19,7 @@ export default [
     plugins: {
       '@angular-eslint': angularPlugin,
       '@typescript-eslint': typescriptEslintPlugin,
+      prettier: prettierPlugin,
     },
     languageOptions: {
       parser: typescriptParser,
@@ -62,6 +65,16 @@ export default [
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
+
+      // Arrow-function shorthand: prefer concise bodies and arrow callbacks
+      'arrow-body-style': ['error', 'as-needed'],
+      'prefer-arrow-callback': 'error',
+
+      // Disable ESLint formatting rules that conflict with Prettier
+      ...prettierConfig.rules,
+
+      // Prettier formatting as warnings (auto-fixed on save, no need to block)
+      'prettier/prettier': 'warn',
     },
   },
 

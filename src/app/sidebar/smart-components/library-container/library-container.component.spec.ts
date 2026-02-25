@@ -6,7 +6,6 @@ import { describe, beforeEach, it, expect } from 'vitest';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-
 describe('LibraryContainerComponent', () => {
   let component: LibraryContainerComponent;
   let fixture: ComponentFixture<LibraryContainerComponent>;
@@ -19,10 +18,9 @@ describe('LibraryContainerComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {},
-        }
-      ]
-    })
-    .compileComponents();
+        },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LibraryContainerComponent);
     component = fixture.componentInstance;

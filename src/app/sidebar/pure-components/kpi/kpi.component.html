@@ -8,14 +8,50 @@
   @let res = kpis()!;
   <tr>
     <th>AZ</th>
-    <td (mouseover)="hoveredKpi.emit('HpbwAz')" (mouseout)="hoveredKpi.emit('')" (click)="copyToClipboard(res.az.hpbw)">{{ res.az.hpbw ? `${res.az.hpbw | number:'1.2-2'}°` : 'N/A' }}</td>
-    <td (mouseover)="hoveredKpi.emit('FnbwAz')" (mouseout)="hoveredKpi.emit('')" (click)="copyToClipboard(res.az.fnbw)">{{ res.az.fnbw ? `${res.az.fnbw | number:'1.2-2'}°` : 'N/A' }}</td>
-    <td (mouseover)="hoveredKpi.emit('SlrAz')" (mouseout)="hoveredKpi.emit('')" (click)="copyToClipboard(res.az.slr)">{{ res.az.fnbw ? `${res.az.slr | number:'1.2-2'}` : 'N/A' }}</td>
+    <td
+      (mouseover)="hoveredKpi.emit('HpbwAz')"
+      (mouseout)="hoveredKpi.emit('')"
+      (click)="copyToClipboard(res.az.hpbw)"
+    >
+      {{ res.az.hpbw ? `${(res.az.hpbw | number: '1.2-2')}°` : 'N/A' }}
+    </td>
+    <td
+      (mouseover)="hoveredKpi.emit('FnbwAz')"
+      (mouseout)="hoveredKpi.emit('')"
+      (click)="copyToClipboard(res.az.fnbw)"
+    >
+      {{ res.az.fnbw ? `${(res.az.fnbw | number: '1.2-2')}°` : 'N/A' }}
+    </td>
+    <td
+      (mouseover)="hoveredKpi.emit('SlrAz')"
+      (mouseout)="hoveredKpi.emit('')"
+      (click)="copyToClipboard(res.az.slr)"
+    >
+      {{ res.az.fnbw ? `${(res.az.slr | number: '1.2-2')}` : 'N/A' }}
+    </td>
   </tr>
   <tr>
     <th>EL</th>
-    <td (mouseover)="hoveredKpi.emit('HpbwEl')" (mouseout)="hoveredKpi.emit('')" (click)="copyToClipboard(res.el.hpbw)">{{ res.el.hpbw ? `${res.el.hpbw | number:'1.2-2'}°` : 'N/A' }}</td>
-    <td (mouseover)="hoveredKpi.emit('FnbwEl')" (mouseout)="hoveredKpi.emit('')" (click)="copyToClipboard(res.el.fnbw)">{{ res.el.fnbw ? `${res.el.fnbw | number:'1.2-2'}°` : 'N/A' }}</td>
-    <td (mouseover)="hoveredKpi.emit('SlrEl')" (mouseout)="hoveredKpi.emit('')" (click)="copyToClipboard(res.el.slr)">{{ res.el.fnbw ? `${res.el.slr | number:'1.2-2'}` : 'N/A' }}</td>
+    <td
+      (mouseover)="hoveredKpi.emit('HpbwEl')"
+      (mouseout)="hoveredKpi.emit('')"
+      (click)="copyToClipboard(res.el.hpbw)"
+    >
+      {{ res.el.hpbw ? `${(res.el.hpbw | number: '1.2-2')}°` : 'N/A' }}
+    </td>
+    <td
+      (mouseover)="hoveredKpi.emit('FnbwEl')"
+      (mouseout)="hoveredKpi.emit('')"
+      (click)="copyToClipboard(res.el.fnbw)"
+    >
+      {{ res.el.fnbw ? `${(res.el.fnbw | number: '1.2-2')}°` : 'N/A' }}
+    </td>
+    <td
+      (mouseover)="hoveredKpi.emit('SlrEl')"
+      (mouseout)="hoveredKpi.emit('')"
+      (click)="copyToClipboard(res.el.slr)"
+    >
+      {{ res.el.fnbw ? `${(res.el.slr | number: '1.2-2')}` : 'N/A' }}
+    </td>
   </tr>
 </table>

@@ -1,10 +1,10 @@
 :host {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 mat-button-toggle-group {
-    align-self: flex-end;
+  align-self: flex-end;
 }
 
 td {
@@ -13,7 +13,7 @@ td {
   cursor: pointer;
   font-variant-numeric: tabular-nums;
   width: 7ch;
-  padding-right: 1.5em;   /* Platz für das Icon in der Box */
+  padding-right: 1.5em; /* Platz für das Icon in der Box */
 }
 
 td:hover {
@@ -22,10 +22,10 @@ td:hover {
 }
 
 td::after {
-  content: "content_copy";
+  content: 'content_copy';
   font-family: 'Material Icons';
   position: absolute;
-  right: 0.2em;            /* innerhalb der Box platzieren */
+  right: 0.2em; /* innerhalb der Box platzieren */
   top: 50%;
   transform: translateY(-50%);
   opacity: 0;
@@ -38,5 +38,5 @@ td:hover::after {
 }
 
 th {
-    min-width: 4ex;
+  min-width: 4ex;
 }

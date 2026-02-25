@@ -4,7 +4,7 @@ import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
 import { excitationBufferMaxElementsDefine } from '../../utils/excitationbuffer';
 import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
 
-const vertexSource = /* wgsl */`
+const vertexSource = /* wgsl */ `
   #include<ExcitationBuffer>
   uniform numElements : i32;
   uniform dynamicRange : f32;
@@ -103,7 +103,7 @@ fn element_factor_uv(uv: vec2<f32>, ka: f32) -> f32 {
     vertexOutputs.globalPos = direction * absresult * 0.02;
   }
 `;
-const fragmentSource = /* wgsl */`
+const fragmentSource = /* wgsl */ `
   #include<ExcitationBuffer>
  
   uniform numElements : i32;
@@ -158,34 +158,30 @@ const fragmentSource = /* wgsl */`
 
 export class FarfieldMaterial extends ShaderMaterial {
   constructor(scene: Scene) {
-    super('FarfieldMaterial', scene, {
-      vertexSource,
-      fragmentSource,
-    }, {
-      attributes: [
-        "position",
-        "normal",
-        "uv",
-      ],
-      uniforms: [
-        "worldViewProjection",
-        "projection",
-        "globalPhase",
-        "k",
-        "t",
-        "dynamicRange",
-        "numElements",
-      ],
-      uniformBuffers: [
-        "Scene", "Mesh", 'excitation'
-      ],
-      samplers: ['viridisSampler'],
-      defines: [
-        "#define INSTANCES", 
-        excitationBufferMaxElementsDefine
-      ],
-      shaderLanguage: ShaderLanguage.WGSL,
-    });
+    super(
+      'FarfieldMaterial',
+      scene,
+      {
+        vertexSource,
+        fragmentSource,
+      },
+      {
+        attributes: ['position', 'normal', 'uv'],
+        uniforms: [
+          'worldViewProjection',
+          'projection',
+          'globalPhase',
+          'k',
+          't',
+          'dynamicRange',
+          'numElements',
+        ],
+        uniformBuffers: ['Scene', 'Mesh', 'excitation'],
+        samplers: ['viridisSampler'],
+        defines: ['#define INSTANCES', excitationBufferMaxElementsDefine],
+        shaderLanguage: ShaderLanguage.WGSL,
+      },
+    );
 
     this.backFaceCulling = false;
     this.wireframe = false;

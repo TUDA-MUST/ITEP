@@ -1,11 +1,11 @@
 import { type Scene } from '@babylonjs/core/scene';
 import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
 
-import '@babylonjs/core/Shaders/ShadersInclude/instancesDeclaration'
-import '@babylonjs/core/Shaders/ShadersInclude/instancesVertex'
+import '@babylonjs/core/Shaders/ShadersInclude/instancesDeclaration';
+import '@babylonjs/core/Shaders/ShadersInclude/instancesVertex';
 import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
 
-const transducerVertexShaderCode = /* wgsl */`
+const transducerVertexShaderCode = /* wgsl */ `
   #include<sceneUboDeclaration>
   #include<meshUboDeclaration>
   #include<instancesDeclaration>
@@ -26,7 +26,7 @@ const transducerVertexShaderCode = /* wgsl */`
   }
 `;
 
-const transducerFragmentShaderCode = /* wgsl*/`
+const transducerFragmentShaderCode = /* wgsl*/ `
   varying vUV : vec2<f32>;
   varying vSelected : f32;
 
@@ -49,26 +49,20 @@ const transducerFragmentShaderCode = /* wgsl*/`
 
 export class TransducerMaterial extends ShaderMaterial {
   constructor(scene: Scene) {
-    super('TransducerMaterial', scene, {
-      vertexSource: transducerVertexShaderCode,
-      fragmentSource: transducerFragmentShaderCode
-    },
+    super(
+      'TransducerMaterial',
+      scene,
       {
-        attributes: [
-          "position",
-          "normal",
-          "uv",
-          "selected"
-        ],
-        uniforms: [
-          "parameter",
-          "transducerDiameter",
-          "innerRadius"
-        ],
-        uniformBuffers: ["Scene", "Mesh"],
+        vertexSource: transducerVertexShaderCode,
+        fragmentSource: transducerFragmentShaderCode,
+      },
+      {
+        attributes: ['position', 'normal', 'uv', 'selected'],
+        uniforms: ['parameter', 'transducerDiameter', 'innerRadius'],
+        uniformBuffers: ['Scene', 'Mesh'],
         needAlphaBlending: true,
         shaderLanguage: ShaderLanguage.WGSL,
-      }
+      },
     );
     this.backFaceCulling = false;
   }

@@ -16,45 +16,23 @@ import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 
 export const cubeCut = (): VertexData => {
   const positions = [
-    -0.5, -0.5, 0, 
-    0.5, -0.5, 0, 
-    0.5, 0.5, 0, 
-    0.0, 0.5, 0,
-    0.0, 0.0, 0,
-    -0.5, 0.0, 0,
+    -0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, 0.0, 0.5, 0, 0.0, 0.0, 0, -0.5, 0.0, 0,
 
-    -0.5, -0.5, 1, 
-    0.5, -0.5, 1, 
-    0.5, 0.5, 1, 
-    0.0, 0.5, 1,
-    0.0, 0.0, 1,
-    -0.5, 0.0, 1,
+    -0.5, -0.5, 1, 0.5, -0.5, 1, 0.5, 0.5, 1, 0.0, 0.5, 1, 0.0, 0.0, 1, -0.5, 0.0, 1,
   ];
 
   const indices = [
-    0, 2, 1, 
-    0, 5, 4,
-    4, 3, 2,
-  
-    4,10,3,
-    10, 9, 3,
-    2, 3, 9,
-    2, 9, 8,
+    0, 2, 1, 0, 5, 4, 4, 3, 2,
 
-    5, 11, 4,
-    11,10,4,
-    0, 6, 5,
-    6, 11, 5,
+    4, 10, 3, 10, 9, 3, 2, 3, 9, 2, 9, 8,
 
-    0, 1, 6,
-    1, 7, 6,
+    5, 11, 4, 11, 10, 4, 0, 6, 5, 6, 11, 5,
 
-    1, 2, 7,
-    2, 8, 7,
+    0, 1, 6, 1, 7, 6,
 
-    6, 8, 7, 
-    6, 11, 10,
-    10, 9, 8,
+    1, 2, 7, 2, 8, 7,
+
+    6, 8, 7, 6, 11, 10, 10, 9, 8,
   ];
 
   const vertexData = new VertexData();
@@ -64,20 +42,25 @@ export const cubeCut = (): VertexData => {
 };
 
 @Component({
-    selector: 'app-rayleigh-integral-renderer',
-    template: '<ng-content/>',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    providers: [{provide: TransducerBufferConsumer, useExisting: RayleighIntegralRendererComponent}],
+  selector: 'app-rayleigh-integral-renderer',
+  template: '<ng-content/>',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  providers: [
+    { provide: TransducerBufferConsumer, useExisting: RayleighIntegralRendererComponent },
+  ],
 })
-export class RayleighIntegralRendererComponent extends TransducerBufferConsumer implements OnDestroy {
+export class RayleighIntegralRendererComponent
+  extends TransducerBufferConsumer
+  implements OnDestroy
+{
   // Should no longer be needed or changed to a number.
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
   readonly resultSet = input<ResultSet | null>(null);
   readonly aspect = input<ResultAspect | null>(null);
   readonly globalPhase = input<number | null>(null);
-  
+
   private material: RayleighMaterial;
 
   update = effect(() => {
@@ -97,16 +80,16 @@ export class RayleighIntegralRendererComponent extends TransducerBufferConsumer 
 
   updatePhase = effect(() => {
     this.material.setFloat('globalPhase', this.globalPhase() ?? 0);
-  })
+  });
 
-  private xzPlane : Mesh;
-  private yzPlane : Mesh;
-  private cubeCut : Mesh;
+  private xzPlane: Mesh;
+  private yzPlane: Mesh;
+  private cubeCut: Mesh;
 
-  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures : Textures): void {
+  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void {
     // Result
     this.material = new RayleighMaterial(scene, textures.coolwarm);
-    this.material.setUniformBuffer('excitation', buffer);      
+    this.material.setUniformBuffer('excitation', buffer);
 
     this.material.stencil.enabled = true;
     this.material.stencil.funcRef = 1;
@@ -120,9 +103,13 @@ export class RayleighIntegralRendererComponent extends TransducerBufferConsumer 
 
     // Setup result plane
     const xzMathPlane = Plane.FromPositionAndNormal(origin, yPositive);
-    this.xzPlane = CreatePlane('rayleigh', {
-      sourcePlane: xzMathPlane,
-    }, scene);
+    this.xzPlane = CreatePlane(
+      'rayleigh',
+      {
+        sourcePlane: xzMathPlane,
+      },
+      scene,
+    );
     this.xzPlane.material = this.material;
     this.xzPlane.position = new Vector3(0, 0, 0.5);
     this.xzPlane.bakeCurrentTransformIntoVertices();
@@ -130,9 +117,13 @@ export class RayleighIntegralRendererComponent extends TransducerBufferConsumer 
     this.xzPlane.renderingGroupId = 1;
 
     const yzMathPlane = Plane.FromPositionAndNormal(origin, xNegative);
-    this.yzPlane = CreatePlane('rayleigh', {
-      sourcePlane: yzMathPlane,
-    }, scene);
+    this.yzPlane = CreatePlane(
+      'rayleigh',
+      {
+        sourcePlane: yzMathPlane,
+      },
+      scene,
+    );
     this.yzPlane.material = this.material;
     this.yzPlane.position = new Vector3(0, 0, 0.5);
     this.yzPlane.bakeCurrentTransformIntoVertices();
@@ -160,7 +151,7 @@ export class RayleighIntegralRendererComponent extends TransducerBufferConsumer 
     this.cubeCut.dispose();
   }
 
-  private uploadEnvironment(environment : Environment | null) : void {
+  private uploadEnvironment(environment: Environment | null): void {
     if (environment) {
       const omega = 2.0 * Math.PI * 40000;
 
@@ -169,7 +160,7 @@ export class RayleighIntegralRendererComponent extends TransducerBufferConsumer 
     }
   }
 
-  private uploadArrayConfig(transducers: Transducer[] | null) : void {
+  private uploadArrayConfig(transducers: Transducer[] | null): void {
     if (transducers) {
       this.material.setInt('numElements', transducers.length);
     }

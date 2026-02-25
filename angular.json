@@ -1,148 +1,136 @@
 {
-	"$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-	"version": 1,
-	"newProjectRoot": "projects",
-	"projects": {
-		"phased": {
-			"projectType": "application",
-			"schematics": {
-				"@schematics/angular:application": {
-					"strict": true
-				},
-				"@schematics/angular:component": {
-					"style": "scss"
-				}
-			},
-			"root": "",
-			"sourceRoot": "src",
-			"prefix": "app",
-			"architect": {
-				"build": {
-					"builder": "@angular/build:application",
-					"options": {
-						"outputPath": "dist/phased",
-						"index": "src/index.html",
-						"tsConfig": "tsconfig.app.json",
-						"assets": [
-							"src/favicon.ico",
-							"src/assets"
-						],
-						"styles": [
-							"src/styles.scss"
-						],
-						"scripts": [],
-						"extractLicenses": false,
-						"sourceMap": true,
-						"optimization": false,
-						"namedChunks": true,
-						"allowedCommonJsDependencies": [
-							"@babylonjs/inspector"
-						],
-						"browser": "src/main.ts"
-					},
-					"configurations": {
-						"production": {
-							"fileReplacements": [
-								{
-									"replace": "src/environments/environment.ts",
-									"with": "src/environments/environment.prod.ts"
-								}
-							],
-							"optimization": true,
-							"outputHashing": "all",
-							"sourceMap": false,
-							"namedChunks": false,
-							"extractLicenses": true,
-							"budgets": [
-								{
-									"type": "initial",
-									"maximumWarning": "500kb",
-									"maximumError": "1mb"
-								},
-								{
-									"type": "anyComponentStyle",
-									"maximumWarning": "2kb",
-									"maximumError": "4kb"
-								}
-							]
-						},
-						            "development": {
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "phased": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        },
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/phased",
+            "index": "src/index.html",
+            "tsConfig": "tsconfig.app.json",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
+            "scripts": [],
+            "extractLicenses": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true,
+            "allowedCommonJsDependencies": ["@babylonjs/inspector"],
+            "browser": "src/main.ts"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ]
+            },
+            "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
             }
-					},
-					"defaultConfiguration": ""
-				},
-				"serve": {
-					"builder": "@angular/build:dev-server",
-					"options": {
-						"buildTarget": "phased:build"
-					},
-					"configurations": {
-						"production": {
-							"buildTarget": "phased:build:production"
-						}
-					}
-				},
-				"extract-i18n": {
-					"builder": "@angular/build:extract-i18n",
-					"options": {
-						"buildTarget": "phased:build"
-					}
-				},
-				"lint": {
-					"builder": "@angular-eslint/builder:lint",
-					"options": {
-						"lintFilePatterns": [
-							"src/**/*.ts",
-							"src/**/*.html"
-						]
-					}
-				},
-				"storybook": {
-					"builder": "@storybook/angular:start-storybook",
-					"options": {
-						"browserTarget": "phased:build",
-						"port": 4400,
-						"compodoc": false,
-						"styles": [ "src/styles.scss" ],
-						"experimentalZoneless": true
-					}
-				},
-				"build-storybook": {
-					"builder": "@storybook/angular:build-storybook",
-					"options": {
-						"browserTarget": "phased:build",
-						"compodoc": false,
-						"styles": [ "src/styles.scss" ],
-						"experimentalZoneless": true
-					}
-				},
-				"test": {
-					"builder": "@angular/build:unit-test",
-					"options": {
-						"tsConfig": "tsconfig.spec.json",
-						"runner": "vitest",
-						"buildTarget": "::development"
-					}
-				}
-			}
-		}
-	},
-	"cli": {
-		"schematicCollections": [
-			"@angular-eslint/schematics"
-		],
-		"analytics": false
-	},
-	"schematics": {
-		"@angular-eslint/schematics:application": {
-			"setParserOptionsProject": true
-		},
-		"@angular-eslint/schematics:library": {
-			"setParserOptionsProject": true
+          },
+          "defaultConfiguration": ""
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "buildTarget": "phased:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "phased:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "buildTarget": "phased:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "browserTarget": "phased:build",
+            "port": 4400,
+            "compodoc": false,
+            "styles": ["src/styles.scss"],
+            "experimentalZoneless": true
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "browserTarget": "phased:build",
+            "compodoc": false,
+            "styles": ["src/styles.scss"],
+            "experimentalZoneless": true
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "runner": "vitest",
+            "buildTarget": "::development"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "schematicCollections": ["@angular-eslint/schematics"],
+    "analytics": false
+  },
+  "schematics": {
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
     },
     "@schematics/angular:component": {
       "type": "component"
@@ -168,5 +156,5 @@
     "@schematics/angular:resolver": {
       "typeSeparator": "."
     }
-	}
+  }
 }

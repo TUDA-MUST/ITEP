@@ -12,11 +12,8 @@ describe('CitationComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CitationComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-      ]
-    })
-    .compileComponents();
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CitationComponent);
     component = fixture.componentInstance;

@@ -1,4 +1,5 @@
-<svg #svgContainer
+<svg
+  #svgContainer
   [attr.width]="svgSize"
   [attr.height]="svgSize"
   [attr.viewBox]="viewBox"
@@ -18,5 +19,6 @@
     [class.dragging]="dragging"
     [attr.cx]="screenPosition.x"
     [attr.cy]="screenPosition.y"
-    [attr.r]="knobRadius" />
+    [attr.r]="knobRadius"
+  />
 </svg>

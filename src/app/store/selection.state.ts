@@ -5,17 +5,20 @@ export interface SelectionState {
   selected: number[];
 }
 
-export const withSelection = () => signalStoreFeature(
-  withState<{ selection: SelectionState}>({ selection:{
-    hovered: [],
-    selected: [],
-  }}),
-  withMethods((store) => ({
-    setHovered: (transducerId: number) => {
-      patchState(store, { selection: { ...store.selection(), hovered: [transducerId]} });
-    },
-    clearHovered: () => {
-      patchState(store, { selection: { ...store.selection(), hovered: []} });
-    },
-  }))
-);
+export const withSelection = () =>
+  signalStoreFeature(
+    withState<{ selection: SelectionState }>({
+      selection: {
+        hovered: [],
+        selected: [],
+      },
+    }),
+    withMethods((store) => ({
+      setHovered: (transducerId: number) => {
+        patchState(store, { selection: { ...store.selection(), hovered: [transducerId] } });
+      },
+      clearHovered: () => {
+        patchState(store, { selection: { ...store.selection(), hovered: [] } });
+      },
+    })),
+  );

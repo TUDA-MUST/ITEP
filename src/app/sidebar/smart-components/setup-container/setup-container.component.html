@@ -1,48 +1,38 @@
 <mat-accordion multi>
   <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
-          <mat-panel-title data-testid="section-environment">
-              Environment
-          </mat-panel-title>
-          {{ environment().environmentHint }}
-      </mat-expansion-panel-header>
-  <app-environment />
+    <mat-expansion-panel-header>
+      <mat-panel-title data-testid="section-environment"> Environment </mat-panel-title>
+      {{ environment().environmentHint }}
+    </mat-expansion-panel-header>
+    <app-environment />
   </mat-expansion-panel>
   <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header>
-        <mat-panel-title data-testid="section-environment">
-            Excitation
-        </mat-panel-title>
-        {{ environment().excitationFrequencyBase }} {{ environment().excitationFrequencyMultiplier }}
+      <mat-panel-title data-testid="section-environment"> Excitation </mat-panel-title>
+      {{ environment().excitationFrequencyBase }} {{ environment().excitationFrequencyMultiplier }}
     </mat-expansion-panel-header>
     <app-excitation />
   </mat-expansion-panel>
   <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header>
-        <mat-panel-title data-testid="section-transducer">
-            Transducer
-        </mat-panel-title>
-        {{ arrayConfig().transducerModel }}
+      <mat-panel-title data-testid="section-transducer"> Transducer </mat-panel-title>
+      {{ arrayConfig().transducerModel }}
     </mat-expansion-panel-header>
     <app-transducer />
   </mat-expansion-panel>
   <mat-expansion-panel hideToggle expanded>
-      <mat-expansion-panel-header>
-          <mat-panel-title data-testid="section-arrayconfig">
-            Array config
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-      <app-array-config />
+    <mat-expansion-panel-header>
+      <mat-panel-title data-testid="section-arrayconfig"> Array config </mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-array-config />
   </mat-expansion-panel>
   <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
-          <mat-panel-title data-testid="section-beamforming">
-              Beamforming
-          </mat-panel-title>
-          @if (!beamformingEnabled()) {
-              <mat-icon aria-hidden="false" aria-label="hidden-icon" fontIcon="do_not_disturb_on" />
-            }
-      </mat-expansion-panel-header>
-      <app-beamforming /> 
+    <mat-expansion-panel-header>
+      <mat-panel-title data-testid="section-beamforming"> Beamforming </mat-panel-title>
+      @if (!beamformingEnabled()) {
+        <mat-icon aria-hidden="false" aria-label="hidden-icon" fontIcon="do_not_disturb_on" />
+      }
+    </mat-expansion-panel-header>
+    <app-beamforming />
   </mat-expansion-panel>
 </mat-accordion>

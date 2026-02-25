@@ -24,7 +24,7 @@ const rayleighVertexShaderCode = /* wgsl*/ `
     vertexOutputs.r = vertexInputs.position;
   }
 `;
-const rayleighFragmentShaderCode = /* wgsl*/`
+const rayleighFragmentShaderCode = /* wgsl*/ `
   #include<ExcitationBuffer>
 
   var coolwarmSampler : sampler;
@@ -78,37 +78,35 @@ const rayleighFragmentShaderCode = /* wgsl*/`
 export enum ResultAspect {
   Elongation = 0,
   Amplitude = 1,
-  Phase = 2
+  Phase = 2,
 }
 
 export class RayleighMaterial extends ShaderMaterial {
   constructor(scene: Scene, texture: BaseTexture) {
-    super('RayleighMaterial', scene, {
-      vertexSource: rayleighVertexShaderCode,
-      fragmentSource: rayleighFragmentShaderCode
-    }, {
-      attributes: [
-        "position",
-        "normal",
-        "uv",
-      ],
-      uniforms: [
-        "worldViewProjection",
-        "globalPhase",
-        "k",
-        "omega",
-        "viewmode",
-        "dynamicRange",
-        "numElements",
-      ],
-      uniformBuffers: ["Scene", "Mesh", "excitation"],
-      samplers: ['coolwarmSampler'],
-      defines: [
-        "#define INSTANCES",
-        excitationBufferMaxElementsDefine
-      ],
-      shaderLanguage: ShaderLanguage.WGSL,
-    });
+    super(
+      'RayleighMaterial',
+      scene,
+      {
+        vertexSource: rayleighVertexShaderCode,
+        fragmentSource: rayleighFragmentShaderCode,
+      },
+      {
+        attributes: ['position', 'normal', 'uv'],
+        uniforms: [
+          'worldViewProjection',
+          'globalPhase',
+          'k',
+          'omega',
+          'viewmode',
+          'dynamicRange',
+          'numElements',
+        ],
+        uniformBuffers: ['Scene', 'Mesh', 'excitation'],
+        samplers: ['coolwarmSampler'],
+        defines: ['#define INSTANCES', excitationBufferMaxElementsDefine],
+        shaderLanguage: ShaderLanguage.WGSL,
+      },
+    );
     this.backFaceCulling = false;
 
     this.setTexture('coolwarmTexture', texture);
@@ -117,7 +115,7 @@ export class RayleighMaterial extends ShaderMaterial {
     sampler.setParameters(Engine.TEXTURE_CLAMP_ADDRESSMODE, Engine.TEXTURE_CLAMP_ADDRESSMODE); // use the default values
     sampler.samplingMode = Constants.TEXTURE_NEAREST_SAMPLINGMODE;
 
-    this.setTextureSampler("coolwarmSampler", sampler);
+    this.setTextureSampler('coolwarmSampler', sampler);
   }
 
   public setResultAspect(aspect: ResultAspect | null): void {
