@@ -1,19 +1,20 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import * as menuLeft from '../sidebar-container/sidebar-container.component.metadata';
+import { ResultContainerComponent } from './result-container.component';
 
 import { describe, beforeEach, it, expect } from 'vitest';
-import { SidebarContainerComponent } from '../sidebar-container/sidebar-container.component';
+import { provideZonelessChangeDetection } from '@angular/core';
 
-describe('SidebarContainerComponent', () => {
-  let component: SidebarContainerComponent;
-  let fixture: ComponentFixture<SidebarContainerComponent>;
+describe('ResultContainerComponent', () => {
+  let component: ResultContainerComponent;
+  let fixture: ComponentFixture<ResultContainerComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule(menuLeft.moduleMetaData).compileComponents();
-  });
+    await TestBed.configureTestingModule({
+      imports: [ResultContainerComponent],
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SidebarContainerComponent);
+    fixture = TestBed.createComponent(ResultContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

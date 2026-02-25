@@ -84,8 +84,8 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer implemen
   }
 
   ngOnDestroy(): void {
-    this.farfieldMesh.dispose();
-    this.material.dispose();
+    this.farfieldMesh?.dispose();
+    this.material?.dispose();
   }
 
   private uploadEnvironment(environment: Environment | null): void {

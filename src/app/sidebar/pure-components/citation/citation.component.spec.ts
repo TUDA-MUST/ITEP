@@ -4,6 +4,7 @@ import { CitationComponent } from './citation.component';
 
 import { describe, beforeEach, it, expect } from 'vitest';
 import { provideZonelessChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 describe('CitationComponent', () => {
   let component: CitationComponent;
@@ -12,7 +13,7 @@ describe('CitationComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CitationComponent],
-      providers: [provideZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection(), provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CitationComponent);
