@@ -2,14 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 
 import { describe, beforeEach, it, expect } from 'vitest';
-import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideZonelessChangeDetection(), provideRouter([])],
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 

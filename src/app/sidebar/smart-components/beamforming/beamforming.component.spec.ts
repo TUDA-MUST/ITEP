@@ -3,7 +3,6 @@ import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { BeamformingComponent } from './beamforming.component';
 
 import { describe, beforeEach, it, expect } from 'vitest';
-import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('BeamformingComponent', () => {
   let component: BeamformingComponent;
@@ -12,7 +11,6 @@ describe('BeamformingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BeamformingComponent],
-      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BeamformingComponent);

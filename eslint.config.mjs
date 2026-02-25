@@ -15,6 +15,7 @@ import prettierConfig from 'eslint-config-prettier';
 // Angular compiler (not ESLint scope analysis), we override addGlobals to
 // simply register placeholder variable entries so that ESLint v10's
 // addDeclaredGlobals() helper can safely annotate them afterwards.
+// Track upstream fix: https://github.com/angular-eslint/angular-eslint/issues/2896
 const templateParserEslint10Compatible = {
   ...templateParser,
   parseForESLint(code, options) {
