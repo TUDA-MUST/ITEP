@@ -1,8 +1,6 @@
 import {
   type AfterContentChecked,
   type AfterViewChecked,
-  ChangeDetectionStrategy,
-  Component,
   contentChildren,
   Directive,
   effect,
