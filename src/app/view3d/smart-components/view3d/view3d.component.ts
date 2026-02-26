@@ -38,7 +38,6 @@ export class View3dComponent {
   k = this.store.k;
   globalPhase = this.store.globalPhase;
   readonly ura = computed(() => this.store.arrayConfig().config.type === 'ura');
-
   transducers = this.store.transducers;
 
   arrayConfig = this.store.arrayConfig;

@@ -11,7 +11,7 @@ import {
 import { ResultAspect } from '../../../view3d/materials/rayleigh.material';
 
 import { Results } from 'src/app/store/viewportConfig.state';
-import { type ResultSet } from 'src/app/store/rayleigh.state';
+import type { ResultSet } from 'src/app/store/rayleigh.state';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { StoreService } from 'src/app/store/store.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -38,7 +38,6 @@ export class RayleighComponent {
   // Publish enums to template
   public ResultAspect = ResultAspect;
   private store = inject(StoreService);
-
   protected readonly formModel = signal({
     rayleighVisible: false,
     rayleighAspect: ResultAspect.Elongation,

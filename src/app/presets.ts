@@ -1,4 +1,4 @@
-import { type ArrayConfig } from './store/store.service';
+import type { ArrayConfig } from './store/store.service';
 
 export const presets: ArrayConfig[] = [
   {

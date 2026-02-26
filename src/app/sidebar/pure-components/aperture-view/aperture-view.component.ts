@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { type Transducer, type TransducerModel } from 'src/app/store/store.service';
+import type { Transducer, TransducerModel } from 'src/app/store/store.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
