@@ -18,6 +18,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "21.1.5",
     "@angular/cdk": "21.1.5",
     "@angular/common": "21.1.5",
     "@angular/compiler": "21.1.5",
@@ -37,6 +38,7 @@
     "webpack": "^5.104.1"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "21.1.5",
     "@angular-eslint/builder": "21.2.0",
     "@angular-eslint/eslint-plugin": "21.2.0",
     "@angular-eslint/eslint-plugin-template": "21.2.0",

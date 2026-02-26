@@ -95,9 +95,10 @@
         "storybook": {
           "builder": "@storybook/angular:start-storybook",
           "options": {
+            "configDir": ".storybook",
             "browserTarget": "phased:build",
-            "port": 4400,
             "compodoc": false,
+            "port": 6006,
             "styles": ["src/styles.scss"],
             "experimentalZoneless": true
           }
