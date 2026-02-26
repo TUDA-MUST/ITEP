@@ -60,7 +60,6 @@ export class RayleighIntegralRendererComponent
   readonly resultSet = input<ResultSet | null>(null);
   readonly aspect = input<ResultAspect | null>(null);
   readonly globalPhase = input<number | null>(null);
-
   private material: RayleighMaterial;
 
   update = effect(() => {

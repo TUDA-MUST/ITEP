@@ -10,12 +10,6 @@ import {
 import { TransducerMaterial } from '../../materials/transducer.material';
 import { type Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Plane } from '@babylonjs/core/Maths/math.plane';
-import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
-import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from '../../../utils/webgl.utils';
-
-import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
-import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 
 import '@babylonjs/core/Culling/ray';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
@@ -27,6 +21,11 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { type Transducer } from 'src/app/store/store.service';
 import { type LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
 import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
+import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
+import { ActionManager } from '@babylonjs/core/Actions/actionManager';
+import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
+import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from 'src/app/utils/webgl.utils';
 
 @Component({
   selector: 'app-excitation-renderer',

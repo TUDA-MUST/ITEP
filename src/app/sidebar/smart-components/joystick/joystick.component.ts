@@ -10,7 +10,7 @@ import {
   computed,
   effect,
 } from '@angular/core';
-import { type AzElCoordinates } from 'src/app/store/beamforming.state';
+import type { AzElCoordinates } from 'src/app/store/beamforming.state';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
