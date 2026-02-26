@@ -7,8 +7,8 @@ import {
   Directive,
   effect,
   ElementRef,
-  HostListener,
   inject,
+  type OnDestroy,
   type OnInit,
   signal,
 } from '@angular/core';
@@ -37,8 +37,18 @@ import { diff } from 'src/app/utils/utils';
   exportAs: 'babylon',
   standalone: true,
 })
-export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterContentChecked {
+export class BabylonJSViewComponent
+  implements AfterViewChecked, OnInit, AfterContentChecked, OnDestroy
+{
   canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);
+
+  private resizeObserver = new ResizeObserver(() => {
+    this.engine?.resize(true);
+    this.engine?.beginFrame();
+    this.scene()?.render();
+    this.engine?.endFrame();
+  });
+
   readonly renderers = contentChildren(BabylonConsumer);
 
   updateRenderers = (() => {
@@ -62,8 +72,6 @@ export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterCo
   public readonly scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
 
-  private elRef = inject(ElementRef);
-
   ngAfterContentChecked(): void {
     const scene = this.scene();
     if (scene) {
@@ -82,15 +90,6 @@ export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterCo
     }
   }
 
-  @HostListener('window:resize')
-  resize(): void {
-    const ne = this.canvasRef.nativeElement;
-    const { width, height } = this.elRef.nativeElement.getBoundingClientRect();
-    ne.width = width;
-    ne.height = height;
-    this.engine.resize(true);
-  }
-
   // FIXME: Should this be an effect?
   ngOnInit(): void {
     void this.initEngine(this.canvasRef.nativeElement)
@@ -100,6 +99,7 @@ export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterCo
         this.scene()?.render();
         this.engine.endFrame();
       });
+    this.resizeObserver.observe(this.canvasRef.nativeElement);
   }
 
   async initEngine(canvas: HTMLCanvasElement) {
@@ -142,7 +142,6 @@ export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterCo
     });
     this.scene.set(scene);
     //this.scene.debugLayer.show();
-    this.resize();
   }
 
   createScene(canvas: HTMLCanvasElement) {
@@ -195,5 +194,11 @@ export class BabylonJSViewComponent implements AfterViewChecked, OnInit, AfterCo
     axis.zAxis.rotate(xAxis, Angle.FromDegrees(-90).radians());
 
     return scene;
+  }
+
+  ngOnDestroy(): void {
+    this.engine?.stopRenderLoop();
+    this.engine?.dispose();
+    this.resizeObserver.unobserve(this.canvasRef.nativeElement);
   }
 }
