@@ -11,6 +11,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+              with:
+                  # Fetch latest 2 commits to allow relative-ci/agent-action
+                  # to lookup the pull request corresponding commit message
+                  fetch-depth: 2
             - uses: actions/setup-node@v4
               with:
                   node-version: "latest"
