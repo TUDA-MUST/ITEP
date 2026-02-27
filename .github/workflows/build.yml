@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch latest 2 commits to allow relative-ci/agent-action
+          # to lookup the pull request corresponding commit message
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Install dependencies
+      - run: npm ci
+
+      # Build and output bundle stats to stats.json using webpack builder
+      - run: npx ng run phased:build-stats
+
+      # Send bundle stats and build information to RelativeCI
+      - name: Send bundle stats to RelativeCI
+        uses: relative-ci/agent-action@v3
+        with:
+          webpackStatsFile: ./dist/phased-stats/stats.json
+          key: ${{ secrets.RELATIVE_CI_KEY }}

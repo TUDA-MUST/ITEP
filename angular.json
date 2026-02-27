@@ -112,6 +112,19 @@
             "experimentalZoneless": true
           }
         },
+        "build-stats": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/phased-stats",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
+            "scripts": [],
+            "statsJson": true
+          }
+        },
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
