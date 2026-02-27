@@ -19,7 +19,7 @@ jobs:
             - run: npm ci
 
             # Build and output bundle stats to webpack-stats.json
-            - run: ng build --stats-json
+            - run: npx ng build --stats-json
 
             # Send bundle stats and build information to RelativeCI
             - name: Send bundle stats to RelativeCI
