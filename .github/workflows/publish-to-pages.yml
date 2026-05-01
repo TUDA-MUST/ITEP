@@ -16,7 +16,7 @@ jobs:
           npx ng build --base-href https://TUDA-MUST.github.io/ITEP/
           cp dist/phased/browser/index.html dist/phased/browser/404.html
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: 'dist/phased/browser'
 
@@ -38,4 +38,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 # or the latest "vX.X.X" version tag for this action
+        uses: actions/deploy-pages@v5 # or the latest "vX.X.X" version tag for this action
