@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 
 import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
-import { type Scene } from '@babylonjs/core/scene';
+import type { Scene } from '@babylonjs/core/scene';
 import {
   createExcitationBuffer,
   excitationBufferMaxElements,
@@ -21,10 +21,10 @@ import {
 import { VEC4_ELEMENT_COUNT } from '../../utils/webgl.utils';
 import { BabylonConsumer } from '../interfaces/lifecycle';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
-import { type BeamformingState } from 'src/app/store/beamforming.state';
-import { type Transducer } from 'src/app/store/store.service';
-import { diff } from 'src/app/utils/utils';
+import type { BeamformingState } from 'src/app/store/beamforming.state';
+import type { Transducer } from 'src/app/store/store.service';
 import { azElToUV } from 'src/app/utils/uv';
+import { diff } from 'src/app/utils/utils';
 
 export interface Textures {
   viridis: Texture;

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import type { Transducer, TransducerModel } from 'src/app/store/store.service';
+import type { TransducerType } from 'src/app/core/transducer';
+import type { Transducer } from 'src/app/store/store.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -9,9 +10,12 @@ import type { Transducer, TransducerModel } from 'src/app/store/store.service';
 })
 export class ApertureViewComponent {
   readonly transducers = input<Transducer[]>([]);
-  readonly transducerModel = input<TransducerModel>();
+  readonly transducerModel = input<TransducerType>();
 
-  readonly transducerDiameter = input<number>(0);
+  readonly transducerDiameter = computed(() => {
+    const model = this.transducerModel();
+    return model?.type === 'Piston' ? model.diameter : 0;
+  });
   readonly arrayDiameter = input<number | null>(null);
   readonly bb = computed(() => {
     const dia = this.arrayDiameter();

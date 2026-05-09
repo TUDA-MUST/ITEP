@@ -25,8 +25,10 @@ export const presets: ArrayConfig[] = [
       authors: 'A. Jäger et. al.',
       year: 2017,
     },
-    transducerDiameter: 0.0034,
-    transducerModel: 'Piston',
+    transducerModel: {
+      type: 'Piston',
+      diameter: 0.0034,
+    },
   },
   {
     name: 'Line 6 0.5lambda',
@@ -51,8 +53,9 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.0043,
       pitchY: 0.0043,
     },
-    transducerDiameter: 0.0034,
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Line 8 0.5lambda wide',
@@ -70,7 +73,6 @@ export const presets: ArrayConfig[] = [
       authors: 'A. Unger et. al.',
       year: 2015,
     },
-    transducerDiameter: 0.0034,
     config: {
       type: 'ura',
       elementsX: 8,
@@ -78,7 +80,9 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.0043,
       pitchY: 0.006,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Urtis',
@@ -95,7 +99,6 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.00385,
       pitchY: 0.00385,
     },
-    transducerDiameter: 0.0002,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/9053536',
@@ -104,7 +107,9 @@ export const presets: ArrayConfig[] = [
       authors: 'Thomas Verellen et. al.',
       year: 2020,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'HiRIS',
@@ -121,7 +126,6 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.0039,
       pitchY: 0.0039,
     },
-    transducerDiameter: 0.0002,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/10491247',
@@ -131,7 +135,9 @@ export const presets: ArrayConfig[] = [
       authors: 'Laurijssen et. al.',
       year: 2024,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Spiral Array',
@@ -147,7 +153,6 @@ export const presets: ArrayConfig[] = [
       elementCount: 64,
       startWithZero: true,
     },
-    transducerDiameter: 0.009,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/9678369',
@@ -157,7 +162,9 @@ export const presets: ArrayConfig[] = [
       authors: 'Allevato et. al.',
       year: 2022,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Hex Array',
@@ -173,7 +180,6 @@ export const presets: ArrayConfig[] = [
       pitch: 0.0043,
       omitCenter: true,
     },
-    transducerDiameter: 0.000325,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/9278601/',
@@ -182,7 +188,9 @@ export const presets: ArrayConfig[] = [
       authors: 'Allevato et. al.',
       year: 2020,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'eRTIS',
@@ -229,7 +237,6 @@ export const presets: ArrayConfig[] = [
         { x: 0.033928706, y: 0.005403375 },
       ],
     },
-    transducerDiameter: 0.000325,
     citation: {
       kind: 'Academic',
       url: 'https://doi.org/10.1109/ICRA.2019.8794419',
@@ -238,6 +245,8 @@ export const presets: ArrayConfig[] = [
       authors: 'R. Kerstens et. al.',
       year: 2019,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
 ];

@@ -4,11 +4,11 @@ import { FarfieldRendererComponent } from '../../renderers/farfield/farfield-ren
 import { RayleighIntegralRendererComponent } from '../../renderers/rayleigh-integral/rayleigh-renderer.component';
 import { TransducerBufferComponent } from '../../shared/transducer-buffer.component';
 import { ExcitationRendererComponent } from '../../renderers/excitation/excitation-renderer.component';
-import { BabylonJSViewComponent } from '../babylon-jsview/babylon-jsview.component';
+import { BabylonJSViewDirective } from '../babylon-jsview/babylon-jsview.directive';
 
 import { Results } from 'src/app/store/viewportConfig.state';
 import { ExportRendererComponent } from '../../renderers/export/export.component';
-import { type ResultValues } from 'src/app/store/export.state';
+import type { ResultValues } from 'src/app/store/export.state';
 import { type ArrayConfig, StoreService } from 'src/app/store/store.service';
 
 @Component({
@@ -17,7 +17,7 @@ import { type ArrayConfig, StoreService } from 'src/app/store/store.service';
   styleUrl: './view3d.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    BabylonJSViewComponent,
+    BabylonJSViewDirective,
     ExcitationRendererComponent,
     ExportRendererComponent,
     TransducerBufferComponent,
@@ -45,7 +45,6 @@ export class View3dComponent {
   selection = this.store.selection;
   beamforming = this.store.beamforming;
 
-  readonly transducerDiameter = computed(() => this.arrayConfig().transducerDiameter);
   readonly transducerModel = computed(() => this.arrayConfig().transducerModel);
 
   public transducerHovered(transducerId: number): void {

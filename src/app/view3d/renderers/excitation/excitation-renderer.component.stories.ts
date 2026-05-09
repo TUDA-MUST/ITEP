@@ -6,15 +6,15 @@ import {
 } from '@storybook/angular';
 
 import { ExcitationRendererComponent } from './excitation-renderer.component';
-import { BabylonJSViewComponent } from '../../smart-components/babylon-jsview/babylon-jsview.component';
-import { Vector3 } from '@babylonjs/core';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { BabylonJSViewDirective } from '../../smart-components/babylon-jsview/babylon-jsview.directive';
 
 export default {
   title: 'ExcitationRendererComponent',
-  component: BabylonJSViewComponent,
+  component: BabylonJSViewDirective,
   decorators: [
     moduleMetadata({
-      imports: [BabylonJSViewComponent, ExcitationRendererComponent],
+      imports: [BabylonJSViewDirective, ExcitationRendererComponent],
     }),
     componentWrapperDecorator((story) => `<app-babylon-jsview>${story}</app-babylon-jsview>`),
     componentWrapperDecorator((story) => `<div style="height: 600px">${story}</div>`),

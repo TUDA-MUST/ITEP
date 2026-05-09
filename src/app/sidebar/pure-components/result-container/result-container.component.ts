@@ -34,13 +34,12 @@ export class ResultContainerComponent {
   private readonly store = inject(StoreService);
   private readonly snackBar = inject(MatSnackBar);
 
-  readonly kpis = computed(() => this.store.lowTechKPis());
+  readonly kpis = computed(() => this.store.kpis());
 
   public readonly farfieldVisible = computed(() =>
     this.store.enabledResults().includes(Results.Farfield),
   );
-  public transducers = this.store.transducers;
-  public readonly diameter = computed(() => this.store.arrayConfig().transducerDiameter);
+  public readonly transducers = this.store.transducers;
   public readonly arrayDiameter = computed(() => {
     const config = this.store.arrayConfig().config;
     if (config.type === 'circular' || config.type === 'spiral') {

@@ -35,7 +35,7 @@ import { diff } from 'src/app/utils/utils';
   exportAs: 'babylon',
   standalone: true,
 })
-export class BabylonJSViewComponent
+export class BabylonJSViewDirective
   implements AfterViewChecked, OnInit, AfterContentChecked, OnDestroy
 {
   canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);

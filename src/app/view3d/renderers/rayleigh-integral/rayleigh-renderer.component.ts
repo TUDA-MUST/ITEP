@@ -4,15 +4,16 @@ import { Plane } from '@babylonjs/core/Maths/math.plane';
 import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { RayleighMaterial, type ResultAspect } from '../../materials/rayleigh.material';
-import { type UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
+import type { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { type Scene } from '@babylonjs/core/scene';
+import type { Scene } from '@babylonjs/core/scene';
 import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { type ResultSet } from 'src/app/store/rayleigh.state';
-import { type Environment, type Transducer } from 'src/app/store/store.service';
+import type { ResultSet } from 'src/app/store/rayleigh.state';
+import type { Transducer } from 'src/app/store/store.service';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
+import type { Environment } from 'src/app/core/environment';
 
 export const cubeCut = (): VertexData => {
   const positions = [

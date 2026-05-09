@@ -3,8 +3,9 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { form, FormField, min, max } from '@angular/forms/signals';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import type { TransducerModel } from 'src/app/core/transducer';
 
-import { StoreService, type TransducerModel } from 'src/app/store/store.service';
+import { StoreService } from 'src/app/store/store.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,18 +29,24 @@ export class TransducerComponent {
 
   updateForm = effect(() => {
     const config = this.store.arrayConfig();
+    const model = config.transducerModel;
+    const transducerModel = model.type;
+    const transducerDiameter = transducerModel === 'Piston' ? model.diameter * 1e3 : 1;
     this.transducerForm().reset({
-      transducerModel: config.transducerModel,
-      transducerDiameter: config.transducerDiameter * 1e3,
+      transducerModel,
+      transducerDiameter,
     });
   });
 
-  updateStore = effect(
-    () =>
-      this.transducerForm().dirty() &&
-      this.store.setTransducer({
-        transducerDiameter: this.transducerForm.transducerDiameter().value() * 1e-3,
-        transducerModel: this.transducerForm.transducerModel().value(),
-      }),
-  );
+  updateStore = effect(() => {
+    if (this.transducerForm().dirty()) {
+      const type = this.transducerForm.transducerModel().value();
+      const transducer =
+        type === 'Piston'
+          ? { type, diameter: this.transducerForm.transducerDiameter().value() * 1e-3 }
+          : { type };
+      console.log('Setting transducer in store: ', transducer);
+      this.store.setTransducer(transducer);
+    }
+  });
 }

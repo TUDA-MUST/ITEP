@@ -5,10 +5,11 @@
     style="justify-self: end"
     hideSingleSelectionIndicator
   >
-    <mat-button-toggle value="ura"> URA </mat-button-toggle>
-    <mat-button-toggle value="hex"> Hex </mat-button-toggle>
-    <mat-button-toggle value="circular"> Circular </mat-button-toggle>
-    <mat-button-toggle value="spiral"> Spiral </mat-button-toggle>
+    <mat-button-toggle value="ura">URA</mat-button-toggle>
+    <mat-button-toggle value="hex">Hex</mat-button-toggle>
+    <mat-button-toggle value="circular">Circ.</mat-button-toggle>
+    <mat-button-toggle value="spiral">Spiral</mat-button-toggle>
+    <mat-button-toggle value="free">Free</mat-button-toggle>
   </mat-button-toggle-group>
   @switch (form.type().value()) {
     @case ('ura') {
@@ -48,14 +49,14 @@
     @case ('free') {
       <p class="span-all">Copy transducer positions to clipboard and import here.</p>
       <p class="span-all">Use tab separated numbers.</p>
-      <button matButton class="span-all" (click)="importFromClipboard()">
+      <button matButton="tonal" type="button" class="span-all" (click)="importFromClipboard()">
         Import from clipboard
       </button>
 
       @if (transducerCount() > 0) {
         <div>
           {{ transducerCount() }} imported.
-          <button mat-icon-button><mat-icon>clear</mat-icon></button>
+          <button type="button" mat-icon-button><mat-icon>clear</mat-icon></button>
         </div>
       }
     }
