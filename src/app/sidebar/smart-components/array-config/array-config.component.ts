@@ -1,22 +1,43 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckbox } from '@angular/material/checkbox';
 
-import { type ArrayConfigType, StoreService } from 'src/app/store/store.service';
+import { type ArrayConfig, type ArrayConfigType, StoreService } from 'src/app/store/store.service';
 import { form, FormField, min, max } from '@angular/forms/signals';
+import type { Point } from 'src/app/store/export.state';
+import { MatIcon } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
+import type { ArrayGeometry } from 'src/app/core/array';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-array-config',
   templateUrl: './array-config.component.html',
   styleUrl: './array-config.component.scss',
-  imports: [MatButtonToggleModule, MatFormFieldModule, MatInputModule, MatCheckbox, FormField],
+  imports: [
+    MatButtonToggleModule,
+    MatButton,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckbox,
+    MatIcon,
+    FormField,
+  ],
 })
 export class ArrayConfigComponent {
   private store = inject(StoreService);
+
+  protected readonly transducerCount = computed(() => this.store.transducers.length);
 
   private readonly model = signal({
     type: 'ura' as ArrayConfigType,
@@ -88,14 +109,79 @@ export class ArrayConfigComponent {
   updateStore = effect(() => {
     const formValue = this.form();
     if (formValue.dirty()) {
+      let config = { ...formValue.value() } as ArrayGeometry;
+
+      switch (config.type) {
+        case 'circular':
+          config = {
+            type: 'circular',
+            diameter: config.diameter,
+            elementCount: config.elementCount,
+          };
+          break;
+        case 'free':
+          config = {
+            type: 'free',
+            positions: [] as Point[],
+          };
+          break;
+        case 'hex':
+          config = {
+            type: 'hex',
+            elements: config.elements,
+            pitch: config.pitch * 1e-3,
+            omitCenter: config.omitCenter,
+          };
+          break;
+        case 'spiral':
+          config = {
+            type: 'spiral',
+            diameter: config.diameter,
+            elementCount: config.elementCount,
+            startWithZero: config.startWithZero,
+          };
+          break;
+        case 'ura':
+          config = {
+            type: 'ura',
+            elementsX: config.elementsX,
+            elementsY: config.elementsY,
+            pitchX: config.pitchX * 1e-3,
+            pitchY: config.pitchY * 1e-3,
+          };
+          break;
+        default:
+          throw new Error('Unknown config type');
+      }
+
       this.store.setConfig({
-        config: {
-          ...formValue.value(),
-          ...(formValue.value().type === 'ura' ? { pitchX: formValue.value().pitchX * 1e-3 } : {}),
-          ...(formValue.value().type === 'ura' ? { pitchY: formValue.value().pitchY * 1e-3 } : {}),
-          ...(formValue.value().type === 'hex' ? { pitch: formValue.value().pitch * 1e-3 } : {}),
-        },
+        config,
       });
     }
   });
+
+  async importFromClipboard() {
+    try {
+      const clipboardContents = await navigator.clipboard.read();
+      for (const item of clipboardContents) {
+        if (!item.types.includes('text/plain')) {
+          throw new Error('Clipboard does not contain suitable text data.');
+        }
+        const blob = await item.getType('text/plain');
+        const text = await blob.text();
+        const lines = text.split('\n').filter((line) => line.trim() !== '');
+        console.log(lines);
+        const positions = lines.map((line) => {
+          const [x, y] = line
+            .split('\t')
+            .map((coord) => parseFloat(coord.trim().replace(',', '.')));
+          return { x, y };
+        });
+
+        this.store.setConfig({ config: { type: 'free', positions } } as ArrayConfig);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
