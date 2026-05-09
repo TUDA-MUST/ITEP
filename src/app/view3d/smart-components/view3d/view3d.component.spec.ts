@@ -2,11 +2,21 @@ import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { View3dComponent } from './view3d.component';
 
-import { describe, beforeEach, it, expect } from 'vitest';
+import { describe, beforeEach, it, expect, beforeAll } from 'vitest';
 
 describe('View3dComponent', () => {
   let component: View3dComponent;
   let fixture: ComponentFixture<View3dComponent>;
+
+  beforeAll(() => {
+    // Mock ResizeObserver
+    // @ts-expect-error "global typing not available"
+    global.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

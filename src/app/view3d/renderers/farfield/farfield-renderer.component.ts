@@ -1,16 +1,18 @@
 import { ChangeDetectionStrategy, Component, effect, input, type OnDestroy } from '@angular/core';
 
-import { type AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
+import type { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { type Scene } from '@babylonjs/core/scene';
-import { type UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
+import type { Scene } from '@babylonjs/core/scene';
+import type { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 import { FarfieldMaterial } from '../../materials/farfield.material';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
 import { Constants } from '@babylonjs/core/Engines/constants';
-import { type Environment, frequencyFromBase, type Transducer } from 'src/app/store/store.service';
+import type { Transducer } from 'src/app/store/store.service';
+import { frequencyFromBase, type Environment } from 'src/app/core/environment';
+import type { TransducerType } from 'src/app/core/transducer';
 
 const uvMesh: VertexData = (() => {
   const positions = [-1, -1, 0, 1, -1, 0, -1, 1, 0, 1, 1, 0];
@@ -33,13 +35,11 @@ const uvMesh: VertexData = (() => {
 export class FarfieldRendererComponent extends TransducerBufferConsumer implements OnDestroy {
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
-  readonly diameter = input(0);
-  readonly transducerModel = input<'Point' | 'Piston'>('Piston');
+  readonly transducerModel = input<TransducerType>({ type: 'Point' });
 
   upload = effect(() => {
     const env = this.environment();
     const transducers = this.transducers();
-    const _dia = this.diameter();
     const _model = this.transducerModel();
 
     if (this.material) {
@@ -100,10 +100,9 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer implemen
 
       this.material.setFloat('omega', omega);
       this.material.setFloat('k', omega / environment.speedOfSound);
-      const ka =
-        this.transducerModel() === 'Piston'
-          ? (this.diameter() * omega) / environment.speedOfSound
-          : 0;
+      const model = this.transducerModel();
+
+      const ka = model.type === 'Piston' ? (model.diameter * omega) / environment.speedOfSound : 0;
       this.material.setFloat('ka', ka);
     }
   }

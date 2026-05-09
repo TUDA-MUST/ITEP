@@ -2,7 +2,6 @@
   <app-excitation-renderer
     [transducers]="transducers()"
     [selection]="selection()"
-    [transducerDiameter]="arrayConfig().transducerDiameter"
     [transducerModel]="transducerModel()"
     (hovered)="transducerHovered($event)"
   />
@@ -26,7 +25,6 @@
       <app-farfield-renderer
         [transducers]="transducers()"
         [environment]="arrayConfig().environment"
-        [diameter]="transducerDiameter()"
         [transducerModel]="transducerModel()"
       />
     }

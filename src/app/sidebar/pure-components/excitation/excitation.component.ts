@@ -5,12 +5,9 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import type { Environment, FrequencyMultiplier } from 'src/app/core/environment';
 
-import {
-  StoreService,
-  type Environment,
-  type FrequencyMultiplier,
-} from 'src/app/store/store.service';
+import { StoreService } from 'src/app/store/store.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

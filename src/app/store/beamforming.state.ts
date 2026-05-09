@@ -1,14 +1,5 @@
 import { signalStoreFeature, withState, withMethods, patchState } from '@ngrx/signals';
-
-export interface UVCoordinates {
-  u: number;
-  v: number;
-}
-
-export interface AzElCoordinates {
-  az: number;
-  el: number;
-}
+import type { AzElCoordinates } from '../utils/uv';
 
 type _NullPartial<T> = {
   [K in keyof T]?: T[K] | null;
