@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { StoreService } from 'src/app/store/store.service';
-import { PSFResult } from 'src/app/core/report';
+import type { PSFResult } from 'src/app/core/report';
 
 export type HoveredKpi = '' | 'HpbwAz' | 'FnbwAz' | 'SlrAz' | 'HpbwEl' | 'FnbwEl' | 'SlrEl';
 
