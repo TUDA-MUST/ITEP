@@ -29,6 +29,13 @@ import { WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
 import '@babylonjs/core/Engines/WebGPU/Extensions/engine.computeShader';
 
 import { diff } from 'src/app/utils/utils';
+
+export function shouldUseWebGPUEngine(userAgent: string, platform: string): boolean {
+  const isFirefox = /firefox/i.test(userAgent);
+  const isMac = /mac/i.test(platform);
+  return !(isFirefox && isMac);
+}
+
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'canvas[babylonsjsview]',
@@ -66,7 +73,7 @@ export class BabylonJSViewDirective
     });
   })();
 
-  engine: WebGPUEngine | NullEngine;
+  engine: WebGPUEngine | Engine | NullEngine;
   public readonly scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
 
@@ -102,10 +109,15 @@ export class BabylonJSViewDirective
 
   async initEngine(canvas: HTMLCanvasElement) {
     if (window.WebGLRenderingContext) {
-      this.engine = new WebGPUEngine(canvas, {
-        adaptToDeviceRatio: true,
-      });
-      await this.engine.initAsync();
+      const useWebGPU = shouldUseWebGPUEngine(navigator.userAgent, navigator.platform);
+      if (useWebGPU) {
+        this.engine = new WebGPUEngine(canvas, {
+          adaptToDeviceRatio: true,
+        });
+        await this.engine.initAsync();
+      } else {
+        this.engine = new Engine(canvas, true, undefined, true);
+      }
 
       // this.engine.setStencilBuffer(true);
       // this.engine.setStencilMask(0xff);
