@@ -27,7 +27,7 @@
     <circle class="outline" [attr.r]="arrayDia / 2" />
   }
 
-  @switch (transducerModel()) {
+  @switch (transducerModel()?.type) {
     @case ('Point') {
       @for (point of transducersMapped(); track $index) {
         <use

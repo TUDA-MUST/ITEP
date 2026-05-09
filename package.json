@@ -32,6 +32,7 @@
     "@babylonjs/core": "^8.52.0",
     "@ngrx/signals": "21.1.0",
     "@stdlib/math-base-special-besselj1": "^0.3.1",
+    "complex.js": "^2.4.3",
     "echarts": "^6.0.0",
     "rxjs": "~7.8.2",
     "tslib": "^2.8.1",

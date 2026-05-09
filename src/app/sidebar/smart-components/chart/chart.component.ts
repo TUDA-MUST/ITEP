@@ -72,7 +72,7 @@ export class ChartComponent implements OnInit {
     const hoveredKpi = this.store.hoveredKpi();
     const plotData = this.store.crossPattern();
 
-    const kpis = this.store.lowTechKPis();
+    const kpis = this.store.kpis();
     const bf = this.store.beamforming();
     const bfAzEl = bf?.beamformingEnabled ? bf : { az: 0, el: 0 };
 
@@ -198,7 +198,10 @@ export class ChartComponent implements OnInit {
           lineStyle: {
             color: 'rgba(192, 0, 0, 0.8)',
           },
-          data: plotData.map((sample) => [sample.angle, dBFormatter(sample.az / kpis.numElements)]),
+          data: plotData.map((sample) => [
+            sample.angle,
+            dBFormatter(sample.az.abs() / kpis.numElements),
+          ]),
           markLine: {
             symbol: ['none', 'none'],
             label: { show: false },
@@ -273,7 +276,10 @@ export class ChartComponent implements OnInit {
           yAxisIndex: 1,
           type: 'line',
           showSymbol: false,
-          data: plotData.map((sample) => [sample.angle, dBFormatter(sample.el / kpis.numElements)]),
+          data: plotData.map((sample) => [
+            sample.angle,
+            dBFormatter(sample.el.abs() / kpis.numElements),
+          ]),
           markLine: {
             symbol: ['none', 'none'],
             label: { show: false },

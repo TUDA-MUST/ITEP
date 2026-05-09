@@ -15,9 +15,9 @@ import { MatInputModule } from '@angular/material/input';
 import { Angle } from '@babylonjs/core/Maths/math.path';
 import { StoreService } from 'src/app/store/store.service';
 import { JoystickComponent } from '../joystick/joystick.component';
-import { type AzElCoordinates } from 'src/app/store/beamforming.state';
 import { deg2rad } from 'src/app/utils/degrad';
 import { disabled, FormField, form, max, min } from '@angular/forms/signals';
+import type { AzElCoordinates } from 'src/app/utils/uv';
 
 const normalizeAngle = (angle: number) => (angle > 180 ? angle - 360 : angle);
 

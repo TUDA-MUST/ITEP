@@ -1,10 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 
-import { describe, beforeEach, it, expect } from 'vitest';
+import { describe, beforeEach, it, expect, beforeAll } from 'vitest';
 import { provideRouter } from '@angular/router';
 
 describe('AppComponent', () => {
+  beforeAll(() => {
+    // Mock ResizeObserver
+    // @ts-expect-error "global typing not available"
+    global.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  });
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
