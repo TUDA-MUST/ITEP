@@ -24,6 +24,10 @@ export class ApertureViewComponent {
         return { width: 0, height: 0 };
     }
   });
+  readonly pistonRadius = computed(() => {
+    const model = this.transducerModel();
+    return model?.type === 'Piston' ? model.diameter / 2 : 0;
+  });
   readonly arrayDiameter = input<number | null>(null);
   readonly bb = computed(() => {
     const dia = this.arrayDiameter();
