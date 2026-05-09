@@ -6,6 +6,7 @@
 >
   <mat-button-toggle value="Point"> Point source </mat-button-toggle>
   <mat-button-toggle value="Piston"> Piston transducer </mat-button-toggle>
+  <mat-button-toggle value="Rectangular"> Rectangular transducer </mat-button-toggle>
 </mat-button-toggle-group>
 @switch (transducerModel().transducerModel) {
   @case ('Point') {
@@ -15,6 +16,18 @@
     <mat-form-field>
       <mat-label>Diameter</mat-label>
       <input matInput type="number" [formField]="transducerForm.transducerDiameter" step="0.01" />
+      <span matSuffix style="margin-right: 1ex">mm</span>
+    </mat-form-field>
+  }
+  @case ('Rectangular') {
+    <mat-form-field>
+      <mat-label>Width</mat-label>
+      <input matInput type="number" [formField]="transducerForm.transducerWidth" step="0.01" />
+      <span matSuffix style="margin-right: 1ex">mm</span>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Height</mat-label>
+      <input matInput type="number" [formField]="transducerForm.transducerHeight" step="0.01" />
       <span matSuffix style="margin-right: 1ex">mm</span>
     </mat-form-field>
   }

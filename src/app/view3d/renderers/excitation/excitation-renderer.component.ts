@@ -172,9 +172,14 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     const buffers = (transducers ?? []).reduce(
       (buffers, transducer, index) => {
         const model = this.transducerModel();
-        const dia = model.type === 'Piston' ? model.diameter : 0;
+        const { width, height } =
+          model.type === 'Piston'
+            ? { width: model.diameter, height: model.diameter }
+            : model.type === 'Rectangular'
+              ? { width: model.width, height: model.height }
+              : { width: 0, height: 0 };
 
-        Matrix.Scaling(dia, dia, 1)
+        Matrix.Scaling(width, height, 1)
           .multiply(Matrix.Translation(transducer.pos.x, transducer.pos.y, transducer.pos.z))
           .copyToArray(buffers.matrices, index * MAT4_ELEMENT_COUNT);
 
@@ -214,13 +219,37 @@ export class ExcitationRendererComponent extends BabylonConsumer {
           });
           break;
         case 'Piston':
+        case 'Rectangular':
           this.pointMesh.setEnabled(false);
-          pistonMeshes.forEach((mesh) => {
-            mesh.setEnabled(true);
-            mesh.thinInstanceSetBuffer('matrix', buffers.matrices, MAT4_ELEMENT_COUNT, false);
+          this.pistonTransducerMesh.setEnabled(true);
+          this.pistonTransducerMesh.thinInstanceSetBuffer(
+            'matrix',
+            buffers.matrices,
+            MAT4_ELEMENT_COUNT,
+            false,
+          );
+          this.pistonTransducerMesh.thinInstanceSetBuffer(
+            'selected',
+            buffers.selection,
+            SCALAR_ELEMENT_COUNT,
+            false,
+          );
 
-            mesh.thinInstanceSetBuffer('selected', buffers.selection, SCALAR_ELEMENT_COUNT, false);
-          });
+          this.pistonTransducerLineMeshHidden.setEnabled(this.transducerModel().type === 'Piston');
+          if (this.transducerModel().type === 'Piston') {
+            this.pistonTransducerLineMeshHidden.thinInstanceSetBuffer(
+              'matrix',
+              buffers.matrices,
+              MAT4_ELEMENT_COUNT,
+              false,
+            );
+            this.pistonTransducerLineMeshHidden.thinInstanceSetBuffer(
+              'selected',
+              buffers.selection,
+              SCALAR_ELEMENT_COUNT,
+              false,
+            );
+          }
           break;
       }
     } else {

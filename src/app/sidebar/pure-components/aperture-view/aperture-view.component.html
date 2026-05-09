@@ -44,7 +44,18 @@
         <circle
           [attr.cx]="point.pos.x"
           [attr.cy]="point.pos.y"
-          [attr.r]="transducerDiameter() / 2"
+          [attr.r]="transducerDimensions().width / 2"
+          fill="#888888"
+        />
+      }
+    }
+    @case ('Rectangular') {
+      @for (point of transducersMapped(); track $index) {
+        <rect
+          [attr.x]="point.pos.x - transducerDimensions().width / 2"
+          [attr.y]="point.pos.y - transducerDimensions().height / 2"
+          [attr.width]="transducerDimensions().width"
+          [attr.height]="transducerDimensions().height"
           fill="#888888"
         />
       }

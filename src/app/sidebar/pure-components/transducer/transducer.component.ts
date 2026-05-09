@@ -20,11 +20,17 @@ export class TransducerComponent {
   protected readonly transducerModel = signal({
     transducerModel: 'Point' as TransducerModel,
     transducerDiameter: 0,
+    transducerWidth: 0,
+    transducerHeight: 0,
   });
 
   protected transducerForm = form(this.transducerModel, (schemaPath) => {
     min(schemaPath.transducerDiameter, 0);
     max(schemaPath.transducerDiameter, 5000);
+    min(schemaPath.transducerWidth, 0);
+    max(schemaPath.transducerWidth, 5000);
+    min(schemaPath.transducerHeight, 0);
+    max(schemaPath.transducerHeight, 5000);
   });
 
   updateForm = effect(() => {
@@ -32,19 +38,33 @@ export class TransducerComponent {
     const model = config.transducerModel;
     const transducerModel = model.type;
     const transducerDiameter = transducerModel === 'Piston' ? model.diameter * 1e3 : 1;
+    const transducerWidth = transducerModel === 'Rectangular' ? model.width * 1e3 : 1;
+    const transducerHeight = transducerModel === 'Rectangular' ? model.height * 1e3 : 1;
     this.transducerForm().reset({
       transducerModel,
       transducerDiameter,
+      transducerWidth,
+      transducerHeight,
     });
   });
 
   updateStore = effect(() => {
     if (this.transducerForm().dirty()) {
       const type = this.transducerForm.transducerModel().value();
-      const transducer =
-        type === 'Piston'
-          ? { type, diameter: this.transducerForm.transducerDiameter().value() * 1e-3 }
-          : { type };
+      const transducer = (() => {
+        switch (type) {
+          case 'Piston':
+            return { type, diameter: this.transducerForm.transducerDiameter().value() * 1e-3 };
+          case 'Rectangular':
+            return {
+              type,
+              width: this.transducerForm.transducerWidth().value() * 1e-3,
+              height: this.transducerForm.transducerHeight().value() * 1e-3,
+            };
+          default:
+            return { type };
+        }
+      })();
       console.log('Setting transducer in store: ', transducer);
       this.store.setTransducer(transducer);
     }

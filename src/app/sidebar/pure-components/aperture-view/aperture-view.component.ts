@@ -12,9 +12,17 @@ export class ApertureViewComponent {
   readonly transducers = input<Transducer[]>([]);
   readonly transducerModel = input<TransducerType>();
 
-  readonly transducerDiameter = computed(() => {
+  readonly transducerDimensions = computed(() => {
     const model = this.transducerModel();
-    return model?.type === 'Piston' ? model.diameter : 0;
+    if (!model) return { width: 0, height: 0 };
+    switch (model.type) {
+      case 'Piston':
+        return { width: model.diameter, height: model.diameter };
+      case 'Rectangular':
+        return { width: model.width, height: model.height };
+      case 'Point':
+        return { width: 0, height: 0 };
+    }
   });
   readonly arrayDiameter = input<number | null>(null);
   readonly bb = computed(() => {
@@ -32,10 +40,10 @@ export class ApertureViewComponent {
 
     const rawBB = this.transducers().reduce(
       (acc, t) => ({
-        left: Math.min(acc.left, t.pos.x - this.transducerDiameter() / 2),
-        top: Math.max(acc.top, t.pos.y + this.transducerDiameter() / 2),
-        right: Math.max(acc.right, t.pos.x + this.transducerDiameter() / 2),
-        bottom: Math.min(acc.bottom, t.pos.y - this.transducerDiameter() / 2),
+        left: Math.min(acc.left, t.pos.x - this.transducerDimensions().width / 2),
+        top: Math.max(acc.top, t.pos.y + this.transducerDimensions().height / 2),
+        right: Math.max(acc.right, t.pos.x + this.transducerDimensions().width / 2),
+        bottom: Math.min(acc.bottom, t.pos.y - this.transducerDimensions().height / 2),
       }),
       initial,
     );
