@@ -8,24 +8,25 @@ import {
 } from '@angular/core';
 
 import { TransducerMaterial } from '../../materials/transducer.material';
-import { type Mesh } from '@babylonjs/core/Meshes/mesh';
+import type { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Plane } from '@babylonjs/core/Maths/math.plane';
 
 import '@babylonjs/core/Culling/ray';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
 
-import { type SelectionState } from 'src/app/store/selection.state';
-import { type Scene } from '@babylonjs/core/scene';
+import type { SelectionState } from 'src/app/store/selection.state';
+import type { Scene } from '@babylonjs/core/scene';
 import { BabylonConsumer } from '../../interfaces/lifecycle';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { type Transducer } from 'src/app/store/store.service';
-import { type LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
+import type { Transducer } from 'src/app/store/store.service';
+import type { LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
 import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
 import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from 'src/app/utils/webgl.utils';
+import type { TransducerType } from 'src/app/core/transducer';
 
 @Component({
   selector: 'app-excitation-renderer',
@@ -38,8 +39,7 @@ import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from 'src/app/utils/webgl.ut
 })
 export class ExcitationRendererComponent extends BabylonConsumer {
   readonly transducers = input<Transducer[] | null>(null);
-  readonly transducerDiameter = input<number | null>(null);
-  readonly transducerModel = input<'Point' | 'Piston'>('Piston');
+  readonly transducerModel = input.required<TransducerType>();
   readonly selection = input<SelectionState | null>(null);
   readonly hovered = output<number>();
 
@@ -171,7 +171,10 @@ export class ExcitationRendererComponent extends BabylonConsumer {
 
     const buffers = (transducers ?? []).reduce(
       (buffers, transducer, index) => {
-        Matrix.Scaling(this.transducerDiameter()!, this.transducerDiameter()!, 1)
+        const model = this.transducerModel();
+        const dia = model.type === 'Piston' ? model.diameter : 0;
+
+        Matrix.Scaling(dia, dia, 1)
           .multiply(Matrix.Translation(transducer.pos.x, transducer.pos.y, transducer.pos.z))
           .copyToArray(buffers.matrices, index * MAT4_ELEMENT_COUNT);
 
@@ -197,7 +200,7 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     ];
     if (transducers.length > 0) {
       const pistonMeshes = [this.pistonTransducerMesh, this.pistonTransducerLineMeshHidden];
-      switch (this.transducerModel()) {
+      switch (this.transducerModel().type) {
         case 'Point':
           this.pointMesh.thinInstanceSetBuffer(
             'matrix',

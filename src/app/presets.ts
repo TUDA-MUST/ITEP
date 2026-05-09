@@ -25,8 +25,10 @@ export const presets: ArrayConfig[] = [
       authors: 'A. Jäger et. al.',
       year: 2017,
     },
-    transducerDiameter: 0.0034,
-    transducerModel: 'Piston',
+    transducerModel: {
+      type: 'Piston',
+      diameter: 0.0034,
+    },
   },
   {
     name: 'Line 6 0.5lambda',
@@ -51,8 +53,9 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.0043,
       pitchY: 0.0043,
     },
-    transducerDiameter: 0.0034,
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Line 8 0.5lambda wide',
@@ -70,7 +73,6 @@ export const presets: ArrayConfig[] = [
       authors: 'A. Unger et. al.',
       year: 2015,
     },
-    transducerDiameter: 0.0034,
     config: {
       type: 'ura',
       elementsX: 8,
@@ -78,7 +80,9 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.0043,
       pitchY: 0.006,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Urtis',
@@ -95,7 +99,6 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.00385,
       pitchY: 0.00385,
     },
-    transducerDiameter: 0.0002,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/9053536',
@@ -104,7 +107,9 @@ export const presets: ArrayConfig[] = [
       authors: 'Thomas Verellen et. al.',
       year: 2020,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'HiRIS',
@@ -121,7 +126,6 @@ export const presets: ArrayConfig[] = [
       pitchX: 0.0039,
       pitchY: 0.0039,
     },
-    transducerDiameter: 0.0002,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/10491247',
@@ -131,7 +135,9 @@ export const presets: ArrayConfig[] = [
       authors: 'Laurijssen et. al.',
       year: 2024,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Spiral Array',
@@ -147,7 +153,6 @@ export const presets: ArrayConfig[] = [
       elementCount: 64,
       startWithZero: true,
     },
-    transducerDiameter: 0.009,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/9678369',
@@ -157,7 +162,9 @@ export const presets: ArrayConfig[] = [
       authors: 'Allevato et. al.',
       year: 2022,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
   },
   {
     name: 'Hex Array',
@@ -173,7 +180,6 @@ export const presets: ArrayConfig[] = [
       pitch: 0.0043,
       omitCenter: true,
     },
-    transducerDiameter: 0.000325,
     citation: {
       kind: 'Academic',
       url: 'https://ieeexplore.ieee.org/document/9278601/',
@@ -182,6 +188,65 @@ export const presets: ArrayConfig[] = [
       authors: 'Allevato et. al.',
       year: 2020,
     },
-    transducerModel: 'Point',
+    transducerModel: {
+      type: 'Point',
+    },
+  },
+  {
+    name: 'eRTIS',
+    environment: {
+      speedOfSound: 343,
+      environmentHint: 'Air',
+      excitationFrequencyBase: 40,
+      excitationFrequencyMultiplier: 'kHz',
+    },
+    config: {
+      type: 'free',
+      positions: [
+        { x: 0.022055606, y: -0.014225825 },
+        { x: 0.013488706, y: -0.016955325 },
+        { x: 0.002350706, y: -0.005861725 },
+        { x: 0.019999806, y: 0.001442875 },
+        { x: 0.009814106, y: 0.006446875 },
+        { x: 0.006187006, y: 0.012616275 },
+        { x: -0.001856194, y: 0.018271775 },
+        { x: -0.004714994, y: 0.007161975 },
+        { x: -0.018600094, y: 0.015132775 },
+        { x: -0.027606794, y: 0.010815275 },
+        { x: -0.007513294, y: -0.002735525 },
+        { x: -0.023822094, y: -0.010428125 },
+        { x: -0.009559394, y: -0.009933525 },
+        { x: -0.022553094, y: -0.002041825 },
+        { x: 0.032796506, y: -0.003681825 },
+        { x: 0.018872206, y: -0.006176725 },
+        { x: 0.006729406, y: -0.019302925 },
+        { x: 0.025336806, y: -0.003796925 },
+        { x: 0.026050806, y: 0.006820875 },
+        { x: 0.007354006, y: -0.000084125 },
+        { x: 0.019358706, y: 0.012333575 },
+        { x: 0.012676606, y: 0.017320975 },
+        { x: -0.008673594, y: 0.016642075 },
+        { x: -0.014591994, y: 0.008010675 },
+        { x: -0.021354994, y: 0.004740675 },
+        { x: -0.015168794, y: -0.001419925 },
+        { x: -0.006331494, y: -0.018844625 },
+        { x: -0.032524194, y: -0.005180825 },
+        { x: -0.016001394, y: -0.012876725 },
+        { x: -0.031014894, y: 0.002577375 },
+        { x: 0.004887606, y: -0.012190925 },
+        { x: 0.033928706, y: 0.005403375 },
+      ],
+    },
+    citation: {
+      kind: 'Academic',
+      url: 'https://doi.org/10.1109/ICRA.2019.8794419',
+      urlTitle: '10.1109/ICRA.2019.8794419',
+      title: 'eRTIS: Embedded Real-Time 3D Sonar Imaging System',
+      authors: 'R. Kerstens et. al.',
+      year: 2019,
+    },
+    transducerModel: {
+      type: 'Point',
+    },
   },
 ];
