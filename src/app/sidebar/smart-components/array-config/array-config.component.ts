@@ -37,7 +37,7 @@ import type { ArrayGeometry } from 'src/app/core/array';
 export class ArrayConfigComponent {
   private store = inject(StoreService);
 
-  protected readonly transducerCount = computed(() => this.store.transducers.length);
+  protected readonly transducerCount = computed(() => this.store.transducers().length);
 
   private readonly model = signal({
     type: 'ura' as ArrayConfigType,
