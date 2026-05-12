@@ -50,7 +50,7 @@
     "@angular/compiler-cli": "21.2.11",
     "@babel/core": "^7.28.5",
     "@chromatic-com/storybook": "^5.1.2",
-    "@playwright/test": "^1.58.0",
+    "@playwright/test": "^1.60.0",
     "@storybook/addon-docs": "^10.3.6",
     "@storybook/addon-links": "^10.3.6",
     "@storybook/angular": "^10.3.6",
