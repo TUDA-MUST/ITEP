@@ -1,0 +1,21 @@
+{
+  "format_on_save": "on",
+  "code_actions_on_save": {
+    "source.organizeImports": true,
+    "source.fixAll": true
+  },
+  "languages": {
+    "TypeScript": {
+      "language_servers": ["!biome", "..."]
+    },
+    "TSX": {
+      "language_servers": ["!biome", "..."]
+    },
+    "JavaScript": {
+      "language_servers": ["!biome", "..."]
+    },
+    "JSX": {
+      "language_servers": ["!biome", "..."]
+    }
+  }
+}

@@ -116,7 +116,7 @@ export class BabylonJSViewDirective
     const scene = this.createScene(canvas);
     scene.useRightHandedSystem = true;
 
-    const renderingOrder = ['rayleigh', 'farfieldMesh', 'excitation', 'excitationHidden'];
+    const renderingOrder = ['rayleigh', 'farfieldMesh', 'excitation'];
 
     scene.setRenderingOrder(1, (meshA, meshB) => {
       const indexA = renderingOrder.indexOf(meshA.getMesh().name);
