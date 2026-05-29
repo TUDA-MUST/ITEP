@@ -8,8 +8,7 @@ import {
 } from '@angular/core';
 
 import { TransducerMaterial } from '../../materials/transducer.material';
-import type { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { Plane } from '@babylonjs/core/Maths/math.plane';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
 
 import '@babylonjs/core/Culling/ray';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
@@ -22,11 +21,24 @@ import type { Transducer } from 'src/app/store/store.service';
 import type { LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
 import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
 import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 import { MAT4_ELEMENT_COUNT, SCALAR_ELEMENT_COUNT } from 'src/app/utils/webgl.utils';
 import type { TransducerType } from 'src/app/core/transducer';
+import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
+
+export const uniformSquareXY = (): VertexData => {
+  const positions = [-0.5, -0.5, 0, 0.5, -0.5, 0, -0.5, 0.5, 0, 0.5, 0.5, 0];
+  const uv = [0, 0, 1, 0, 0, 1, 1, 1];
+  // FIXME: These should be the other way around.
+  const indices = [0, 1, 2, 1, 3, 2];
+
+  const vertexData = new VertexData();
+  vertexData.positions = positions;
+  vertexData.indices = indices;
+  vertexData.uvs = uv;
+  return vertexData;
+};
 
 @Component({
   selector: 'app-excitation-renderer',
@@ -45,9 +57,11 @@ export class ExcitationRendererComponent extends BabylonConsumer {
 
   private pointMesh: LinesMesh;
 
-  private pistonTransducerMaterial: TransducerMaterial;
-  private pistonTransducerMesh: Mesh;
-  private pistonTransducerLineMeshHidden: LinesMesh;
+  private transducerMaterial: TransducerMaterial;
+
+  private transducerSurfaceMesh: Mesh;
+  private circularTransducerOutlineMesh: LinesMesh;
+  private rectangularTransducerOutlineMesh: LinesMesh;
 
   async ngxSceneCreated(scene: Scene): Promise<void> {
     this.initialize3D(scene);
@@ -58,34 +72,27 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     const transducers = this.transducers();
     const selection = this.selection();
 
-    if (this.pistonTransducerMaterial) {
+    if (this.transducerMaterial) {
       this.uploadArrayConfig(transducers, selection);
     }
   });
 
   public initialize3D(scene: Scene): void {
-    const origin = new Vector3(0, 0, 0);
-    const zPositive = new Vector3(0, 0, -1);
-    const aperturePlane = Plane.FromPositionAndNormal(origin, zPositive);
+    this.transducerMaterial = new TransducerMaterial(scene);
+    this.transducerMaterial.depthFunction = Engine.ALWAYS;
+    this.transducerMaterial.stencil.enabled = true;
+    this.transducerMaterial.stencil.funcRef = 1;
+    this.transducerMaterial.stencil.func = Engine.NOTEQUAL;
+    this.transducerMaterial.stencil.opStencilDepthPass = Engine.KEEP;
+    this.transducerMaterial.setFloat('innerRadius', 0.0);
 
-    const apertureOptions = {
-      sourcePlane: aperturePlane,
-      size: 1,
-    };
+    this.transducerSurfaceMesh = new Mesh('excitation', scene);
+    uniformSquareXY().applyToMesh(this.transducerSurfaceMesh);
 
-    this.pistonTransducerMaterial = new TransducerMaterial(scene);
-    this.pistonTransducerMaterial.depthFunction = Engine.ALWAYS;
-    this.pistonTransducerMaterial.stencil.enabled = true;
-    this.pistonTransducerMaterial.stencil.funcRef = 1;
-    this.pistonTransducerMaterial.stencil.func = Engine.NOTEQUAL;
-    this.pistonTransducerMaterial.stencil.opStencilDepthPass = Engine.KEEP;
-    this.pistonTransducerMaterial.setFloat('innerRadius', 0.0);
-
-    this.pistonTransducerMesh = CreatePlane('excitationHidden', apertureOptions, scene);
-    this.pistonTransducerMesh.material = this.pistonTransducerMaterial;
-    this.pistonTransducerMesh.renderingGroupId = 1;
-    this.pistonTransducerMesh.thinInstanceEnablePicking = true;
-    this.pistonTransducerMesh.pointerOverDisableMeshTesting = false;
+    this.transducerSurfaceMesh.material = this.transducerMaterial;
+    this.transducerSurfaceMesh.renderingGroupId = 1;
+    this.transducerSurfaceMesh.thinInstanceEnablePicking = true;
+    this.transducerSurfaceMesh.pointerOverDisableMeshTesting = false;
 
     const segments = 64;
     const points = Array.from({ length: segments + 1 }, (_, i) => {
@@ -93,16 +100,16 @@ export class ExcitationRendererComponent extends BabylonConsumer {
       return new Vector3(Math.cos(a) * 0.5, Math.sin(a) * 0.5, 0);
     });
 
-    this.pistonTransducerLineMeshHidden = CreateLineSystem(
-      'hiddenLines',
+    this.circularTransducerOutlineMesh = CreateLineSystem(
+      'hiddenLinesCircular',
       {
         lines: [points],
       },
       scene,
     );
-    this.pistonTransducerLineMeshHidden.renderingGroupId = 1;
+    this.circularTransducerOutlineMesh.renderingGroupId = 1;
 
-    const hiddenLinesMaterial = this.pistonTransducerLineMeshHidden.material!;
+    const hiddenLinesMaterial = this.circularTransducerOutlineMesh.material!;
     hiddenLinesMaterial.alpha = 0.99;
     hiddenLinesMaterial.depthFunction = Engine.ALWAYS;
     hiddenLinesMaterial.stencil.enabled = true;
@@ -110,8 +117,33 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     hiddenLinesMaterial.stencil.func = Engine.EQUAL;
     hiddenLinesMaterial.stencil.opStencilDepthPass = Engine.KEEP;
 
+    const rectanglePoints = [
+      new Vector3(-0.5, -0.5, 0),
+      new Vector3(0.5, -0.5, 0),
+      new Vector3(0.5, 0.5, 0),
+      new Vector3(-0.5, 0.5, 0),
+      new Vector3(-0.5, -0.5, 0),
+    ];
+
+    this.rectangularTransducerOutlineMesh = CreateLineSystem(
+      'hiddenLinesRectangular',
+      {
+        lines: [rectanglePoints],
+      },
+      scene,
+    );
+    this.rectangularTransducerOutlineMesh.renderingGroupId = 1;
+
+    const hiddenRectLinesMaterial = this.rectangularTransducerOutlineMesh.material!;
+    hiddenRectLinesMaterial.alpha = 0.99;
+    hiddenRectLinesMaterial.depthFunction = Engine.ALWAYS;
+    hiddenRectLinesMaterial.stencil.enabled = true;
+    hiddenRectLinesMaterial.stencil.funcRef = 1;
+    hiddenRectLinesMaterial.stencil.func = Engine.EQUAL;
+    hiddenRectLinesMaterial.stencil.opStencilDepthPass = Engine.KEEP;
+
     const actionManager = new ActionManager(scene);
-    this.pistonTransducerMesh.actionManager = actionManager;
+    this.transducerSurfaceMesh.actionManager = actionManager;
 
     actionManager.registerAction(
       new ExecuteCodeAction(
@@ -172,9 +204,14 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     const buffers = (transducers ?? []).reduce(
       (buffers, transducer, index) => {
         const model = this.transducerModel();
-        const dia = model.type === 'Piston' ? model.diameter : 0;
+        const { width, height } =
+          model.type === 'Piston'
+            ? { width: model.diameter, height: model.diameter }
+            : model.type === 'Rectangular'
+              ? { width: model.width, height: model.height }
+              : { width: 0, height: 0 };
 
-        Matrix.Scaling(dia, dia, 1)
+        Matrix.Scaling(width, height, 1)
           .multiply(Matrix.Translation(transducer.pos.x, transducer.pos.y, transducer.pos.z))
           .copyToArray(buffers.matrices, index * MAT4_ELEMENT_COUNT);
 
@@ -195,11 +232,16 @@ export class ExcitationRendererComponent extends BabylonConsumer {
 
     const allMeshes = [
       this.pointMesh,
-      this.pistonTransducerMesh,
-      this.pistonTransducerLineMeshHidden,
+      this.transducerSurfaceMesh,
+      this.circularTransducerOutlineMesh,
+      this.rectangularTransducerOutlineMesh,
     ];
     if (transducers.length > 0) {
-      const pistonMeshes = [this.pistonTransducerMesh, this.pistonTransducerLineMeshHidden];
+      const nonPointMeshes = [
+        this.transducerSurfaceMesh,
+        this.circularTransducerOutlineMesh,
+        this.rectangularTransducerOutlineMesh,
+      ];
       switch (this.transducerModel().type) {
         case 'Point':
           this.pointMesh.thinInstanceSetBuffer(
@@ -209,18 +251,44 @@ export class ExcitationRendererComponent extends BabylonConsumer {
             false,
           );
           this.pointMesh.setEnabled(true);
-          pistonMeshes.forEach((mesh) => {
+          nonPointMeshes.forEach((mesh) => {
             mesh.setEnabled(false);
           });
           break;
         case 'Piston':
+        case 'Rectangular':
+          this.transducerMaterial.setTransducerModel(this.transducerModel());
           this.pointMesh.setEnabled(false);
-          pistonMeshes.forEach((mesh) => {
-            mesh.setEnabled(true);
-            mesh.thinInstanceSetBuffer('matrix', buffers.matrices, MAT4_ELEMENT_COUNT, false);
+          this.transducerSurfaceMesh.setEnabled(true);
+          this.transducerSurfaceMesh.thinInstanceSetBuffer(
+            'matrix',
+            buffers.matrices,
+            MAT4_ELEMENT_COUNT,
+            false,
+          );
+          this.transducerSurfaceMesh.thinInstanceSetBuffer(
+            'selected',
+            buffers.selection,
+            SCALAR_ELEMENT_COUNT,
+            false,
+          );
 
-            mesh.thinInstanceSetBuffer('selected', buffers.selection, SCALAR_ELEMENT_COUNT, false);
-          });
+          const lineMesh =
+            this.transducerModel().type === 'Piston'
+              ? this.circularTransducerOutlineMesh
+              : this.rectangularTransducerOutlineMesh;
+          this.circularTransducerOutlineMesh.setEnabled(this.transducerModel().type === 'Piston');
+          this.rectangularTransducerOutlineMesh.setEnabled(
+            this.transducerModel().type === 'Rectangular',
+          );
+
+          lineMesh.thinInstanceSetBuffer('matrix', buffers.matrices, MAT4_ELEMENT_COUNT, false);
+          lineMesh.thinInstanceSetBuffer(
+            'selected',
+            buffers.selection,
+            SCALAR_ELEMENT_COUNT,
+            false,
+          );
           break;
       }
     } else {

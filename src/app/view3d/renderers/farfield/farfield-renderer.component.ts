@@ -35,7 +35,7 @@ const uvMesh: VertexData = (() => {
 export class FarfieldRendererComponent extends TransducerBufferConsumer implements OnDestroy {
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
-  readonly transducerModel = input<TransducerType>({ type: 'Point' });
+  readonly transducerModel = input.required<TransducerType>();
 
   upload = effect(() => {
     const env = this.environment();
@@ -98,12 +98,29 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer implemen
           environment.excitationFrequencyMultiplier,
         );
 
-      this.material.setFloat('omega', omega);
-      this.material.setFloat('k', omega / environment.speedOfSound);
+      const k = omega / environment.speedOfSound;
+      this.material.setFloat('k', k);
+
       const model = this.transducerModel();
 
-      const ka = model.type === 'Piston' ? (model.diameter * omega) / environment.speedOfSound : 0;
+      let ka = 0;
+      let kb = 0;
+      switch (model.type) {
+        case 'Point':
+          break;
+        case 'Piston':
+          ka = model.diameter * k;
+          kb = ka;
+          break;
+        case 'Rectangular':
+          ka = model.width * k;
+          kb = model.height * k;
+          break;
+      }
+
       this.material.setFloat('ka', ka);
+      this.material.setFloat('kb', kb);
+      this.material.setTransducerModel(model);
     }
   }
 

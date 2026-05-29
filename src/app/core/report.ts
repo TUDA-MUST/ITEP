@@ -72,9 +72,8 @@ export const patternUV = (k: number, bf: BeamformingState, transducers: Transduc
         ? k * ((bfuv.u ?? 0) * t.pos.x + (bfuv.v ?? 0) * t.pos.y)
         : 0;
       const argv = { x: t.pos.x * uv.u, y: t.pos.y * uv.v };
-      //float argument = k*(argv.x+argv.y) + element.delay*omega;
-      const argument = k * (argv.x + argv.y) - phase;
-      return acc.add(Complex({ abs: 1, arg: argument }));
+      const arg = k * (argv.x + argv.y) - phase;
+      return acc.add(Complex({ abs: 1, arg }));
     }, Complex.ZERO);
 };
 
