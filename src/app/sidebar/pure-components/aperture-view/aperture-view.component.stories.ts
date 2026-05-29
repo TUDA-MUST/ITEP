@@ -23,24 +23,21 @@ const ura2x2 = [
 export const PointSources: Story = {
   args: {
     transducers: ura2x2,
-    transducerModel: 'Point',
-    transducerDiameter: 0.003,
+    transducerModel: { type: 'Point' },
+    arrayDiameter: 0.02,
   },
 };
 
 export const PistonTransducers: Story = {
   args: {
     transducers: ura2x2,
-    transducerModel: 'Piston',
-    transducerDiameter: 0.003,
+    transducerModel: { type: 'Piston', diameter: 0.003 },
   },
 };
 
-export const WithArrayDiameter: Story = {
+export const Rectangular: Story = {
   args: {
     transducers: ura2x2,
-    transducerModel: 'Point',
-    transducerDiameter: 0.003,
-    arrayDiameter: 0.02,
+    transducerModel: { type: 'Rectangular', width: 0.003, height: 0.002 },
   },
 };

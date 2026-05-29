@@ -37,9 +37,10 @@ export class TransducerComponent {
     const config = this.store.arrayConfig();
     const model = config.transducerModel;
     const transducerModel = model.type;
-    const transducerDiameter = transducerModel === 'Piston' ? model.diameter * 1e3 : 0;
-    const transducerWidth = transducerModel === 'Rectangular' ? model.width * 1e3 : 0;
-    const transducerHeight = transducerModel === 'Rectangular' ? model.height * 1e3 : 0;
+    // FIXME: Fallback to last used value first
+    const transducerDiameter = transducerModel === 'Piston' ? model.diameter * 1e3 : 1;
+    const transducerWidth = transducerModel === 'Rectangular' ? model.width * 1e3 : 1;
+    const transducerHeight = transducerModel === 'Rectangular' ? model.height * 1e3 : 1;
     this.transducerForm().reset({
       transducerModel,
       transducerDiameter,
