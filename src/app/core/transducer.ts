@@ -10,7 +10,19 @@ export interface PistonTransducer {
   diameter: number;
 }
 
-export type TransducerType = PointTransducer | PistonTransducer;
+export interface RectangularTransducer {
+  type: 'Rectangular';
+  width: number;
+  height: number;
+}
+
+const sinc = (x: number) => {
+  if (!Number.isFinite(x)) return NaN;
+  if (Math.abs(x) < 1e-8) return 1;
+  return Math.sin(x) / x;
+};
+
+export type TransducerType = PointTransducer | PistonTransducer | RectangularTransducer;
 export type TransducerModel = TransducerType['type'];
 
 export const patternElement = (model: TransducerType, k: number) => {
@@ -30,6 +42,15 @@ export const patternElement = (model: TransducerType, k: number) => {
         if (Math.abs(x) < 1e-8) return 1;
 
         return (2 * j1(x)) / x;
+      };
+    }
+    case 'Rectangular': {
+      const halfWidth = model.width / 2;
+      const halfHeight = model.height / 2;
+      return (uv: UVCoordinates) => {
+        const { u, v } = uv;
+        if ([u, v, k, halfWidth, halfHeight].some((num) => !Number.isFinite(num))) return NaN;
+        return sinc(k * halfWidth * u) * sinc(k * halfHeight * v);
       };
     }
     default:

@@ -25,8 +25,9 @@ import {
   MarkAreaComponent,
   MarkLineComponent,
 } from 'echarts/components';
-import { type CallbackDataParams, type ECBasicOption } from 'echarts/types/dist/shared';
+import type { CallbackDataParams, ECBasicOption } from 'echarts/types/dist/shared';
 import { StoreService } from 'src/app/store/store.service';
+import { rad2deg } from 'src/app/utils/degrad';
 
 const degreeFormatter = (value: number) => `${value.toFixed(0)}°`;
 const dBFormatter = (value: number) => 20 * Math.log10(Math.abs(value));
@@ -80,7 +81,7 @@ export class ChartComponent implements OnInit {
       yAxis: [
         {
           type: 'value',
-          name: `Norm. Amplit. AZ / dB @ EL = ${((180 * bfAzEl.el) / Math.PI).toFixed(2)}°`,
+          name: `Norm. Amplit. AZ / dB @ EL = ${rad2deg(bfAzEl.el).toFixed(2)}°`,
           min: -30,
           max: 0,
           minorSplitLine: {
@@ -112,7 +113,7 @@ export class ChartComponent implements OnInit {
         {
           type: 'value',
           gridIndex: 1,
-          name: `Normalized Amplitude EL / dB @ AZ = ${((180 * bfAzEl.az) / Math.PI).toFixed(2)}`,
+          name: `Norm. Amplit. EL / dB @ AZ = ${rad2deg(bfAzEl.az).toFixed(2)}°`,
           nameLocation: 'end',
           nameGap: 10,
           min: -30,
