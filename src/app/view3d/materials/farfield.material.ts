@@ -3,6 +3,7 @@ import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
 
 import { excitationBufferMaxElementsDefine } from '../../utils/excitationbuffer';
 import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
+import { type TransducerType } from 'src/app/core/transducer';
 
 const vertexSource = /* wgsl */ `
   #include<ExcitationBuffer>
@@ -10,6 +11,13 @@ const vertexSource = /* wgsl */ `
   uniform dynamicRange : f32;
   uniform k : f32;
   uniform ka : f32; // k * a
+  uniform kb : f32;
+
+
+  // 0 -> Point
+  // 1 -> Piston
+  // 2 -> Rectangular
+  uniform transducerType : i32;
 
   // Uniforms
   uniform worldViewProjection : mat4x4<f32>;
@@ -57,9 +65,34 @@ fn jinc_even(u: f32) -> f32 {
   return (2.0 * j1_approx_pos(au)) / au;
 }
 
-fn element_factor_uv(uv: vec2<f32>, ka: f32) -> f32 {
-  let rho = min(length(uv), 0.9999999);   // = sin(theta)
-  return jinc_even(ka * rho);
+fn sinc_even(u: f32) -> f32 {
+  let au = abs(u);
+  if (au < U_SMALL) {
+    let u2 = au * au;
+    return fma(u2, fma(u2, 1.0 / 120.0, -1.0 / 6.0), 1.0);
+  }
+  return sin(au) / au;
+}
+
+fn element_factor_uv(uv: vec2<f32>, ka: f32, kb: f32, transducerType: i32) -> f32 {
+  switch (transducerType) {
+    case 0: {
+      return 1.0;
+    }
+    case 1: {
+      let rho = min(length(uv), 0.9999999); // = sin(theta)
+      return jinc_even(ka * rho);
+    }
+    case 2: {
+      // ka = k * width, kb = k * height -> need k * halfSize for sinc arguments
+      let rectX = sinc_even(0.5 * ka * uv.x);
+      let rectY = sinc_even(0.5 * kb * uv.y);
+      return rectX * rectY;
+    }
+    default: {
+      return 1.0;
+    }
+  }
 }
 
   @vertex
@@ -70,7 +103,6 @@ fn element_factor_uv(uv: vec2<f32>, ka: f32) -> f32 {
     for (var i = 0; i < uniforms.numElements; i++) {
         let element = excitation.elements[i];
         let argv = element.position.xy*vertexInputs.uv;
-        //float argument = k*(argv.x+argv.y) + element.delay*omega;
         let argument = uniforms.k*(argv.x+argv.y) - element.phasor.x;
         result += vec2<f32>(cos(argument), sin(argument));
     }
@@ -80,7 +112,7 @@ fn element_factor_uv(uv: vec2<f32>, ka: f32) -> f32 {
 
     //float tf = abs(2*(texture(transducerFactor,.25*uv+vec2(.5,.5)).x)-.5);
 
-    let tf : f32 = element_factor_uv(vertexInputs.uv, uniforms.ka);
+    let tf : f32 = element_factor_uv(vertexInputs.uv, uniforms.ka, uniforms.kb, uniforms.transducerType);
 
     // const tf = 1.0;
     let af = length(result);
@@ -105,7 +137,7 @@ fn element_factor_uv(uv: vec2<f32>, ka: f32) -> f32 {
 `;
 const fragmentSource = /* wgsl */ `
   #include<ExcitationBuffer>
- 
+
   uniform numElements : i32;
 
   var viridisSampler : sampler;
@@ -133,7 +165,7 @@ const fragmentSource = /* wgsl */ `
     //     let argument = uniforms.k*(argv.x+argv.y) + element.phasor.x;
     //     result += vec2(cos(argument), sin(argument));
     // }
-    
+
     //let intensity = 0.5 + 0.5 * length(result) / (f32(uniforms.numElements));
 
     if length(fragmentInputs.uvf) > 1.0 {
@@ -172,9 +204,12 @@ export class FarfieldMaterial extends ShaderMaterial {
           'projection',
           'globalPhase',
           'k',
+          'ka',
+          'kb',
           't',
           'dynamicRange',
           'numElements',
+          'transducerType',
         ],
         uniformBuffers: ['Scene', 'Mesh', 'excitation'],
         samplers: ['viridisSampler'],
@@ -185,5 +220,21 @@ export class FarfieldMaterial extends ShaderMaterial {
 
     this.backFaceCulling = false;
     this.wireframe = false;
+  }
+
+  setTransducerModel(model: TransducerType): void {
+    switch (model.type) {
+      case 'Point':
+        this.setInt('transducerType', 0);
+        break;
+      case 'Piston':
+        this.setInt('transducerType', 1);
+        break;
+      case 'Rectangular':
+        this.setInt('transducerType', 2);
+        break;
+      default:
+        console.warn('Unknown transducer model: ', model);
+    }
   }
 }
