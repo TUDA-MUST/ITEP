@@ -4,6 +4,11 @@ import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
 import { excitationBufferMaxElementsDefine } from '../../utils/excitationbuffer';
 import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
 import { type TransducerType } from 'src/app/core/transducer';
+import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import { Constants } from '@babylonjs/core/Engines/constants';
+import { type BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
+import { colormapTextureSampleRows } from '../shared/colormap-texture';
 
 const vertexSource = /* wgsl */ `
   #include<ExcitationBuffer>
@@ -140,8 +145,9 @@ const fragmentSource = /* wgsl */ `
 
   uniform numElements : i32;
 
-  var viridisSampler : sampler;
-  var viridisTexture : texture_2d<f32>;
+  var colormapSampler : sampler;
+  var colormapTexture : texture_2d<f32>;
+  uniform colormapY : f32;
 
   uniform globalPhase : f32;
 
@@ -182,14 +188,18 @@ const fragmentSource = /* wgsl */ `
     let diff = max(dot(normal, lightDir), 0.0);
     let ambient = 0.1;
     let intensity = ambient + (1.0 - ambient) * diff;
-    fragmentOutputs.color = textureSample(viridisTexture, viridisSampler, vec2(fragmentInputs.absresult, 0.375)) * 0.5 * (1.0 + intensity);
+    fragmentOutputs.color = textureSample(
+      colormapTexture,
+      colormapSampler,
+      vec2(fragmentInputs.absresult, uniforms.colormapY)
+    ) * 0.5 * (1.0 + intensity);
     fragmentOutputs.color.a = 1.0;
     return fragmentOutputs;
   }
 `;
 
 export class FarfieldMaterial extends ShaderMaterial {
-  constructor(scene: Scene) {
+  constructor(scene: Scene, texture: BaseTexture) {
     super(
       'FarfieldMaterial',
       scene,
@@ -210,9 +220,10 @@ export class FarfieldMaterial extends ShaderMaterial {
           'dynamicRange',
           'numElements',
           'transducerType',
+          'colormapY',
         ],
         uniformBuffers: ['Scene', 'Mesh', 'excitation'],
-        samplers: ['viridisSampler'],
+        samplers: ['colormapSampler'],
         defines: ['#define INSTANCES', excitationBufferMaxElementsDefine],
         shaderLanguage: ShaderLanguage.WGSL,
       },
@@ -220,6 +231,15 @@ export class FarfieldMaterial extends ShaderMaterial {
 
     this.backFaceCulling = false;
     this.wireframe = false;
+
+    this.setTexture('colormapTexture', texture);
+    this.setFloat('colormapY', colormapTextureSampleRows.viridis);
+
+    const sampler = new TextureSampler();
+    sampler.setParameters(Engine.TEXTURE_CLAMP_ADDRESSMODE, Engine.TEXTURE_CLAMP_ADDRESSMODE);
+    sampler.samplingMode = Constants.TEXTURE_NEAREST_SAMPLINGMODE;
+
+    this.setTextureSampler('colormapSampler', sampler);
   }
 
   setTransducerModel(model: TransducerType): void {

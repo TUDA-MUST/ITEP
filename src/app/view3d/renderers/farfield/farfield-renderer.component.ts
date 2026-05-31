@@ -8,8 +8,6 @@ import { FarfieldMaterial } from '../../materials/farfield.material';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
-import { Constants } from '@babylonjs/core/Engines/constants';
 import type { Transducer } from 'src/app/store/store.service';
 import { frequencyFromBase, type Environment } from 'src/app/core/environment';
 import type { TransducerType } from 'src/app/core/transducer';
@@ -52,15 +50,7 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer implemen
   private farfieldMesh: Mesh;
 
   ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void {
-    this.material = new FarfieldMaterial(scene);
-    this.material.setTexture('viridisTexture', textures.viridis);
-
-    const sampler = new TextureSampler();
-
-    sampler.setParameters(); // use the default values
-    sampler.samplingMode = Constants.TEXTURE_NEAREST_SAMPLINGMODE;
-
-    this.material.setTextureSampler('viridisSampler', sampler);
+    this.material = new FarfieldMaterial(scene, textures.colormaps);
 
     this.material.stencil.enabled = true;
     this.material.stencil.funcRef = 1;

@@ -88,7 +88,7 @@ export class RayleighIntegralRendererComponent
 
   ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void {
     // Result
-    this.material = new RayleighMaterial(scene, textures.coolwarm);
+    this.material = new RayleighMaterial(scene, textures.colormaps);
     this.material.setUniformBuffer('excitation', buffer);
 
     this.material.stencil.enabled = true;
