@@ -7,6 +7,7 @@ import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
 import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
 import { Constants } from '@babylonjs/core/Engines/constants';
 import { type BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
+import { colormapTextureSampleRows } from '../shared/colormap-texture';
 
 const rayleighVertexShaderCode = /* wgsl*/ `
   #include<sceneUboDeclaration>
@@ -27,8 +28,8 @@ const rayleighVertexShaderCode = /* wgsl*/ `
 const rayleighFragmentShaderCode = /* wgsl*/ `
   #include<ExcitationBuffer>
 
-  var coolwarmSampler : sampler;
-  var coolwarmTexture : texture_2d<f32>;
+  var colormapSampler : sampler;
+  var colormapTexture : texture_2d<f32>;
   uniform globalPhase : f32;
 
   uniform k : f32;
@@ -36,6 +37,9 @@ const rayleighFragmentShaderCode = /* wgsl*/ `
 
   uniform viewmode : i32;
   uniform dynamicRange : f32;
+  uniform elongationColormapY : f32;
+  uniform magnitudeColormapY : f32;
+  uniform phaseColormapY : f32;
 
   uniform numElements : i32;
 
@@ -61,15 +65,27 @@ const rayleighFragmentShaderCode = /* wgsl*/ `
   
     // glFragColor = vec4(.5 + elongation.x, .5-elongation.x, 0.5,1);
     if (uniforms.viewmode == 0) { // Elongation
-      let intensity = 0.5 + (.5*elongation.x + .25) / (f32(uniforms.numElements)*uniforms.dynamicRange);
-      fragmentOutputs.color = textureSample(coolwarmTexture, coolwarmSampler, vec2<f32>(intensity, 0.375));
+      let intensity = saturate(0.5 + (.5*elongation.x + .25) / (f32(uniforms.numElements)*uniforms.dynamicRange));
+      fragmentOutputs.color = textureSample(
+        colormapTexture,
+        colormapSampler,
+        vec2<f32>(intensity, uniforms.elongationColormapY)
+      );
     } else if (uniforms.viewmode == 1) { // Magnitude
-      //intensity = 0.25*length(elongation) / numsources;
-      let intensity = log(length(elongation) / f32(uniforms.numElements))/log(10.0f);
-      fragmentOutputs.color = textureSample(coolwarmTexture, coolwarmSampler, vec2<f32>(intensity, 1));
+      let magnitude = log(length(elongation) / f32(uniforms.numElements))/log(10.0f);
+      let intensity = saturate((magnitude + uniforms.dynamicRange) / uniforms.dynamicRange);
+      fragmentOutputs.color = textureSample(
+        colormapTexture,
+        colormapSampler,
+        vec2<f32>(intensity, uniforms.magnitudeColormapY)
+      );
     } else if (uniforms.viewmode == 2) { // Phase
-      let intensity = (atan2(elongation.y, elongation.x)/(3.14) + .25);
-      fragmentOutputs.color = textureSample(coolwarmTexture, coolwarmSampler, vec2<f32>(intensity, 1));
+      let intensity = fract(atan2(elongation.y, elongation.x) / (2.0 * 3.14159265358979323846) + 1.0);
+      fragmentOutputs.color = textureSample(
+        colormapTexture,
+        colormapSampler,
+        vec2<f32>(intensity, uniforms.phaseColormapY)
+      );
     }
   }
 `;
@@ -99,23 +115,29 @@ export class RayleighMaterial extends ShaderMaterial {
           'omega',
           'viewmode',
           'dynamicRange',
+          'elongationColormapY',
+          'magnitudeColormapY',
+          'phaseColormapY',
           'numElements',
         ],
         uniformBuffers: ['Scene', 'Mesh', 'excitation'],
-        samplers: ['coolwarmSampler'],
+        samplers: ['colormapSampler'],
         defines: ['#define INSTANCES', excitationBufferMaxElementsDefine],
         shaderLanguage: ShaderLanguage.WGSL,
       },
     );
     this.backFaceCulling = false;
 
-    this.setTexture('coolwarmTexture', texture);
+    this.setTexture('colormapTexture', texture);
+    this.setFloat('elongationColormapY', colormapTextureSampleRows.coolwarm);
+    this.setFloat('magnitudeColormapY', colormapTextureSampleRows.viridis);
+    this.setFloat('phaseColormapY', colormapTextureSampleRows.twilightShifted);
     const sampler = new TextureSampler();
 
     sampler.setParameters(Engine.TEXTURE_CLAMP_ADDRESSMODE, Engine.TEXTURE_CLAMP_ADDRESSMODE); // use the default values
     sampler.samplingMode = Constants.TEXTURE_NEAREST_SAMPLINGMODE;
 
-    this.setTextureSampler('coolwarmSampler', sampler);
+    this.setTextureSampler('colormapSampler', sampler);
   }
 
   public setResultAspect(aspect: ResultAspect | null): void {

@@ -25,10 +25,10 @@ import type { BeamformingState } from 'src/app/store/beamforming.state';
 import type { Transducer } from 'src/app/store/store.service';
 import { azElToUV } from 'src/app/utils/uv';
 import { diff } from 'src/app/utils/utils';
+import { colormapTexturePath } from './colormap-texture';
 
 export interface Textures {
-  viridis: Texture;
-  coolwarm: Texture;
+  colormaps: Texture;
 }
 
 export interface OnTransducerBufferCreated {
@@ -78,22 +78,16 @@ export class TransducerBufferComponent extends BabylonConsumer implements OnDest
       excitationBufferMaxElements * 2,
     );
 
-    const textures = ['assets/viridis.png', 'assets/coolwarm.png'];
-    const tex = await Promise.all(
-      textures.map(
-        (txpath) =>
-          new Promise((resolve, _reject) => {
-            const tex = new Texture(txpath, scene, undefined, undefined, undefined, () => {
-              tex.wrapU = Texture.CLAMP_ADDRESSMODE;
-              resolve(tex);
-            });
-          }),
-      ),
-    );
+    const colormaps = await new Promise<Texture>((resolve, _reject) => {
+      const texture = new Texture(colormapTexturePath, scene, true, false, undefined, () => {
+        texture.wrapU = Texture.CLAMP_ADDRESSMODE;
+        texture.wrapV = Texture.CLAMP_ADDRESSMODE;
+        resolve(texture);
+      });
+    });
 
     this.textures = {
-      viridis: tex[0] as Texture,
-      coolwarm: tex[1] as Texture,
+      colormaps,
     };
 
     this.scene.set(scene);
