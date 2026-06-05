@@ -47,10 +47,12 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       const targetSize = 1024;
 
       // Straightforward RenderTarget export using Babylon's Tools helper
+      // Some Babylon versions expect (engine, camera, size, fileName?, renderList?) — pass null filename and renderList as fifth arg
       const dataUrl = await (Tools as any).CreateScreenshotUsingRenderTarget(
         engine,
         camera,
         targetSize,
+        null,
         targetMeshes,
       );
 
