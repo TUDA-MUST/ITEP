@@ -53,15 +53,74 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       // Fixed high-res size
       const targetSize = 1024;
 
-      // Create an orthographic camera that frames the Rayleigh rectangle: X: [0,1], Y: [-0.5,0.5]
-      const rtCam = new FreeCamera('rayleighRTCam', new Vector3(0.5, 0, 2), scene);
-      rtCam.setTarget(new Vector3(0.5, 0, 0));
+      // Compute world-space corners of the combined bounding box for target meshes
+      const pts = [] as Vector3[];
+      for (const m of targetMeshes) {
+        const bi = m.getBoundingInfo().boundingBox;
+        const minW = bi.minimumWorld;
+        const maxW = bi.maximumWorld;
+        pts.push(new Vector3(minW.x, minW.y, minW.z));
+        pts.push(new Vector3(minW.x, minW.y, maxW.z));
+        pts.push(new Vector3(minW.x, maxW.y, minW.z));
+        pts.push(new Vector3(minW.x, maxW.y, maxW.z));
+        pts.push(new Vector3(maxW.x, minW.y, minW.z));
+        pts.push(new Vector3(maxW.x, minW.y, maxW.z));
+        pts.push(new Vector3(maxW.x, maxW.y, minW.z));
+        pts.push(new Vector3(maxW.x, maxW.y, maxW.z));
+      }
+
+      // Determine a reasonable normal using first mesh triangle if possible
+      let normal = new Vector3(0, 0, 1);
+      const first = targetMeshes[0];
+      const positions = (first.getVerticesData as any)('position') as number[] | undefined;
+      if (positions && positions.length >= 9) {
+        const p0 = new Vector3(positions[0], positions[1], positions[2]);
+        const p1 = new Vector3(positions[3], positions[4], positions[5]);
+        const p2 = new Vector3(positions[6], positions[7], positions[8]);
+        const wm = first.getWorldMatrix();
+        const p0w = Vector3.TransformCoordinates(p0, wm);
+        const p1w = Vector3.TransformCoordinates(p1, wm);
+        const p2w = Vector3.TransformCoordinates(p2, wm);
+        normal = Vector3.Cross(p1w.subtract(p0w), p2w.subtract(p0w)).normalize();
+        if (normal.lengthSquared() === 0) {
+          normal = new Vector3(0, 0, 1);
+        }
+      }
+
+      // Choose camera axes: right and up perpendicular to normal
+      let up = new Vector3(0, 1, 0);
+      if (Math.abs(Vector3.Dot(up, normal)) > 0.99) {
+        up = new Vector3(0, 0, 1);
+      }
+      const right = Vector3.Cross(up, normal).normalize();
+      const camUp = Vector3.Cross(normal, right).normalize();
+
+      // Project bbox corners onto camera axes to get ortho bounds
+      let minR = Infinity,
+        minU = Infinity,
+        maxR = -Infinity,
+        maxU = -Infinity;
+      let center = new Vector3(0, 0, 0);
+      for (const p of pts) {
+        center = center.add(p);
+        const r = Vector3.Dot(p, right);
+        const u = Vector3.Dot(p, camUp);
+        minR = Math.min(minR, r);
+        minU = Math.min(minU, u);
+        maxR = Math.max(maxR, r);
+        maxU = Math.max(maxU, u);
+      }
+      center = center.scale(1 / pts.length);
+
+      // Create orthographic camera aligned with plane
+      const rtCam = new FreeCamera('rayleighRTCam', center.add(normal.scale(1)), scene);
+      rtCam.setTarget(center);
       rtCam.mode = Camera.ORTHOGRAPHIC_CAMERA;
-      // Ortho bounds in world units
-      rtCam.orthoLeft = 0;
-      rtCam.orthoRight = 1;
-      rtCam.orthoTop = 0.5;
-      rtCam.orthoBottom = -0.5;
+      rtCam.orthoLeft = minR;
+      rtCam.orthoRight = maxR;
+      rtCam.orthoTop = maxU;
+      rtCam.orthoBottom = minU;
+
       // Create a RenderTargetTexture and render only the rayleigh meshes into it using the RT camera
       const rt = new RenderTargetTexture('rayleighRT', targetSize, scene, false, true, Engine.TEXTURETYPE_UNSIGNED_INT);
       rt.renderList = targetMeshes;
@@ -98,6 +157,8 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       }, 'image/png');
 
       rt.dispose();
+      // dispose temporary camera
+      rtCam.dispose();
     } catch (e) {
       console.error('Failed to export rayleigh image via RenderTarget', e);
       throw e;
