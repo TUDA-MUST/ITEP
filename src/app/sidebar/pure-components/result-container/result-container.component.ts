@@ -82,4 +82,10 @@ export class ResultContainerComponent {
       duration: 1000,
     });
   }
+
+  exportRayleigh() {
+    // Signal the render component to export the current canvas content
+    window.dispatchEvent(new CustomEvent('export-rayleigh'));
+    this.snackBar.open(`Rayleigh image download started`, 'Close', { duration: 1000 });
+  }
 }
