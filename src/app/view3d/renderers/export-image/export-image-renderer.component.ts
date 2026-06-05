@@ -87,20 +87,25 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
         }
       }
 
-      // Choose camera axes: right and up perpendicular to normal
-      let up = new Vector3(0, 1, 0);
-      if (Math.abs(Vector3.Dot(up, normal)) > 0.99) {
-        up = new Vector3(0, 0, 1);
+      // Choose camera axes: right and up perpendicular to normal using a stable world up
+      let worldUp = new Vector3(0, 1, 0);
+      if (Math.abs(Vector3.Dot(worldUp, normal)) > 0.99) {
+        worldUp = new Vector3(0, 0, 1);
       }
-      let rightAxis = Vector3.Cross(up, normal).normalize();
+      let rightAxis = Vector3.Cross(worldUp, normal);
+      if (rightAxis.lengthSquared() === 0) {
+        rightAxis = Vector3.Cross(new Vector3(1, 0, 0), normal);
+      }
+      rightAxis = rightAxis.normalize();
       let camUp = Vector3.Cross(normal, rightAxis).normalize();
 
-      // Ensure global propagation direction (+Z) appears as downward in the image: flip axes if needed
+      // Ensure global propagation (+Z) projects downward in image (i.e. has negative component along camUp)
       const globalForward = new Vector3(0, 0, 1);
       if (Vector3.Dot(globalForward, camUp) > 0) {
         camUp = camUp.scale(-1);
-        rightAxis = rightAxis.scale(-1);
       }
+      // Recompute rightAxis to keep a consistent orthonormal basis
+      rightAxis = Vector3.Cross(camUp, normal).normalize();
 
       // Compute center first
       let center = new Vector3(0, 0, 0);
