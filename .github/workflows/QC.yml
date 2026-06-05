@@ -18,51 +18,71 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
+      - run: pnpm run lint
 
   format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run format:check
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
+      - run: pnpm run format:check
 
   build:
     needs: [lint, format]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build --if-present
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
+      - run: pnpm run build --if-present
 
   test:
     needs: [lint, format]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run test
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
+      - run: pnpm run test
 
   chromatic:
     needs: [lint, format]
@@ -71,12 +91,18 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
       - name: Publish to Chromatic
         uses: chromaui/action@latest
         with:
@@ -91,14 +117,20 @@ jobs:
         browser: [chromium, firefox]
     steps:
       - uses: actions/checkout@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: pnpm dlx playwright install --with-deps
       - name: Run Playwright tests
         run: npx playwright test --config=playwright-github.config.ts --project ${{matrix.browser}}
       - uses: actions/upload-artifact@v7
