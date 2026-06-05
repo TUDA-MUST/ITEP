@@ -27,6 +27,8 @@ import { ShaderStore } from '@babylonjs/core/Engines/shaderStore';
 import { WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
 
 import '@babylonjs/core/Engines/WebGPU/Extensions/engine.computeShader';
+// Ensure screenshotTools side-effects (render-target readback) are registered early
+import '@babylonjs/core/Misc/screenshotTools';
 
 import { diff } from 'src/app/utils/utils';
 @Directive({
