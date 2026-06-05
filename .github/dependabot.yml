@@ -5,7 +5,8 @@
 
 version: 2
 updates:
-  - package-ecosystem: 'pnpm' # See documentation for possible values
+  - package-ecosystem: 'npm' # See documentation for possible values
+    # pnpm lockfile is supported via the npm ecosystem; Dependabot will update pnpm-lock.yaml if present
     directory: '/' # Location of package manifests
     schedule:
       interval: 'weekly'
