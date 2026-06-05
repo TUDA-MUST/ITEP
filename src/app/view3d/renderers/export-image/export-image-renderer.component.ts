@@ -92,8 +92,15 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       if (Math.abs(Vector3.Dot(up, normal)) > 0.99) {
         up = new Vector3(0, 0, 1);
       }
-      const rightAxis = Vector3.Cross(up, normal).normalize();
-      const camUp = Vector3.Cross(normal, rightAxis).normalize();
+      let rightAxis = Vector3.Cross(up, normal).normalize();
+      let camUp = Vector3.Cross(normal, rightAxis).normalize();
+
+      // Ensure global propagation direction (+Z) appears as downward in the image: flip axes if needed
+      const globalForward = new Vector3(0, 0, 1);
+      if (Vector3.Dot(globalForward, camUp) > 0) {
+        camUp = camUp.scale(-1);
+        rightAxis = rightAxis.scale(-1);
+      }
 
       // Compute center first
       let center = new Vector3(0, 0, 0);
