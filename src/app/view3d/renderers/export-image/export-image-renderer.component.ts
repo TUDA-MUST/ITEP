@@ -87,24 +87,22 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
         }
       }
 
-      // Choose camera axes: right and up perpendicular to normal using a stable world up
-      let worldUp = new Vector3(0, 1, 0);
-      if (Math.abs(Vector3.Dot(worldUp, normal)) > 0.99) {
-        worldUp = new Vector3(0, 0, 1);
-      }
-      let rightAxis = Vector3.Cross(worldUp, normal);
+      // Force image vertical axis to align so global +Z projects downward.
+      // Use a fixed camUp roughly pointing down in world space, then build rightAxis from it and the plane normal.
+      let camUp = new Vector3(0, 0, -1);
+      let rightAxis = Vector3.Cross(camUp, normal);
       if (rightAxis.lengthSquared() === 0) {
-        rightAxis = Vector3.Cross(new Vector3(1, 0, 0), normal);
+        // fallback when plane normal is aligned with camUp: pick world Y as alternate
+        rightAxis = Vector3.Cross(new Vector3(0, 1, 0), normal);
+        if (rightAxis.lengthSquared() === 0) {
+          rightAxis = Vector3.Cross(new Vector3(1, 0, 0), normal);
+        }
       }
       rightAxis = rightAxis.normalize();
-      let camUp = Vector3.Cross(normal, rightAxis).normalize();
-
-      // Ensure global propagation (+Z) projects downward in image (i.e. has negative component along camUp)
-      const globalForward = new Vector3(0, 0, 1);
-      if (Vector3.Dot(globalForward, camUp) > 0) {
-        camUp = camUp.scale(-1);
-      }
-      // Recompute rightAxis to keep a consistent orthonormal basis
+      // Recompute camUp to ensure exact orthogonality; keep its Z sign negative to make +Z project downward
+      camUp = Vector3.Cross(normal, rightAxis).normalize();
+      if (camUp.z > 0) camUp = camUp.scale(-1);
+      // final rightAxis orthonormal
       rightAxis = Vector3.Cross(camUp, normal).normalize();
 
       // Compute center first
