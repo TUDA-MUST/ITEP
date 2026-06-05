@@ -1,3 +1,6 @@
+// Ensure Babylon screenshotTools side-effects (render-target readback) are registered before any Babylon imports
+import '@babylonjs/core/Misc/screenshotTools';
+
 import { enableProdMode, isDevMode } from '@angular/core';
 
 import { environment } from './environments/environment';
