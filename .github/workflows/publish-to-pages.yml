@@ -11,9 +11,9 @@ jobs:
         uses: actions/checkout@v6
       - name: Build Angular app
         run: |
-          npm version ${{ github.event.release.tag_name }} --git-tag-version=false
-          npm ci
-          npx ng build --base-href https://TUDA-MUST.github.io/ITEP/
+          pnpm version ${{ github.event.release.tag_name }} --git-tag-version=false
+          pnpm install --frozen-lockfile
+          pnpm run build -- --base-href https://TUDA-MUST.github.io/ITEP/
           cp dist/phased/browser/index.html dist/phased/browser/404.html
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
