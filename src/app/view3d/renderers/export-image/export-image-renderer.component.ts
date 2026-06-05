@@ -147,6 +147,8 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       const distance = Math.max(0.5, maxDist * 3);
 
       const rtCam = new FreeCamera('rayleighRTCam', camCenter.add(normal.scale(distance)), scene);
+      // align camera up vector to computed camUp so image axes match projections
+      rtCam.upVector = camUp;
       rtCam.setTarget(camCenter);
       rtCam.mode = Camera.ORTHOGRAPHIC_CAMERA;
       // tighten near/far to ensure plane in view
