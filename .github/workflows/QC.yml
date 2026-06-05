@@ -24,7 +24,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
 
@@ -38,7 +38,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run format:check
 
@@ -53,7 +53,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build --if-present
 
@@ -68,7 +68,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test
 
@@ -84,7 +84,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Publish to Chromatic
@@ -106,7 +106,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Install Playwright Browsers
