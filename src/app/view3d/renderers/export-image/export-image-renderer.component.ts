@@ -115,13 +115,11 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
         maxU = Math.max(maxU, u);
       }
 
-      // Add small padding around computed bounds
-      const padR = (maxR - minR) * 0.05 || 0.1;
-      const padU = (maxU - minU) * 0.05 || 0.1;
-      const left = minR - padR;
-      const rightBound = maxR + padR;
-      const top = maxU + padU;
-      const bottom = minU - padU;
+      // Use computed bounds exactly (no styling padding)
+      const left = minR;
+      const rightBound = maxR;
+      const top = maxU;
+      const bottom = minU;
 
       // compute radius to place camera sufficiently far from plane
       let maxDist = 0;
