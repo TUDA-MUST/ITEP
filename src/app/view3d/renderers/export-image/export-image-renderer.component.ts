@@ -92,8 +92,8 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       if (Math.abs(Vector3.Dot(up, normal)) > 0.99) {
         up = new Vector3(0, 0, 1);
       }
-      const right = Vector3.Cross(up, normal).normalize();
-      const camUp = Vector3.Cross(normal, right).normalize();
+      const rightAxis = Vector3.Cross(up, normal).normalize();
+      const camUp = Vector3.Cross(normal, rightAxis).normalize();
 
       // Compute center first
       let center = new Vector3(0, 0, 0);
@@ -107,7 +107,7 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
         maxU = -Infinity;
       for (const p of pts) {
         const rel = p.subtract(center);
-        const r = Vector3.Dot(rel, right);
+        const r = Vector3.Dot(rel, rightAxis);
         const u = Vector3.Dot(rel, camUp);
         minR = Math.min(minR, r);
         minU = Math.min(minU, u);
@@ -119,7 +119,7 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       const padR = (maxR - minR) * 0.05 || 0.1;
       const padU = (maxU - minU) * 0.05 || 0.1;
       const left = minR - padR;
-      const right = maxR + padR;
+      const rightBound = maxR + padR;
       const top = maxU + padU;
       const bottom = minU - padU;
 
@@ -138,7 +138,7 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       rtCam.minZ = 0.0001;
       rtCam.maxZ = distance * 10;
       rtCam.orthoLeft = left;
-      rtCam.orthoRight = right;
+      rtCam.orthoRight = rightBound;
       rtCam.orthoTop = top;
       rtCam.orthoBottom = bottom;
 
