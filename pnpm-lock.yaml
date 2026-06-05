@@ -103,13 +103,13 @@ importers:
         specifier: ^1.60.0
         version: 1.60.0
       '@storybook/addon-docs':
-        specifier: ^10.4.1
+        specifier: ^10.4.2
         version: 10.4.2(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(esbuild@0.27.7)(rollup@4.61.1)(storybook@10.4.2(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(vite@7.3.2(@types/node@25.9.1)(jiti@2.7.0)(less@4.4.2)(sass@1.97.3)(terser@5.48.0))(webpack@5.105.0(esbuild@0.27.7)(postcss@8.5.15))
       '@storybook/addon-links':
-        specifier: ^10.4.1
+        specifier: ^10.4.2
         version: 10.4.2(@types/react@19.2.16)(react@19.2.7)(storybook@10.4.2(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       '@storybook/angular':
-        specifier: ^10.4.1
+        specifier: ^10.4.2
         version: 10.4.2(721122cc3d1b94a36a92364774f64485)
       '@types/node':
         specifier: ^25.9.0
@@ -127,7 +127,7 @@ importers:
         specifier: ^8.60.0
         version: 8.60.1(eslint@10.4.1(jiti@2.7.0))(typescript@5.9.3)
       chromatic:
-        specifier: ^17.1.0
+        specifier: ^17.2.0
         version: 17.2.0
       eslint:
         specifier: ^10.4.0
@@ -148,7 +148,7 @@ importers:
         specifier: ^3.8.1
         version: 3.8.3
       storybook:
-        specifier: ^10.4.1
+        specifier: ^10.4.2
         version: 10.4.2(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       typescript:
         specifier: 5.9.3
@@ -8909,7 +8909,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.1
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -8919,7 +8919,7 @@ snapshots:
       lru-cache: 11.5.1
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.1
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -8936,7 +8936,7 @@ snapshots:
       hosted-git-info: 9.0.3
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.1
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -12593,7 +12593,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.1
       tar: 7.5.16
       tinyglobby: 0.2.17
       undici: 6.26.0
@@ -12613,7 +12613,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.1
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -12634,7 +12634,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.4
+      semver: 7.8.1
 
   npm-registry-fetch@19.1.1:
     dependencies:
