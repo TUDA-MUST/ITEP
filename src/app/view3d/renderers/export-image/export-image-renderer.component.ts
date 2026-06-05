@@ -61,13 +61,13 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       // readPixels is available on RT in recent Babylon versions
       if (typeof (rt as any).readPixels !== 'function') {
         console.error('RenderTargetTexture.readPixels not available in this Babylon build');
-        rt.dispose(true);
+        rt.dispose();
         return;
       }
 
       const pixels: Uint8Array = await (rt as any).readPixels();
       // pixels is RGBA uint8 array
-      const clamped = new Uint8ClampedArray(pixels.buffer);
+      const clamped = new Uint8ClampedArray(pixels);
       const imageData = new ImageData(clamped, targetSize, targetSize);
 
       const off = document.createElement('canvas');
@@ -85,7 +85,7 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
         URL.revokeObjectURL(a.href);
       }, 'image/png');
 
-      rt.dispose(true);
+      rt.dispose();
     } catch (e) {
       console.error('Failed to export rayleigh image via RenderTarget', e);
       throw e;
