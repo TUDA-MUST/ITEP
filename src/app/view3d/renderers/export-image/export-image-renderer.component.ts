@@ -115,19 +115,32 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
         maxU = Math.max(maxU, u);
       }
 
-      // Create orthographic camera with fixed bounds X:[0,1], Y:[-0.5,0.5]
-      const distance = 2.0; // fixed distance along normal to avoid clipping
-      const target = new Vector3(0.5, 0, 0);
-      const rtCam = new FreeCamera('rayleighRTCam', target.add(normal.scale(distance)), scene);
-      rtCam.setTarget(target);
+      // Add small padding around computed bounds
+      const padR = (maxR - minR) * 0.05 || 0.1;
+      const padU = (maxU - minU) * 0.05 || 0.1;
+      const left = minR - padR;
+      const right = maxR + padR;
+      const top = maxU + padU;
+      const bottom = minU - padU;
+
+      // compute radius to place camera sufficiently far from plane
+      let maxDist = 0;
+      for (const p of pts) {
+        const d = Vector3.Distance(center, p);
+        if (d > maxDist) maxDist = d;
+      }
+      const distance = Math.max(0.5, maxDist * 3);
+
+      const rtCam = new FreeCamera('rayleighRTCam', center.add(normal.scale(distance)), scene);
+      rtCam.setTarget(center);
       rtCam.mode = Camera.ORTHOGRAPHIC_CAMERA;
       // tighten near/far to ensure plane in view
       rtCam.minZ = 0.0001;
       rtCam.maxZ = distance * 10;
-      rtCam.orthoLeft = 0;
-      rtCam.orthoRight = 1;
-      rtCam.orthoTop = 0.5;
-      rtCam.orthoBottom = -0.5;
+      rtCam.orthoLeft = left;
+      rtCam.orthoRight = right;
+      rtCam.orthoTop = top;
+      rtCam.orthoBottom = bottom;
 
       // Create a RenderTargetTexture and render only the rayleigh meshes into it using the RT camera
       const rt = new RenderTargetTexture('rayleighRT', targetSize, scene, false, true, Engine.TEXTURETYPE_UNSIGNED_INT);
