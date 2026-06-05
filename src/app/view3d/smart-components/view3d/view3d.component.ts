@@ -8,6 +8,7 @@ import { BabylonJSViewDirective } from '../babylon-jsview/babylon-jsview.directi
 
 import { Results } from 'src/app/store/viewportConfig.state';
 import { ExportRendererComponent } from '../../renderers/export/export.component';
+import { ExportImageRendererComponent } from '../../renderers/export-image/export-image-renderer.component';
 import type { ResultValues } from 'src/app/store/export.state';
 import { type ArrayConfig, StoreService } from 'src/app/store/store.service';
 
@@ -20,6 +21,7 @@ import { type ArrayConfig, StoreService } from 'src/app/store/store.service';
     BabylonJSViewDirective,
     ExcitationRendererComponent,
     ExportRendererComponent,
+    ExportImageRendererComponent,
     TransducerBufferComponent,
     RayleighIntegralRendererComponent,
     FarfieldRendererComponent,
