@@ -95,22 +95,25 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       const right = Vector3.Cross(up, normal).normalize();
       const camUp = Vector3.Cross(normal, right).normalize();
 
-      // Project bbox corners onto camera axes to get ortho bounds
+      // Compute center first
+      let center = new Vector3(0, 0, 0);
+      for (const p of pts) center = center.add(p);
+      center = center.scale(1 / pts.length);
+
+      // Project bbox corners onto camera axes (relative to center) to get ortho bounds
       let minR = Infinity,
         minU = Infinity,
         maxR = -Infinity,
         maxU = -Infinity;
-      let center = new Vector3(0, 0, 0);
       for (const p of pts) {
-        center = center.add(p);
-        const r = Vector3.Dot(p, right);
-        const u = Vector3.Dot(p, camUp);
+        const rel = p.subtract(center);
+        const r = Vector3.Dot(rel, right);
+        const u = Vector3.Dot(rel, camUp);
         minR = Math.min(minR, r);
         minU = Math.min(minU, u);
         maxR = Math.max(maxR, r);
         maxU = Math.max(maxU, u);
       }
-      center = center.scale(1 / pts.length);
 
       // Create orthographic camera aligned with plane
       // compute radius to place camera sufficiently far from plane
