@@ -64,7 +64,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm approve-builds --all
-      - run: pnpm run build --if-present
+      - run: pnpm run build
 
   test:
     needs: [lint, format]
