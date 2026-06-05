@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import type { Scene } from '@babylonjs/core/scene';
 import { Tools } from '@babylonjs/core/Misc/tools';
+// ScreenshotTools registers read-back helpers required by RenderTarget operations; import for side-effects
+import '@babylonjs/core/Misc/screenshotTools';
 import { RenderTargetTexture } from '@babylonjs/core/Materials/Textures/renderTargetTexture';
 import { Engine } from '@babylonjs/core/Engines/engine';
 
