@@ -121,16 +121,26 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       const top = maxU;
       const bottom = minU;
 
-      // compute radius to place camera sufficiently far from plane
+      // Shift camera center so world origin maps to top-center of the image
+      const origin = new Vector3(0, 0, 0);
+      const relOrigin = origin.subtract(center);
+      const r_o = Vector3.Dot(relOrigin, rightAxis);
+      const u_o = Vector3.Dot(relOrigin, camUp);
+      const desired_r = (minR + maxR) / 2;
+      const desired_u = maxU; // top
+      const delta = rightAxis.scale(r_o - desired_r).add(camUp.scale(u_o - desired_u));
+      const camCenter = center.add(delta);
+
+      // compute radius to place camera sufficiently far from plane (use camCenter)
       let maxDist = 0;
       for (const p of pts) {
-        const d = Vector3.Distance(center, p);
+        const d = Vector3.Distance(camCenter, p);
         if (d > maxDist) maxDist = d;
       }
       const distance = Math.max(0.5, maxDist * 3);
 
-      const rtCam = new FreeCamera('rayleighRTCam', center.add(normal.scale(distance)), scene);
-      rtCam.setTarget(center);
+      const rtCam = new FreeCamera('rayleighRTCam', camCenter.add(normal.scale(distance)), scene);
+      rtCam.setTarget(camCenter);
       rtCam.mode = Camera.ORTHOGRAPHIC_CAMERA;
       // tighten near/far to ensure plane in view
       rtCam.minZ = 0.0001;
