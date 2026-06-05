@@ -59,4 +59,4 @@ storybook-static/*
 # NX
 .nx/*
 
-stats.html
+stats.htmlnode_modules/
