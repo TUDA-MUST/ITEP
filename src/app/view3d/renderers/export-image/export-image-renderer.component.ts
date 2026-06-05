@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
 import type { Scene } from '@babylonjs/core/scene';
 import { Tools } from '@babylonjs/core/Misc/tools';
+import { RenderTargetTexture } from '@babylonjs/core/Materials/Textures/renderTargetTexture';
+import { Engine } from '@babylonjs/core/Engines/engine';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,25 +48,42 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       // Fixed high-res size
       const targetSize = 1024;
 
-      // Straightforward RenderTarget export using Babylon's Tools helper
-      // Some Babylon versions expect (engine, camera, size, fileName?, renderList?) — pass null filename and renderList as fifth arg
-      const dataUrl = await (Tools as any).CreateScreenshotUsingRenderTarget(
-        engine,
-        camera,
-        targetSize,
-        null,
-        targetMeshes,
-      );
+      // Create a RenderTargetTexture and render only the rayleigh meshes into it
+      const rt = new RenderTargetTexture('rayleighRT', targetSize, scene, false, true, Engine.TEXTURETYPE_UNSIGNED_INT);
+      rt.renderList = targetMeshes;
+      rt.activeCamera = camera;
 
-      if (!dataUrl) {
-        console.error('CreateScreenshotUsingRenderTarget returned no data');
+      // Render once to the RT
+      await rt.render(true);
+
+      // readPixels is available on RT in recent Babylon versions
+      if (typeof (rt as any).readPixels !== 'function') {
+        console.error('RenderTargetTexture.readPixels not available in this Babylon build');
+        rt.dispose(true);
         return;
       }
 
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = `rayleigh-${Date.now()}.png`;
-      a.click();
+      const pixels: Uint8Array = await (rt as any).readPixels();
+      // pixels is RGBA uint8 array
+      const clamped = new Uint8ClampedArray(pixels.buffer);
+      const imageData = new ImageData(clamped, targetSize, targetSize);
+
+      const off = document.createElement('canvas');
+      off.width = targetSize;
+      off.height = targetSize;
+      const ctx = off.getContext('2d')!;
+      ctx.putImageData(imageData, 0, 0);
+
+      off.toBlob((blob) => {
+        if (!blob) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `rayleigh-${Date.now()}.png`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }, 'image/png');
+
+      rt.dispose(true);
     } catch (e) {
       console.error('Failed to export rayleigh image via RenderTarget', e);
       throw e;
