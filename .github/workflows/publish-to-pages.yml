@@ -9,10 +9,16 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
+          cache: true
       - name: Build Angular app
         run: |
           pnpm version ${{ github.event.release.tag_name }} --git-tag-version=false
           pnpm install --frozen-lockfile
+          pnpm approve-builds --all
           pnpm run build -- --base-href https://TUDA-MUST.github.io/ITEP/
           cp dist/phased/browser/index.html dist/phased/browser/404.html
       - name: Upload Pages artifact

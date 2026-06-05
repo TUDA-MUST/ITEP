@@ -24,8 +24,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
+          cache: true
       - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
       - run: pnpm run lint
 
   format:
@@ -38,8 +42,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
+          cache: true
       - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
       - run: pnpm run format:check
 
   build:
@@ -53,8 +61,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
+          cache: true
       - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
       - run: pnpm run build --if-present
 
   test:
@@ -68,8 +80,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
+          cache: true
       - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
       - run: pnpm run test
 
   chromatic:
@@ -84,9 +100,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
+          cache: true
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
       - name: Publish to Chromatic
         uses: chromaui/action@latest
         with:
@@ -106,9 +127,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
       - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@11.5.2 --activate
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.5.2'
+          cache: true
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
       - name: Install Playwright Browsers
         run: pnpm dlx playwright install --with-deps
       - name: Run Playwright tests
