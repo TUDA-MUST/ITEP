@@ -113,9 +113,20 @@ export class ExportImageRendererComponent extends TransducerBufferConsumer imple
       center = center.scale(1 / pts.length);
 
       // Create orthographic camera aligned with plane
-      const rtCam = new FreeCamera('rayleighRTCam', center.add(normal.scale(1)), scene);
+      // compute radius to place camera sufficiently far from plane
+      let maxDist = 0;
+      for (const p of pts) {
+        const d = Vector3.Distance(center, p);
+        if (d > maxDist) maxDist = d;
+      }
+      const distance = Math.max(0.5, maxDist * 3);
+
+      const rtCam = new FreeCamera('rayleighRTCam', center.add(normal.scale(distance)), scene);
       rtCam.setTarget(center);
       rtCam.mode = Camera.ORTHOGRAPHIC_CAMERA;
+      // tighten near/far to ensure plane in view
+      rtCam.minZ = 0.0001;
+      rtCam.maxZ = distance * 10;
       rtCam.orthoLeft = minR;
       rtCam.orthoRight = maxR;
       rtCam.orthoTop = maxU;
