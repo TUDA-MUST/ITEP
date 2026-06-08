@@ -32,7 +32,6 @@ import { excitationBufferInclude } from '../../../utils/excitationbuffer';
 })
 export class BabylonJSViewDirective implements AfterViewChecked, OnInit, OnDestroy {
   canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);
-
   private resizeObserver = new ResizeObserver(() => {
     this.engine?.resize(true);
     this.requestRender();

@@ -13,7 +13,7 @@ export interface ExcitationElement {
 export const excitationBufferInclude = /* wgsl */ `
   struct ExcitationElement { // size per element: 8
     position : vec4<f32>, // offset 0
-    phasor : vec4<f32>, // 0: amplitude, 1: area, 2: delay, 3: dummy // Offset  16
+    phasor : vec4<f32>, // 0: phase shift [rad], 1: radiator area weight, 2-3: reserved // offset 16
   };
 
   struct ExcitationBuffer { 
@@ -36,8 +36,8 @@ export function setExcitationElement(
   const elementOffset = excitationBufferElementSize * index;
   position.toArray(buffer, elementOffset);
 
-  buffer[elementOffset + 4] = phase; // amplitude
+  buffer[elementOffset + 4] = phase; // phase shift [rad]
   buffer[elementOffset + 5] = 1; // area
-  buffer[elementOffset + 6] = 0; // phase
-  buffer[elementOffset + 7] = 0; // zero
+  buffer[elementOffset + 6] = 0; // reserved
+  buffer[elementOffset + 7] = 0; // reserved
 }
