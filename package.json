@@ -4,7 +4,7 @@
   "packageManager": "pnpm@11.5.2",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port ${CMUX_PORT:-4200}",
+    "start": "ng serve --port 4200",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
