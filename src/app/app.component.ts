@@ -4,6 +4,11 @@ import { ResultContainerComponent } from './sidebar/pure-components/result-conta
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SidebarContainerComponent } from './sidebar/pure-components/sidebar-container/sidebar-container.component';
 
+import '@babylonjs/core/ShadersWGSL/color.vertex';
+import '@babylonjs/core/ShadersWGSL/color.fragment';
+import '@babylonjs/core/ShadersWGSL/ShadersInclude/meshUboDeclaration';
+import '@babylonjs/core/ShadersWGSL/ShadersInclude/sceneUboDeclaration';
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
