@@ -35,7 +35,7 @@
       [beamforming]="beamforming()"
     />
 
-    <app-export-image-renderer />
+    <app-export-image-renderer [resultSet]="rayleighResultSet()" />
   </app-transducer-buffer>
   <ng-content />
 </canvas>
