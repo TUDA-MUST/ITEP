@@ -32,7 +32,7 @@ struct ExcitationElement { // size per element: 8
   phasor : vec4<f32>, // 0: amplitude, 1: area, 2: delay, 3: dummy // Offset  16
 };
 
-struct ExcitationBuffer { 
+struct ExcitationBuffer {
   elements: array<ExcitationElement, 2048>,
 };
 
