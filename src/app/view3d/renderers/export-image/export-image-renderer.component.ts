@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, Component, input, type OnDestroy } from '@angular/core';
-import { TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
-import type { Scene } from '@babylonjs/core/scene';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  type OnDestroy,
+} from '@angular/core';
+import { TransducerBufferComponent } from '../../shared/transducer-buffer.component';
 // ScreenshotTools registers read-back helpers required by RenderTarget operations; import for side-effects
 import '@babylonjs/core/Misc/screenshotTools';
 import { RenderTargetTexture } from '@babylonjs/core/Materials/Textures/renderTargetTexture';
@@ -8,25 +14,27 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { Camera } from '@babylonjs/core/Cameras/camera';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import type { Scene } from '@babylonjs/core/scene';
 import type { ResultSet } from 'src/app/store/rayleigh.state';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-export-image-renderer',
   template: '<ng-content />',
-  standalone: true,
-  providers: [{ provide: TransducerBufferConsumer, useExisting: ExportImageRendererComponent }],
 })
-export class ExportImageRendererComponent extends TransducerBufferConsumer implements OnDestroy {
+export class ExportImageRendererComponent implements OnDestroy {
+  private readonly transducerBuffer = inject(TransducerBufferComponent);
   private sceneRef: Scene | null = null;
   private handler = () => void this.exportImage();
 
   readonly resultSet = input<ResultSet | null>(null);
 
-  ngxSceneAndBufferCreated(scene: Scene): void {
-    this.sceneRef = scene;
+  private readonly initEffect = effect(() => {
+    const ctx = this.transducerBuffer.bufferContext();
+    if (!ctx || this.sceneRef) return;
+    this.sceneRef = ctx.scene;
     window.addEventListener('export-rayleigh', this.handler);
-  }
+  });
 
   ngOnDestroy(): void {
     window.removeEventListener('export-rayleigh', this.handler);
