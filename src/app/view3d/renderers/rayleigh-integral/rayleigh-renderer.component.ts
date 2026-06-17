@@ -1,14 +1,19 @@
-import { ChangeDetectionStrategy, Component, effect, input, type OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  type OnDestroy,
+} from '@angular/core';
 
 import { Plane } from '@babylonjs/core/Maths/math.plane';
 import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { RayleighMaterial, type ResultAspect } from '../../materials/rayleigh.material';
-import type { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import type { Scene } from '@babylonjs/core/scene';
-import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { TransducerBufferComponent } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import type { ResultSet } from 'src/app/store/rayleigh.state';
 import type { Transducer } from 'src/app/store/store.service';
@@ -46,15 +51,10 @@ export const cubeCut = (): VertexData => {
   selector: 'app-rayleigh-integral-renderer',
   template: '<ng-content/>',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  providers: [
-    { provide: TransducerBufferConsumer, useExisting: RayleighIntegralRendererComponent },
-  ],
 })
-export class RayleighIntegralRendererComponent
-  extends TransducerBufferConsumer
-  implements OnDestroy
-{
+export class RayleighIntegralRendererComponent implements OnDestroy {
+  private readonly transducerBuffer = inject(TransducerBufferComponent);
+
   // Should no longer be needed or changed to a number.
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
@@ -71,7 +71,7 @@ export class RayleighIntegralRendererComponent
     }
 
     const resultSet = this.resultSet();
-    if (resultSet !== null) {
+    if (resultSet !== null && this.xzPlane) {
       this.xzPlane.setEnabled(resultSet === 'XZPlane');
       this.yzPlane.setEnabled(resultSet === 'YZPlane');
       this.cubeCut.setEnabled(resultSet === 'CutCube');
@@ -79,36 +79,33 @@ export class RayleighIntegralRendererComponent
   });
 
   updatePhase = effect(() => {
-    this.material.setFloat('globalPhase', this.globalPhase() ?? 0);
+    this.material?.setFloat('globalPhase', this.globalPhase() ?? 0);
   });
 
   private xzPlane: Mesh;
   private yzPlane: Mesh;
   private cubeCut: Mesh;
 
-  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void {
-    // Result
-    this.material = new RayleighMaterial(scene, textures.colormaps);
-    this.material.setUniformBuffer('excitation', buffer);
+  private readonly initEffect = effect(() => {
+    const ctx = this.transducerBuffer.bufferContext();
+    if (!ctx || this.material) return;
+
+    this.material = new RayleighMaterial(ctx.scene, ctx.textures.colormaps);
+    this.material.setUniformBuffer('excitation', ctx.buffer);
 
     this.material.stencil.enabled = true;
     this.material.stencil.funcRef = 1;
     this.material.stencil.func = Engine.ALWAYS;
     this.material.stencil.opStencilDepthPass = Engine.REPLACE;
 
-    // Setup Aperture
     const origin = new Vector3(0, 0, 0);
     const xNegative = new Vector3(-1, 0, 0);
     const yPositive = new Vector3(0, 1, 0);
 
-    // Setup result plane
-    const xzMathPlane = Plane.FromPositionAndNormal(origin, yPositive);
     this.xzPlane = CreatePlane(
       'rayleigh',
-      {
-        sourcePlane: xzMathPlane,
-      },
-      scene,
+      { sourcePlane: Plane.FromPositionAndNormal(origin, yPositive) },
+      ctx.scene,
     );
     this.xzPlane.material = this.material;
     this.xzPlane.position = new Vector3(0, 0, 0.5);
@@ -116,13 +113,10 @@ export class RayleighIntegralRendererComponent
     this.xzPlane.isPickable = false;
     this.xzPlane.renderingGroupId = 1;
 
-    const yzMathPlane = Plane.FromPositionAndNormal(origin, xNegative);
     this.yzPlane = CreatePlane(
       'rayleigh',
-      {
-        sourcePlane: yzMathPlane,
-      },
-      scene,
+      { sourcePlane: Plane.FromPositionAndNormal(origin, xNegative) },
+      ctx.scene,
     );
     this.yzPlane.material = this.material;
     this.yzPlane.position = new Vector3(0, 0, 0.5);
@@ -131,7 +125,7 @@ export class RayleighIntegralRendererComponent
     this.yzPlane.renderingGroupId = 1;
     this.yzPlane.setEnabled(false);
 
-    this.cubeCut = new Mesh('cubeCut', scene);
+    this.cubeCut = new Mesh('cubeCut', ctx.scene);
     cubeCut().applyToMesh(this.cubeCut);
     this.cubeCut.material = this.material;
     this.cubeCut.isPickable = false;
@@ -142,7 +136,7 @@ export class RayleighIntegralRendererComponent
     this.material.setResultAspect(this.aspect());
     this.uploadArrayConfig(this.transducers());
     this.uploadEnvironment(this.environment());
-  }
+  });
 
   ngOnDestroy(): void {
     this.material.dispose();

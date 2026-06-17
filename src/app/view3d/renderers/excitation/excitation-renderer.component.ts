@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  forwardRef,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
 
 import { TransducerMaterial } from '../../materials/transducer.material';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
@@ -14,8 +7,7 @@ import '@babylonjs/core/Culling/ray';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
 
 import type { SelectionState } from 'src/app/store/selection.state';
-import type { Scene } from '@babylonjs/core/scene';
-import { BabylonConsumer } from '../../interfaces/lifecycle';
+import { BabylonJSViewDirective } from '../../smart-components/babylon-jsview/babylon-jsview.directive';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import type { Transducer } from 'src/app/store/store.service';
 import type { LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
@@ -44,12 +36,10 @@ export const uniformSquareXY = (): VertexData => {
   selector: 'app-excitation-renderer',
   template: '<ng-content/>',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  providers: [
-    { provide: BabylonConsumer, useExisting: forwardRef(() => ExcitationRendererComponent) },
-  ],
 })
-export class ExcitationRendererComponent extends BabylonConsumer {
+export class ExcitationRendererComponent {
+  private readonly babylonView = inject(BabylonJSViewDirective);
+
   readonly transducers = input<Transducer[] | null>(null);
   readonly transducerModel = input.required<TransducerType>();
   readonly selection = input<SelectionState | null>(null);
@@ -63,21 +53,10 @@ export class ExcitationRendererComponent extends BabylonConsumer {
   private circularTransducerOutlineMesh: LinesMesh;
   private rectangularTransducerOutlineMesh: LinesMesh;
 
-  async ngxSceneCreated(scene: Scene): Promise<void> {
-    this.initialize3D(scene);
-    this.uploadArrayConfig(this.transducers(), this.selection());
-  }
+  private readonly initEffect = effect(() => {
+    const scene = this.babylonView.scene();
+    if (!scene || this.transducerMaterial) return;
 
-  updateArrayConfig = effect(() => {
-    const transducers = this.transducers();
-    const selection = this.selection();
-
-    if (this.transducerMaterial) {
-      this.uploadArrayConfig(transducers, selection);
-    }
-  });
-
-  public initialize3D(scene: Scene): void {
     this.transducerMaterial = new TransducerMaterial(scene);
     this.transducerMaterial.depthFunction = Engine.ALWAYS;
     this.transducerMaterial.stencil.enabled = true;
@@ -102,9 +81,7 @@ export class ExcitationRendererComponent extends BabylonConsumer {
 
     this.circularTransducerOutlineMesh = CreateLineSystem(
       'hiddenLinesCircular',
-      {
-        lines: [points],
-      },
+      { lines: [points] },
       scene,
     );
     this.circularTransducerOutlineMesh.renderingGroupId = 1;
@@ -127,9 +104,7 @@ export class ExcitationRendererComponent extends BabylonConsumer {
 
     this.rectangularTransducerOutlineMesh = CreateLineSystem(
       'hiddenLinesRectangular',
-      {
-        lines: [rectanglePoints],
-      },
+      { lines: [rectanglePoints] },
       scene,
     );
     this.rectangularTransducerOutlineMesh.renderingGroupId = 1;
@@ -146,38 +121,40 @@ export class ExcitationRendererComponent extends BabylonConsumer {
     this.transducerSurfaceMesh.actionManager = actionManager;
 
     actionManager.registerAction(
-      new ExecuteCodeAction(
-        {
-          trigger: ActionManager.OnPointerOverTrigger,
-        },
-        (event) => {
-          const pickingResult = scene.pick(event.pointerX, scene.pointerY);
-          this.hovered.emit(pickingResult.thinInstanceIndex);
-        },
-      ),
+      new ExecuteCodeAction({ trigger: ActionManager.OnPointerOverTrigger }, (event) => {
+        const pickingResult = scene.pick(event.pointerX, scene.pointerY);
+        this.hovered.emit(pickingResult.thinInstanceIndex);
+      }),
     );
     actionManager.registerAction(
-      new ExecuteCodeAction(
-        {
-          trigger: ActionManager.OnPointerOutTrigger,
-        },
-        (_event) => this.hovered.emit(-1),
+      new ExecuteCodeAction({ trigger: ActionManager.OnPointerOutTrigger }, (_event) =>
+        this.hovered.emit(-1),
       ),
     );
 
-    const options = {
-      lines: [
-        [new Vector3(-0.5, -0.5, 0), new Vector3(0.5, 0.5, 0)],
-        [new Vector3(-0.5, 0.5, 0), new Vector3(0.5, -0.5, 0)],
-      ],
-    };
-
-    this.pointMesh = CreateLineSystem('point', options, scene);
+    this.pointMesh = CreateLineSystem(
+      'point',
+      {
+        lines: [
+          [new Vector3(-0.5, -0.5, 0), new Vector3(0.5, 0.5, 0)],
+          [new Vector3(-0.5, 0.5, 0), new Vector3(0.5, -0.5, 0)],
+        ],
+      },
+      scene,
+    );
     this.pointMesh.renderingGroupId = 1;
     this.pointMesh.material!.alpha = 0.99;
 
     this.uploadArrayConfig(this.transducers(), this.selection());
-  }
+  });
+
+  updateArrayConfig = effect(() => {
+    const transducers = this.transducers();
+    const selection = this.selection();
+    if (this.transducerMaterial) {
+      this.uploadArrayConfig(transducers, selection);
+    }
+  });
 
   private uploadArrayConfig(
     transducersx: Transducer[] | null,

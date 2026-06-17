@@ -60,3 +60,5 @@ storybook-static/*
 .nx/*
 
 stats.htmlnode_modules/
+
+stats.html

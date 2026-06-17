@@ -1,9 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
+  inject,
   type OnChanges,
   type OnDestroy,
-  forwardRef,
   input,
   output,
 } from '@angular/core';
@@ -13,23 +14,18 @@ import { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilde
 import { type PointerDragBehavior } from '@babylonjs/core/Behaviors/Meshes/pointerDragBehavior';
 import { type Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { BabylonConsumer } from '../../interfaces/lifecycle';
+import { BabylonJSViewDirective } from '../../smart-components/babylon-jsview/babylon-jsview.directive';
 import { type ArrayConfig } from 'src/app/store/store.service';
-import { type Scene } from '@babylonjs/core/scene';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ura-interaction',
   imports: [],
   template: '<ng-content />',
-  providers: [
-    { provide: BabylonConsumer, useExisting: forwardRef(() => UraInteractionRendererComponent) },
-  ],
 })
-export class UraInteractionRendererComponent
-  extends BabylonConsumer
-  implements OnDestroy, OnChanges
-{
+export class UraInteractionRendererComponent implements OnDestroy, OnChanges {
+  private readonly babylonView = inject(BabylonJSViewDirective);
+
   readonly arrayConfig = input<ArrayConfig | null>();
   readonly arrayConfigChange = output<ArrayConfig>();
 
@@ -42,7 +38,9 @@ export class UraInteractionRendererComponent
   private pointerDragBehavior: PointerDragBehavior;
   private offset: Vector3;
 
-  async ngxSceneCreated(_scene: Scene): Promise<void> {
+  private readonly initEffect = effect(() => {
+    if (!this.babylonView.scene() || this.pitchHandle) return;
+
     this.pitchHandle = CreateIcoSphere('arrayPitchHandle', {
       radius: 0.00025,
       subdivisions: 3,
@@ -144,7 +142,7 @@ export class UraInteractionRendererComponent
       }
     });
     this.prepareHandles();
-  }
+  });
 
   ngOnDestroy(): void {
     this.pitchHandle?.dispose();
