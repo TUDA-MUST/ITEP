@@ -39,12 +39,17 @@ export class UraInteractionRendererComponent implements OnDestroy, OnChanges {
   private offset: Vector3;
 
   private readonly initEffect = effect(() => {
-    if (!this.babylonView.scene() || this.pitchHandle) return;
+    const scene = this.babylonView.scene();
+    if (!scene || this.pitchHandle) return;
 
-    this.pitchHandle = CreateIcoSphere('arrayPitchHandle', {
-      radius: 0.00025,
-      subdivisions: 3,
-    });
+    this.pitchHandle = CreateIcoSphere(
+      'arrayPitchHandle',
+      {
+        radius: 0.00025,
+        subdivisions: 3,
+      },
+      scene,
+    );
 
     this.pitchGizmo = new PositionGizmo();
     this.pitchGizmo.zGizmo.dispose();
