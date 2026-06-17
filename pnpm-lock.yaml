@@ -41,8 +41,8 @@ importers:
         specifier: 9.12.0
         version: 9.12.0
       '@ngrx/signals':
-        specifier: 21.1.0
-        version: 21.1.0(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: 21.1.1
+        version: 21.1.1(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)
       '@stdlib/math-base-special-besselj1':
         specifier: ^0.3.1
         version: 0.3.1
@@ -2960,10 +2960,10 @@ packages:
         integrity: sha512-klcSooChXXOzIm+SE5IISIAn3bYzYfPjbX7D7HoqZL84oAfgREeSg5vSIaSFH+DaGzzvImTyWe1OyrJ67vik4A==,
       }
 
-  '@ngrx/signals@21.1.0':
+  '@ngrx/signals@21.1.1':
     resolution:
       {
-        integrity: sha512-eDGaBs6sssEZe2cLGwDdRnfTwyx9TKD+zpLW8yDov6acWzyi0nW5qxUWjpMRwmIU1i+o0t5MMpQaF/rFMmtHSg==,
+        integrity: sha512-AXxsvO39cJ4gu2GMvLyUHwx+3qHi35Bn7OUqyIfJW0fffi/Af7ML6h0MPMWDHVROo55FBgxzJrYRswwzdew9VA==,
       }
     peerDependencies:
       '@angular/core': ^21.0.0
@@ -13055,7 +13055,7 @@ snapshots:
 
   '@neoconfetti/react@1.0.0': {}
 
-  '@ngrx/signals@21.1.0(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)':
+  '@ngrx/signals@21.1.1(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
       '@angular/core': 21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)
       tslib: 2.8.1
