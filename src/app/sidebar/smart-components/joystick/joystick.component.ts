@@ -15,7 +15,6 @@ import type { AzElCoordinates } from 'src/app/utils/uv';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-joystick',
-  standalone: true,
   templateUrl: './joystick.component.html',
   styleUrl: './joystick.component.scss',
 })

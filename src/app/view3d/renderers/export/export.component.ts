@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
-import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
+import { TransducerBufferComponent } from '../../shared/transducer-buffer.component';
 import { type Point, type ResultValues } from 'src/app/store/export.state';
 import { type BeamformingState } from 'src/app/store/beamforming.state';
 import { type Transducer } from 'src/app/store/store.service';
@@ -7,7 +7,6 @@ import { type Transducer } from 'src/app/store/store.service';
 import { ComputeShader } from '@babylonjs/core/Compute/computeShader';
 import { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 import { StorageBuffer } from '@babylonjs/core/Buffers/storageBuffer';
-import { type Scene } from '@babylonjs/core/scene';
 import { type WebGPUEngine } from '@babylonjs/core/Engines/webgpuEngine';
 
 const exportComputeShader = /* wgsl */ `
@@ -69,9 +68,10 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
   selector: 'app-export-renderer',
   imports: [],
   template: '<ng-content />',
-  providers: [{ provide: TransducerBufferConsumer, useExisting: ExportRendererComponent }],
 })
-export class ExportRendererComponent extends TransducerBufferConsumer {
+export class ExportRendererComponent {
+  private readonly transducerBuffer = inject(TransducerBufferComponent);
+
   readonly results = output<ResultValues>();
 
   readonly transducers = input<Transducer[] | null>(null);
@@ -90,13 +90,14 @@ export class ExportRendererComponent extends TransducerBufferConsumer {
 
   numPoints = 200;
 
-  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, _textures: Textures): void {
+  private readonly initEffect = effect(() => {
+    const ctx = this.transducerBuffer.bufferContext();
+    if (!ctx || this.cs) return;
+
     this.cs = new ComputeShader(
       'myCompute',
-      scene.getEngine(),
-      {
-        computeSource: exportComputeShader,
-      },
+      ctx.scene.getEngine(),
+      { computeSource: exportComputeShader },
       {
         bindingsMapping: {
           uniforms: { group: 0, binding: 0 },
@@ -106,7 +107,7 @@ export class ExportRendererComponent extends TransducerBufferConsumer {
       },
     );
 
-    this.uniformBuffer = new UniformBuffer(scene.getEngine());
+    this.uniformBuffer = new UniformBuffer(ctx.scene.getEngine());
     this.uniformBuffer.addUniform('k', 1);
     this.uniformBuffer.addUniform('omega', 1);
     this.uniformBuffer.addUniform('t', 1);
@@ -115,15 +116,15 @@ export class ExportRendererComponent extends TransducerBufferConsumer {
     this.uniformBuffer.create();
 
     this.cs.setUniformBuffer('uniforms', this.uniformBuffer);
-    this.cs.setUniformBuffer('excitation', buffer);
+    this.cs.setUniformBuffer('excitation', ctx.buffer);
 
     this.resultBuffer = new StorageBuffer(
-      scene.getEngine() as WebGPUEngine,
+      ctx.scene.getEngine() as WebGPUEngine,
       this.numPoints * 3 * Float32Array.BYTES_PER_ELEMENT,
     );
     this.cs.setStorageBuffer('resultBuffer', this.resultBuffer);
     this.calcData();
-  }
+  });
 
   calcData(): void {
     if (this.cs && this.resultBuffer) {

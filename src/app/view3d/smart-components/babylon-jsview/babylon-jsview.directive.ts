@@ -1,18 +1,12 @@
 import {
-  type AfterContentChecked,
   type AfterViewChecked,
-  contentChildren,
   Directive,
-  effect,
   ElementRef,
   inject,
   type OnDestroy,
   type OnInit,
   signal,
 } from '@angular/core';
-
-import { excitationBufferInclude } from '../../../utils/excitationbuffer';
-import { BabylonConsumer, implementsOnSceneCreated } from '../../interfaces/lifecycle';
 
 import { Angle } from '@babylonjs/core/Maths/math.path';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
@@ -30,16 +24,13 @@ import '@babylonjs/core/Engines/WebGPU/Extensions/engine.computeShader';
 // Ensure screenshotTools side-effects (render-target readback) are registered early
 import '@babylonjs/core/Misc/screenshotTools';
 
-import { diff } from 'src/app/utils/utils';
+import { excitationBufferInclude } from '../../../utils/excitationbuffer';
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'canvas[babylonsjsview]',
   exportAs: 'babylon',
-  standalone: true,
 })
-export class BabylonJSViewDirective
-  implements AfterViewChecked, OnInit, AfterContentChecked, OnDestroy
-{
+export class BabylonJSViewDirective implements AfterViewChecked, OnInit, OnDestroy {
   canvasRef = inject<ElementRef<HTMLCanvasElement>>(ElementRef);
 
   private resizeObserver = new ResizeObserver(() => {
@@ -49,37 +40,9 @@ export class BabylonJSViewDirective
     this.engine?.endFrame();
   });
 
-  readonly renderers = contentChildren(BabylonConsumer);
-
-  updateRenderers = (() => {
-    let prev: BabylonConsumer[] = [];
-    return effect(() => {
-      const next = this.renderers();
-      const scene = this.scene();
-      if (scene) {
-        const { added } = diff(prev, next);
-        for (const renderer of added) {
-          if (implementsOnSceneCreated(renderer)) {
-            renderer.ngxSceneCreated(scene);
-          }
-        }
-        prev = [...next];
-      }
-    });
-  })();
-
   engine: WebGPUEngine | NullEngine;
   public readonly scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
-
-  ngAfterContentChecked(): void {
-    const scene = this.scene();
-    if (scene) {
-      this.engine.beginFrame();
-      scene.render();
-      this.engine.endFrame();
-    }
-  }
 
   ngAfterViewChecked(): void {
     const scene = this.scene();

@@ -1,12 +1,17 @@
-import { ChangeDetectionStrategy, Component, effect, input, type OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  type OnDestroy,
+} from '@angular/core';
 
 import type { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import type { Scene } from '@babylonjs/core/scene';
-import type { UniformBuffer } from '@babylonjs/core/Materials/uniformBuffer';
 import { FarfieldMaterial } from '../../materials/farfield.material';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
-import { type Textures, TransducerBufferConsumer } from '../../shared/transducer-buffer.component';
+import { TransducerBufferComponent } from '../../shared/transducer-buffer.component';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import type { Transducer } from 'src/app/store/store.service';
 import { frequencyFromBase, type Environment } from 'src/app/core/environment';
@@ -27,10 +32,10 @@ const uvMesh: VertexData = (() => {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-farfield-renderer',
   template: '<ng-content/>',
-  standalone: true,
-  providers: [{ provide: TransducerBufferConsumer, useExisting: FarfieldRendererComponent }],
 })
-export class FarfieldRendererComponent extends TransducerBufferConsumer implements OnDestroy {
+export class FarfieldRendererComponent implements OnDestroy {
+  private readonly transducerBuffer = inject(TransducerBufferComponent);
+
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
   readonly transducerModel = input.required<TransducerType>();
@@ -49,15 +54,18 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer implemen
   private material: FarfieldMaterial;
   private farfieldMesh: Mesh;
 
-  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void {
-    this.material = new FarfieldMaterial(scene, textures.colormaps);
+  private readonly initEffect = effect(() => {
+    const ctx = this.transducerBuffer.bufferContext();
+    if (!ctx || this.material) return;
+
+    this.material = new FarfieldMaterial(ctx.scene, ctx.textures.colormaps);
 
     this.material.stencil.enabled = true;
     this.material.stencil.funcRef = 1;
     this.material.stencil.func = Engine.ALWAYS;
     this.material.stencil.opStencilDepthPass = Engine.REPLACE;
 
-    this.farfieldMesh = new Mesh('farfieldMesh', scene);
+    this.farfieldMesh = new Mesh('farfieldMesh', ctx.scene);
     uvMesh.applyToMesh(this.farfieldMesh);
     this.farfieldMesh.increaseVertices(400);
     this.farfieldMesh.material = this.material;
@@ -65,13 +73,13 @@ export class FarfieldRendererComponent extends TransducerBufferConsumer implemen
     this.farfieldMesh.renderingGroupId = 1;
 
     this.material.onBind = (_mesh: AbstractMesh) => {
-      this.material.getEffect().bindUniformBuffer(buffer.getBuffer()!, 'excitation');
+      this.material.getEffect().bindUniformBuffer(ctx.buffer.getBuffer()!, 'excitation');
     };
 
     this.material.setFloat('dynamicRange', 50.0);
     this.uploadEnvironment(this.environment());
     this.uploadArrayConfig(this.transducers());
-  }
+  });
 
   ngOnDestroy(): void {
     this.farfieldMesh?.dispose();

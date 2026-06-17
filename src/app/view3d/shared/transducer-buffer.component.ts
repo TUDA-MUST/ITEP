@@ -1,10 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  contentChildren,
-  DestroyRef,
   effect,
-  forwardRef,
   inject,
   input,
   type OnDestroy,
@@ -19,54 +16,41 @@ import {
   setExcitationElement,
 } from '../../utils/excitationbuffer';
 import { VEC4_ELEMENT_COUNT } from '../../utils/webgl.utils';
-import { BabylonConsumer } from '../interfaces/lifecycle';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 import type { BeamformingState } from 'src/app/store/beamforming.state';
 import type { Transducer } from 'src/app/store/store.service';
 import { azElToUV } from 'src/app/utils/uv';
-import { diff } from 'src/app/utils/utils';
 import { colormapTexturePath } from './colormap-texture';
+import { BabylonJSViewDirective } from '../smart-components/babylon-jsview/babylon-jsview.directive';
 
 export interface Textures {
   colormaps: Texture;
 }
 
-export interface OnTransducerBufferCreated {
-  ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void;
+export interface BufferContext {
+  scene: Scene;
+  buffer: UniformBuffer;
+  textures: Textures;
 }
-
-export abstract class TransducerBufferConsumer implements OnTransducerBufferCreated {
-  abstract ngxSceneAndBufferCreated(scene: Scene, buffer: UniformBuffer, textures: Textures): void;
-}
-
-export const implementsOnTransducerBufferCreated = (
-  candidate: unknown,
-): candidate is OnTransducerBufferCreated =>
-  typeof candidate === 'object' && candidate !== null && 'ngxSceneAndBufferCreated' in candidate;
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-transducer-buffer',
   template: '<ng-content/>',
-  standalone: true,
-  providers: [
-    { provide: BabylonConsumer, useExisting: forwardRef(() => TransducerBufferComponent) },
-  ],
 })
-export class TransducerBufferComponent extends BabylonConsumer implements OnDestroy {
-  destroyRef = inject(DestroyRef);
+export class TransducerBufferComponent implements OnDestroy {
+  private readonly babylonView = inject(BabylonJSViewDirective);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly beamforming = input<BeamformingState | null>(null);
   readonly k = input<number | null>(null);
 
-  readonly consumers = contentChildren(TransducerBufferConsumer);
-
   private uniformExcitationBuffer: UniformBuffer;
-  private textures: Textures;
-  public readonly scene = signal<Scene | null>(null);
+  public readonly bufferContext = signal<BufferContext | null>(null);
 
-  async ngxSceneCreated(scene: Scene): Promise<void> {
+  private readonly initEffect = effect(() => {
+    const scene = this.babylonView.scene();
+    if (!scene) return;
     this.uniformExcitationBuffer = new UniformBuffer(scene.getEngine());
     // Babylons only supports element sizes of 1,2,3,4 and 16.
     // Use 4 here, although it is 8 in reality (VEC4_ELEMENT_COUNT * 2) and multiply the number
@@ -77,42 +61,23 @@ export class TransducerBufferComponent extends BabylonConsumer implements OnDest
       VEC4_ELEMENT_COUNT /* *2 */,
       excitationBufferMaxElements * 2,
     );
-
-    const colormaps = await new Promise<Texture>((resolve, _reject) => {
+    new Promise<Texture>((resolve) => {
       const texture = new Texture(colormapTexturePath, scene, true, false, undefined, () => {
         texture.wrapU = Texture.CLAMP_ADDRESSMODE;
         texture.wrapV = Texture.CLAMP_ADDRESSMODE;
         resolve(texture);
       });
+    }).then((colormaps) => {
+      this.bufferContext.set({
+        scene,
+        buffer: this.uniformExcitationBuffer,
+        textures: { colormaps },
+      });
+      this.updateBuffer(this.transducers() ?? [], null);
     });
+  });
 
-    this.textures = {
-      colormaps,
-    };
-
-    this.scene.set(scene);
-
-    this.updateBuffer(this.transducers() ?? [], null);
-  }
-
-  updateRenderers = (() => {
-    let prev: TransducerBufferConsumer[] = [];
-    return effect(() => {
-      const next = this.consumers();
-      const scene = this.scene();
-      if (scene) {
-        const { added } = diff(prev, next);
-        added.forEach((consumer) => {
-          if (implementsOnTransducerBufferCreated(consumer)) {
-            consumer.ngxSceneAndBufferCreated(scene, this.uniformExcitationBuffer, this.textures);
-          }
-        });
-        prev = [...next];
-      }
-    });
-  })();
-
-  update = effect(() => {
+  private readonly updateEffect = effect(() => {
     const transducers = this.transducers();
     const beamforming = this.beamforming();
     if (this.uniformExcitationBuffer && transducers) {
