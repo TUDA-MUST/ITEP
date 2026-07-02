@@ -57,8 +57,20 @@ export default [
     },
     processor: angularTemplatePlugin.processors['extract-inline-html'],
     rules: {
-      // Angular recommended rules
-      ...angularPlugin.configs.recommended.rules,
+      // Angular recommended rules (inlined from angular-eslint v22 ts-recommended config,
+      // as @angular-eslint/eslint-plugin v22 no longer exports configs.recommended)
+      '@angular-eslint/contextual-lifecycle': 'error',
+      '@angular-eslint/no-empty-lifecycle-method': 'error',
+      '@angular-eslint/no-input-rename': 'error',
+      '@angular-eslint/no-inputs-metadata-property': 'error',
+      '@angular-eslint/no-output-native': 'error',
+      '@angular-eslint/no-output-on-prefix': 'error',
+      '@angular-eslint/no-output-rename': 'error',
+      '@angular-eslint/no-outputs-metadata-property': 'error',
+      '@angular-eslint/prefer-inject': 'error',
+      '@angular-eslint/prefer-standalone': 'error',
+      '@angular-eslint/use-pipe-transform-interface': 'error',
+      '@angular-eslint/use-lifecycle-interface': 'warn',
 
       // Angular component/directive selectors
       '@angular-eslint/component-selector': [
@@ -124,8 +136,12 @@ export default [
       parser: templateParserEslint10Compatible,
     },
     rules: {
-      // Angular template recommended rules
-      ...angularTemplatePlugin.configs.recommended.rules,
+      // Angular template recommended rules (inlined from angular-eslint v22 template-recommended
+      // config, as @angular-eslint/eslint-plugin-template v22 no longer exports configs.recommended)
+      '@angular-eslint/template/banana-in-box': 'error',
+      '@angular-eslint/template/eqeqeq': 'error',
+      '@angular-eslint/template/no-negated-async': 'error',
+      '@angular-eslint/template/prefer-control-flow': 'error',
 
       // Template best practices
       '@angular-eslint/template/prefer-self-closing-tags': 'error',
