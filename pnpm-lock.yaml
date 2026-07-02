@@ -38,8 +38,8 @@ importers:
         specifier: 21.2.13
         version: 21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)
       '@babylonjs/core':
-        specifier: 9.12.0
-        version: 9.12.0
+        specifier: 9.14.0
+        version: 9.14.0
       '@ngrx/signals':
         specifier: 21.1.1
         version: 21.1.1(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -643,6 +643,7 @@ packages:
         integrity: sha512-VltLjoKi7lOIGtwkBy9jauV+JLU9PAaLU7/iIVxZBgucvV85xj7CA+//KOBzneQ5V+XtnpgVrdE9bHMFIhiH5Q==,
       }
     engines: { node: ^20.19.0 || ^22.12.0 || >=24.0.0 }
+    deprecated: '@angular/platform-browser-dynamic is deprecated. Use `@angular/platform-browser` instead.'
     peerDependencies:
       '@angular/common': 21.2.13
       '@angular/compiler': 21.2.13
@@ -1522,10 +1523,10 @@ packages:
       }
     engines: { node: '>=6.9.0' }
 
-  '@babylonjs/core@9.12.0':
+  '@babylonjs/core@9.14.0':
     resolution:
       {
-        integrity: sha512-00g7FhRkfBRw3Qvj/L86Gam8u3YTp/Op3SLoN4BNIUGM79nJVsE+ahQIDvxTTCOnt2eb4LmXzslTF2QfdChm7g==,
+        integrity: sha512-gEXo5KF8wEu+k0bZbNLLfwW2LoIQm6d2ljdOc16p2kLapclVnHc4nZOk8q6l8N4scWD7GYM9WuX3au1namokiw==,
       }
 
   '@bramus/specificity@2.4.2':
@@ -12339,7 +12340,7 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@babylonjs/core@9.12.0': {}
+  '@babylonjs/core@9.14.0': {}
 
   '@bramus/specificity@2.4.2':
     dependencies:
