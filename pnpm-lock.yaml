@@ -1,5 +1,9 @@
 lockfileVersion: '9.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -35,8 +39,8 @@ importers:
         specifier: 21.2.13
         version: 21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)
       '@babylonjs/core':
-        specifier: 9.14.0
-        version: 9.14.0
+        specifier: 9.15.0
+        version: 9.15.0
       '@ngrx/signals':
         specifier: 21.1.1
         version: 21.1.1(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -1039,8 +1043,8 @@ packages:
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
 
-  '@babylonjs/core@9.14.0':
-    resolution: {integrity: sha512-gEXo5KF8wEu+k0bZbNLLfwW2LoIQm6d2ljdOc16p2kLapclVnHc4nZOk8q6l8N4scWD7GYM9WuX3au1namokiw==}
+  '@babylonjs/core@9.15.0':
+    resolution: {integrity: sha512-HoLq2evNXQNqJFDIC3gngDGlEgQd/mmpbwwaKMJ0zW13tMc5jSf4Qxc4oUaBKdKMGHrJ8ylTObr36mdUFvLhfw==}
 
   '@bramus/specificity@2.4.2':
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
@@ -8187,7 +8191,7 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@babylonjs/core@9.14.0': {}
+  '@babylonjs/core@9.15.0': {}
 
   '@bramus/specificity@2.4.2':
     dependencies:
