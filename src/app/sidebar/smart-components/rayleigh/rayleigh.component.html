@@ -12,7 +12,7 @@ Aspect:
   <mat-button-toggle [value]="ResultAspect.Phase">arg</mat-button-toggle>
 </mat-button-toggle-group>
 Phase:
-<div style="display: flex; align-items: center">
+<div class="phase-controls">
   @if (animateTimer()) {
     <button type="button" mat-icon-button (click)="stopTimer()" [disabled]="!phaseEnabled()">
       <mat-icon>stop</mat-icon>
@@ -26,12 +26,15 @@ Phase:
     <mat-icon>replay</mat-icon>
   </button>
   <input
+    title="Global phase"
     min="0"
     max="6.28"
     step="0.01"
+    [style.--range-progress]="(phase() / 6.28) * 100 + '%'"
     type="range"
     [value]="phase()"
     (input)="setPhase($event)"
     [disabled]="!phaseEnabled()"
   />
 </div>
+<mat-checkbox [formField]="form.vectorModeEnabled">Vector diagram</mat-checkbox><span></span>

@@ -1,7 +1,5 @@
 @use '@angular/material' as mat;
 
-@import '@angular/material/prebuilt-themes/cyan-orange.css';
-
 $theme: mat.define-theme(
   (
     color: (
@@ -21,6 +19,8 @@ $theme: mat.define-theme(
 html {
   scrollbar-color: rgb(36, 36, 36) transparent;
   scrollbar-width: thin;
+  @include mat.system-level-colors($theme);
+  @include mat.system-level-typography($theme);
   @include mat.all-component-themes($theme);
 }
 
@@ -75,7 +75,67 @@ body {
   }
 
   input[type='range'] {
-    accent-color: var(--mat-slide-toggle-selected-handle-color);
+    --range-fill-color: var(--mat-button-toggle-selected-state-background-color);
+    --range-track-color: var(--mat-sys-surface-variant);
+    --range-progress: 0%;
+
+    appearance: none;
+    width: 100%;
+    height: 20px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(
+      to right,
+      var(--range-fill-color) 0 var(--range-progress),
+      var(--range-track-color) var(--range-progress) 100%
+    );
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+    margin-top: -8px;
+    border: 1px solid #333;
+    border-radius: 50%;
+    background: var(--mat-sys-primary);
+    cursor: grab;
+  }
+
+  input[type='range']:active::-webkit-slider-thumb {
+    cursor: grabbing;
+  }
+
+  input[type='range']::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--range-track-color);
+  }
+
+  input[type='range']::-moz-range-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--range-fill-color);
+  }
+
+  input[type='range']::-moz-range-thumb {
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #333;
+    border-radius: 50%;
+    background: var(--mat-sys-primary);
+    cursor: grab;
+  }
+
+  input[type='range']:active::-moz-range-thumb {
+    cursor: grabbing;
   }
 }
 

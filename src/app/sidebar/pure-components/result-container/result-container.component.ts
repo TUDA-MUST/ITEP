@@ -12,6 +12,7 @@ import { ApertureViewComponent } from '../aperture-view/aperture-view.component'
 import { StoreService } from 'src/app/store/store.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { RayleighVectorDiagramComponent } from '../../smart-components/rayleigh-vector-diagram/rayleigh-vector-diagram.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +27,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     KPIComponent,
     ApertureViewComponent,
     RayleighComponent,
+    RayleighVectorDiagramComponent,
     MatButtonModule,
   ],
 })
@@ -52,6 +54,7 @@ export class ResultContainerComponent {
   public readonly rayleighVisible = computed(() =>
     this.store.enabledResults().includes(Results.RayleighIntegral),
   );
+  public readonly rayleighVectorModeEnabled = this.store.vectorModeEnabled;
   public setHoveredKpi(hoveredKpi: HoveredKpi) {
     this.store.setHoveredKpi(hoveredKpi);
   }

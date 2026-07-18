@@ -1,0 +1,49 @@
+:host {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--mat-expansion-container-text-color, var(--mat-sys-on-surface));
+}
+
+svg {
+  width: 220px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.frame {
+  fill: none;
+  stroke: #8a8f99;
+  stroke-width: 0.01;
+}
+
+.axis {
+  stroke: var(--mat-expansion-container-text-color, var(--mat-sys-on-surface));
+  stroke-width: 0.008;
+}
+
+.chain {
+  fill: none;
+  stroke: #aab1bc;
+  stroke-width: 0.008;
+  stroke-dasharray: 0.03 0.02;
+}
+
+.vector {
+  stroke-width: 0.012;
+}
+
+.sum {
+  stroke: #f5f7fa;
+  stroke-width: 0.02;
+}
+
+.sum-arrowhead {
+  fill: #f5f7fa;
+}

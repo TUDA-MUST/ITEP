@@ -35,22 +35,31 @@ export class BabylonJSViewDirective implements AfterViewChecked, OnInit, OnDestr
 
   private resizeObserver = new ResizeObserver(() => {
     this.engine?.resize(true);
-    this.engine?.beginFrame();
-    this.scene()?.render();
-    this.engine?.endFrame();
+    this.requestRender();
   });
 
   engine: WebGPUEngine | NullEngine;
   public readonly scene = signal<Scene | null>(null);
   camera: ArcRotateCamera;
 
-  ngAfterViewChecked(): void {
-    const scene = this.scene();
-    if (scene) {
-      this.engine.beginFrame();
-      scene.render();
-      this.engine.endFrame();
+  private renderFrameId: number | null = null;
+
+  public requestRender(): void {
+    if (this.renderFrameId !== null) {
+      return;
     }
+    this.renderFrameId = requestAnimationFrame(() => {
+      this.renderFrameId = null;
+      const scene = this.scene();
+      if (scene) {
+        this.engine.beginFrame();
+        scene.render();
+        this.engine.endFrame();
+      }
+    });
+  }
+  ngAfterViewChecked(): void {
+    this.requestRender();
   }
 
   // FIXME: Should this be an effect?
@@ -58,9 +67,7 @@ export class BabylonJSViewDirective implements AfterViewChecked, OnInit, OnDestr
     void this.initEngine(this.canvasRef.nativeElement)
       .then(() => this.scene()?.whenReadyAsync())
       .then(() => {
-        this.engine.beginFrame();
-        this.scene()?.render();
-        this.engine.endFrame();
+        this.requestRender();
       });
     this.resizeObserver.observe(this.canvasRef.nativeElement);
   }
@@ -129,9 +136,7 @@ export class BabylonJSViewDirective implements AfterViewChecked, OnInit, OnDestr
     this.camera.zoomToMouseLocation = true;
 
     this.camera.onViewMatrixChangedObservable.add(() => {
-      this.engine.beginFrame();
-      scene.render();
-      this.engine.endFrame();
+      this.requestRender();
     });
 
     new HemisphericLight('light1', new Vector3(0, 1, 0), scene);
@@ -160,6 +165,10 @@ export class BabylonJSViewDirective implements AfterViewChecked, OnInit, OnDestr
   }
 
   ngOnDestroy(): void {
+    if (this.renderFrameId !== null) {
+      cancelAnimationFrame(this.renderFrameId);
+      this.renderFrameId = null;
+    }
     this.engine?.stopRenderLoop();
     this.engine?.dispose();
     this.resizeObserver.unobserve(this.canvasRef.nativeElement);
