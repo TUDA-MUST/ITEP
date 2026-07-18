@@ -43,6 +43,9 @@
       }
     </mat-expansion-panel-header>
     <app-rayleigh />
+    @if (rayleighVectorModeEnabled()) {
+      <app-rayleigh-vector-diagram />
+    }
     <mat-action-row>
       <button type="button" mat-icon-button color="primary" (click)="exportRayleigh()">
         <mat-icon>download</mat-icon>

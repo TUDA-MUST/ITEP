@@ -1,8 +1,8 @@
 :host {
   --joystick-bg: transparent;
   --joystick-axis: var(--mat-expansion-container-text-color, var(--mat-sys-on-surface));
-  --joystick-axis-active: var(--mat-stepper-header-edit-state-icon-background-color);
-  --joystick-knob: var(--mat-stepper-header-edit-state-icon-background-color);
+  --joystick-axis-active: var(--mat-sys-primary);
+  --joystick-knob: var(--mat-sys-primary);
   --joystick-knob-border: #333;
 
   svg {

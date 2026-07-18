@@ -12,12 +12,25 @@
 
   <app-transducer-buffer [transducers]="transducers()" [beamforming]="beamforming()" [k]="k()">
     @if (rayleighEnabled()) {
+      <app-rayleigh-probe-renderer
+        [enabled]="rayleighVectorModeEnabled()"
+        [resultSet]="rayleighResultSet()"
+        [point]="rayleighProbePoint()"
+        (pointChange)="onRayleighProbePointChanged($event)"
+      />
+
       <app-rayleigh-integral-renderer
         [transducers]="transducers()"
         [environment]="arrayConfig().environment"
         [aspect]="rayleighAspect()"
         [resultSet]="rayleighResultSet()"
         [globalPhase]="globalPhase()"
+      />
+
+      <app-rayleigh-vector-rays-renderer
+        [enabled]="rayleighVectorModeEnabled()"
+        [transducers]="transducers()"
+        [point]="rayleighProbePoint()"
       />
     }
 

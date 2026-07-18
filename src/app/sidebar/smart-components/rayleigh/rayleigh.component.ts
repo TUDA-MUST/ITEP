@@ -42,6 +42,7 @@ export class RayleighComponent {
     rayleighVisible: false,
     rayleighAspect: ResultAspect.Elongation,
     resultSet: 'XZPlane' as ResultSet,
+    vectorModeEnabled: false,
   });
 
   protected readonly phaseEnabled = computed(
@@ -51,8 +52,18 @@ export class RayleighComponent {
   );
 
   protected form = form(this.formModel, (schemaPath) => {
-    disabled(schemaPath.rayleighAspect, ({ valueOf }) => !valueOf(schemaPath.rayleighVisible));
-    disabled(schemaPath.resultSet, ({ valueOf }) => !valueOf(schemaPath.rayleighVisible));
+    disabled(
+      schemaPath.rayleighAspect,
+      ({ valueOf: getValue }) => !getValue(schemaPath.rayleighVisible),
+    );
+    disabled(
+      schemaPath.resultSet,
+      ({ valueOf: getValue }) => !getValue(schemaPath.rayleighVisible),
+    );
+    disabled(
+      schemaPath.vectorModeEnabled,
+      ({ valueOf: getValue }) => !getValue(schemaPath.rayleighVisible),
+    );
   });
 
   updateForm = effect(() =>
@@ -60,6 +71,7 @@ export class RayleighComponent {
       rayleighVisible: this.store.enabledResults().includes(Results.RayleighIntegral),
       rayleighAspect: this.store.aspect(),
       resultSet: this.store.resultSet(),
+      vectorModeEnabled: this.store.vectorModeEnabled(),
     }),
   );
 
@@ -69,6 +81,7 @@ export class RayleighComponent {
       this.store.setResultVisible(Results.RayleighIntegral, formValue.rayleighVisible);
       this.store.setAspect(formValue.rayleighAspect);
       this.store.setResultSet(formValue.resultSet);
+      this.store.setVectorModeEnabled(formValue.vectorModeEnabled);
     }
   });
 
