@@ -34,7 +34,7 @@ export class RayleighVectorRaysRendererComponent implements OnDestroy {
   private readonly transducerBuffer = inject(TransducerBufferComponent, { optional: true });
 
   readonly update = effect(() => {
-    const scene = this.transducerBuffer?.scene?.();
+    const scene = this.transducerBuffer?.bufferContext()?.scene;
     if (scene && !this.sceneRef) {
       this.sceneRef = scene;
     }
