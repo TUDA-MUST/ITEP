@@ -94,12 +94,13 @@ export class TransducerBufferComponent implements OnDestroy {
   updateBuffer(transducers: Transducer[], bf: BeamformingState | null): void {
     if (this.uniformExcitationBuffer) {
       const bfuv = azElToUV(bf ?? { az: 0, el: 0 });
+      const waveNumber = this.k();
 
       const excitationBuffer = transducers.reduce((buffer, transducer, index) => {
-        const phase = bf?.beamformingEnabled
-          ? (this.k() ?? 700) *
-            ((bfuv.u ?? 0) * transducer.pos.x + (bfuv.v ?? 0) * transducer.pos.y)
-          : 0;
+        const phase =
+          bf?.beamformingEnabled && waveNumber !== null
+            ? waveNumber * ((bfuv.u ?? 0) * transducer.pos.x + (bfuv.v ?? 0) * transducer.pos.y)
+            : 0;
         setExcitationElement(transducer.pos, phase, buffer, index);
         return buffer;
       }, createExcitationBuffer());

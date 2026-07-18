@@ -18,7 +18,7 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import type { ResultSet } from 'src/app/store/rayleigh.state';
 import type { Transducer } from 'src/app/store/store.service';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
-import type { Environment } from 'src/app/core/environment';
+import { frequencyFromBase, type Environment } from 'src/app/core/environment';
 
 export const cubeCut = (): VertexData => {
   const positions = [
@@ -147,7 +147,13 @@ export class RayleighIntegralRendererComponent implements OnDestroy {
 
   private uploadEnvironment(environment: Environment | null): void {
     if (environment) {
-      const omega = 2.0 * Math.PI * 40000;
+      const omega =
+        2.0 *
+        Math.PI *
+        frequencyFromBase(
+          environment.excitationFrequencyBase,
+          environment.excitationFrequencyMultiplier,
+        );
 
       this.material.setFloat('omega', omega);
       this.material.setFloat('k', omega / environment.speedOfSound);

@@ -1,4 +1,4 @@
-import { type Scene } from '@babylonjs/core/scene';
+import type { Scene } from '@babylonjs/core/scene';
 import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { excitationBufferMaxElementsDefine } from '../../utils/excitationbuffer';
@@ -6,7 +6,7 @@ import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
 
 import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
 import { Constants } from '@babylonjs/core/Engines/constants';
-import { type BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
+import type { BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
 import { colormapTextureSampleRows } from '../shared/colormap-texture';
 
 const rayleighVertexShaderCode = /* wgsl*/ `
@@ -16,7 +16,7 @@ const rayleighVertexShaderCode = /* wgsl*/ `
   uniform worldViewProjection : mat4x4<f32>;
 
   attribute position : vec3<f32>;
-  
+
   varying r : vec3<f32>;
 
   @vertex
@@ -56,13 +56,12 @@ const rayleighFragmentShaderCode = /* wgsl*/ `
 
       let amplitude = 1.0;
       let area = elm.phasor.y;
-      // elm.phasor.x is a phase shift
-      let delay = elm.phasor.x / uniforms.omega;
-
-      let argz = (d*uniforms.k + delay*uniforms.omega - uniforms.globalPhase);
+      // elm.phasor.x is a phase shift [rad]. Keep it in phase space so a
+      // zero excitation frequency does not require dividing by omega.
+      let argz = (d*uniforms.k + elm.phasor.x - uniforms.globalPhase);
       elongation += vec2(cos(argz), sin(argz))*amplitude*area*oodd;
-    } 
-  
+    }
+
     // glFragColor = vec4(.5 + elongation.x, .5-elongation.x, 0.5,1);
     if (uniforms.viewmode == 0) { // Elongation
       let intensity = saturate(0.5 + (.5*elongation.x + .25) / (f32(uniforms.numElements)*uniforms.dynamicRange));

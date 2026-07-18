@@ -28,7 +28,7 @@ struct ResultPoint {
 
 struct ExcitationElement { // size per element: 8
   position : vec4<f32>, // offset 0
-  phasor : vec4<f32>, // 0: amplitude, 1: area, 2: delay, 3: dummy // Offset  16
+  phasor : vec4<f32>, // 0: phase shift [rad], 1: radiator area weight, 2-3: reserved // offset 16
 };
 
 struct ExcitationBuffer {

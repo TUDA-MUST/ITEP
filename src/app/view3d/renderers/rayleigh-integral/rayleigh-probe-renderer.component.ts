@@ -148,7 +148,7 @@ export class RayleighProbeRendererComponent implements OnDestroy {
   constructor() {
     // react to availability of the scene provided by TransducerBufferComponent
     effect(() => {
-      const scene = this.transducerBuffer?.scene?.();
+      const scene = this.transducerBuffer?.bufferContext()?.scene;
       if (scene && !this.sceneRef) {
         this.initializeScene(scene);
       }
