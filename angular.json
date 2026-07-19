@@ -31,7 +31,10 @@
             "optimization": false,
             "namedChunks": true,
             "allowedCommonJsDependencies": ["@babylonjs/inspector"],
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "loader": {
+              ".wgsl": "text"
+            }
           },
           "configurations": {
             "production": {
