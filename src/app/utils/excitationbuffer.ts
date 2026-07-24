@@ -1,4 +1,5 @@
 import { type Vector3 } from '@babylonjs/core/Maths/math.vector';
+import excitationBufferInclude from './excitation-buffer.wgsl';
 
 export const excitationBufferMaxElements = 2048;
 export const excitationBufferMaxElementsDefine = `#define MAX_ELEMENTS ${excitationBufferMaxElements}`;
@@ -10,18 +11,7 @@ export interface ExcitationElement {
   amplitude: number;
 }
 
-export const excitationBufferInclude = /* wgsl */ `
-  struct ExcitationElement { // size per element: 8
-    position : vec4<f32>, // offset 0
-    phasor : vec4<f32>, // 0: phase shift [rad], 1: radiator area weight, 2-3: reserved // offset 16
-  };
-
-  struct ExcitationBuffer { 
-    elements: array<ExcitationElement, 2048>,
-  };
-
-  var<uniform> excitation: ExcitationBuffer;
-`;
+export { excitationBufferInclude };
 
 export function createExcitationBuffer() {
   return new Float32Array(excitationBufferElementSize * excitationBufferMaxElements);
