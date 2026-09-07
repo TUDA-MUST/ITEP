@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 
-import { ResultAspect } from '../../../view3d/materials/rayleigh.material';
+import { ResultAspect } from '../../../core/result-aspect';
 
 import { Results } from 'src/app/store/viewportConfig.state';
 import type { ResultSet } from 'src/app/store/rayleigh.state';

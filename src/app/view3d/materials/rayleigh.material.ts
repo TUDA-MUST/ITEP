@@ -1,69 +1,50 @@
-import type { Scene } from '@babylonjs/core/scene';
-import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
-import { Engine } from '@babylonjs/core/Engines/engine';
-import { excitationBufferMaxElementsDefine } from '../../utils/excitationbuffer';
-import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
+import {
+  createShaderMaterial,
+  setShaderStorageBuffer,
+  setShaderTexture,
+  type ShaderMaterial,
+  type StorageBuffer,
+  type Texture2D,
+} from '@babylonjs/lite';
 
-import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
-import { Constants } from '@babylonjs/core/Engines/constants';
-import type { BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
-import { colormapTextureSampleRows } from '../shared/colormap-texture';
-import vertexSource from './shaders/rayleigh.vertex.wgsl';
+import { excitationBufferMaxElements } from '../../utils/excitationbuffer';
 import fragmentSource from './shaders/rayleigh.fragment.wgsl';
+import vertexSource from './shaders/rayleigh.vertex.wgsl';
 
-// Do not make type since integers are needed for shader uniforms
-export enum ResultAspect {
+export enum LiteResultAspect {
   Elongation = 0,
   Amplitude = 1,
   Phase = 2,
 }
 
-export class RayleighMaterial extends ShaderMaterial {
-  constructor(scene: Scene, texture: BaseTexture) {
-    super(
-      'RayleighMaterial',
-      scene,
-      {
-        vertexSource,
-        fragmentSource,
-      },
-      {
-        attributes: ['position', 'normal', 'uv'],
-        uniforms: [
-          'worldViewProjection',
-          'globalPhase',
-          'k',
-          'omega',
-          'viewmode',
-          'dynamicRange',
-          'elongationColormapY',
-          'magnitudeColormapY',
-          'phaseColormapY',
-          'numElements',
-        ],
-        uniformBuffers: ['Scene', 'Mesh', 'excitation'],
-        samplers: ['colormapSampler'],
-        defines: ['#define INSTANCES', excitationBufferMaxElementsDefine],
-        shaderLanguage: ShaderLanguage.WGSL,
-      },
-    );
-    this.backFaceCulling = false;
+export function createRayleighLiteMaterial(
+  colormap: Texture2D,
+  excitation: StorageBuffer,
+): ShaderMaterial {
+  const material = createShaderMaterial({
+    name: 'RayleighMaterial',
+    vertexSource,
+    fragmentSource,
+    attributes: ['position'],
+    uniforms: [
+      'worldViewProjection',
+      { name: 'globalPhase', type: 'f32', defaultValue: 0 },
+      { name: 'k', type: 'f32', defaultValue: 0 },
+      { name: 'viewmode', type: 'i32', defaultValue: LiteResultAspect.Elongation },
+      { name: 'dynamicRange', type: 'f32', defaultValue: 10 },
+      { name: 'elongationColormapY', type: 'f32', defaultValue: 0 },
+      { name: 'magnitudeColormapY', type: 'f32', defaultValue: 0 },
+      { name: 'phaseColormapY', type: 'f32', defaultValue: 0 },
+      { name: 'numElements', type: 'i32', defaultValue: 0 },
+    ],
+    samplers: ['colormap'],
+    storageBuffers: [
+      { name: 'excitation', type: `array<ExcitationElement, ${excitationBufferMaxElements}>` },
+    ],
+    backFaceCulling: false,
+  });
 
-    this.setTexture('colormapTexture', texture);
-    this.setFloat('elongationColormapY', colormapTextureSampleRows.coolwarm);
-    this.setFloat('magnitudeColormapY', colormapTextureSampleRows.viridis);
-    this.setFloat('phaseColormapY', colormapTextureSampleRows.twilightShifted);
-    const sampler = new TextureSampler();
-
-    sampler.setParameters(Engine.TEXTURE_CLAMP_ADDRESSMODE, Engine.TEXTURE_CLAMP_ADDRESSMODE); // use the default values
-    sampler.samplingMode = Constants.TEXTURE_NEAREST_SAMPLINGMODE;
-
-    this.setTextureSampler('colormapSampler', sampler);
-  }
-
-  public setResultAspect(aspect: ResultAspect | null): void {
-    if (aspect !== null) {
-      this.setInt('viewmode', aspect);
-    }
-  }
+  setShaderTexture(material, 'colormap', colormap);
+  setShaderStorageBuffer(material, 'excitation', excitation);
+  return material;
 }
