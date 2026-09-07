@@ -12,10 +12,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Angle } from '@babylonjs/core/Maths/math.path';
 import { StoreService } from 'src/app/store/store.service';
 import { JoystickComponent } from '../joystick/joystick.component';
-import { deg2rad } from 'src/app/utils/degrad';
+import { deg2rad, rad2deg } from 'src/app/utils/degrad';
 import { disabled, FormField, form, max, min } from '@angular/forms/signals';
 import type { AzElCoordinates } from 'src/app/utils/uv';
 
@@ -86,8 +85,8 @@ export class BeamformingComponent {
     const bf = this.store.beamforming();
     this.form().reset({
       beamformingEnabled: bf?.beamformingEnabled,
-      az: normalizeAngle(Angle.FromRadians(bf.az).degrees()),
-      el: normalizeAngle(Angle.FromRadians(bf.el).degrees()),
+      az: normalizeAngle(rad2deg(bf.az)),
+      el: normalizeAngle(rad2deg(bf.el)),
     });
   });
 

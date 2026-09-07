@@ -1,107 +1,84 @@
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  input,
-  type OnDestroy,
-  inject,
-} from '@angular/core';
-import type { Scene } from '@babylonjs/core/scene';
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import type { LinesMesh } from '@babylonjs/core/Meshes/linesMesh';
-import { CreateLineSystem } from '@babylonjs/core/Meshes/Builders/linesBuilder';
-import { Color4 } from '@babylonjs/core/Maths/math.color';
-import { TransducerBufferComponent } from '../../shared/transducer-buffer.component';
-import type { Transducer } from 'src/app/store/store.service';
+  addToScene,
+  createLineMaterial,
+  createLineSystem,
+  removeFromScene,
+  setMeshVisible,
+  updateLineSystem,
+  type Mesh,
+} from '@babylonjs/lite';
+
 import type { RayleighProbePoint } from 'src/app/store/rayleigh.state';
+import type { Transducer } from 'src/app/store/store.service';
 import { rayleighVectorColor } from 'src/app/utils/rayleigh-vector-colors';
+import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
 
 @Component({
   selector: 'app-rayleigh-vector-rays-renderer',
-  template: '<ng-content/>',
+  template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
 })
-export class RayleighVectorRaysRendererComponent implements OnDestroy {
+export class RayleighVectorRaysRendererComponent {
+  private readonly resources = inject(LiteRendererResourcesDirective);
+
   readonly transducers = input<Transducer[] | null>(null);
   readonly point = input<RayleighProbePoint>({ x: 0, y: 0, z: 0.5 });
-  readonly enabled = input<boolean>(false);
+  readonly enabled = input(false);
 
-  private sceneRef: Scene | null = null;
-  private raysMesh: LinesMesh | null = null;
-  private raysMeshElementCount = 0;
+  private mesh: Mesh | null = null;
+  private rayCount = 0;
 
-  private readonly transducerBuffer = inject(TransducerBufferComponent, { optional: true });
-
-  readonly update = effect(() => {
-    const scene = this.transducerBuffer?.bufferContext()?.scene;
-    if (scene && !this.sceneRef) {
-      this.sceneRef = scene;
-    }
-
-    if (!this.sceneRef) {
-      return;
-    }
-
+  private readonly update = effect(() => {
+    const context = this.resources.bufferContext();
     const transducers = this.transducers() ?? [];
     const point = this.point();
-    const enabled = this.enabled();
+    const enabled = this.enabled() && transducers.length > 0;
+    if (!context) return;
 
-    if (!enabled || transducers.length === 0) {
-      this.raysMesh?.setEnabled(false);
+    if (!enabled) {
+      if (this.mesh) setMeshVisible(this.mesh, false);
       return;
-    }
-
-    // Babylon can update line positions in-place, but it cannot change the line count.
-    // Recreate the mesh if the number of transducers (thus line segments) changed.
-    if (this.raysMesh && this.raysMeshElementCount !== transducers.length) {
-      this.raysMesh.dispose();
-      this.raysMesh = null;
-      this.raysMeshElementCount = 0;
     }
 
     const lines = transducers.map((transducer) => [
-      new Vector3(transducer.pos.x, transducer.pos.y, transducer.pos.z),
-      new Vector3(point.x, point.y, point.z),
+      { x: transducer.pos.x, y: transducer.pos.y, z: transducer.pos.z },
+      { x: point.x, y: point.y, z: point.z },
     ]);
     const colors = transducers.map((_, index) => {
       const color = rayleighVectorColor(index);
-      const lineColor = new Color4(color.r, color.g, color.b, 0.75);
+      const lineColor = { r: color.r, g: color.g, b: color.b, a: 0.75 };
       return [lineColor, lineColor];
     });
 
-    if (this.raysMesh) {
-      CreateLineSystem(
-        'rayleighProbeRays',
-        {
-          lines,
-          colors,
-          updatable: true,
-          instance: this.raysMesh,
-        },
-        this.sceneRef,
-      );
-    } else {
-      this.raysMesh = CreateLineSystem(
-        'rayleighProbeRays',
-        {
-          lines,
-          colors,
-          updatable: true,
-        },
-        this.sceneRef,
-      );
-      this.raysMesh.isPickable = false;
-      this.raysMesh.alwaysSelectAsActiveMesh = true;
-      this.raysMesh.doNotSyncBoundingInfo = true;
-      this.raysMesh.renderingGroupId = 2;
-      this.raysMeshElementCount = transducers.length;
+    if (this.mesh && this.rayCount !== transducers.length) {
+      removeFromScene(context.scene, this.mesh);
+      this.mesh = null;
+      this.rayCount = 0;
     }
 
-    this.raysMesh.setEnabled(true);
+    if (this.mesh) {
+      updateLineSystem(context.engine, this.mesh, { lines, colors });
+    } else {
+      const material = createLineMaterial({
+        color: { r: 1, g: 1, b: 1, a: 1 },
+        useVertexColor: true,
+        useVertexAlpha: true,
+        depthCompare: 'always',
+        depthWrite: false,
+      });
+      this.mesh = createLineSystem(context.engine, {
+        name: 'rayleighProbeRays',
+        lines,
+        colors,
+        material,
+        useVertexAlpha: true,
+      });
+      this.mesh.renderOrder = 2;
+      this.mesh.pickable = false;
+      this.rayCount = transducers.length;
+      addToScene(context.scene, this.mesh);
+    }
+    setMeshVisible(this.mesh, true);
   });
-
-  ngOnDestroy(): void {
-    this.raysMesh?.dispose();
-  }
 }

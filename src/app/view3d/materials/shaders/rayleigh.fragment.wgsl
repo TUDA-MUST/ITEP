@@ -1,61 +1,44 @@
-#include<ExcitationBuffer>
+struct ExcitationElement {
+  position: vec4<f32>,
+  phasor: vec4<f32>,
+};
 
-var colormapSampler : sampler;
-var colormapTexture : texture_2d<f32>;
-uniform globalPhase : f32;
+struct VertexOutput {
+  @builtin(position) position: vec4<f32>,
+  @location(0) r: vec3<f32>,
+};
 
-uniform k : f32;
-uniform omega : f32;
-
-uniform viewmode : i32;
-uniform dynamicRange : f32;
-uniform elongationColormapY : f32;
-uniform magnitudeColormapY : f32;
-uniform phaseColormapY : f32;
-
-uniform numElements : i32;
-
-varying r : vec3<f32>;
+const RESULT_ASPECT_ELONGATION: i32 = 0;
+const RESULT_ASPECT_AMPLITUDE: i32 = 1;
 
 @fragment
-fn main(input : FragmentInputs) -> FragmentOutputs {
-  var elongation : vec2<f32> = vec2<f32>(0.0,0.0); // Complex number
+fn mainFragment(input: VertexOutput) -> @location(0) vec4<f32> {
+  var elongation = vec2<f32>(0.0, 0.0);
 
-  for (var j = 0; j < uniforms.numElements; j++) {
-    let elm = excitation.elements[j];
-    let d = distance(elm.position.xyz, fragmentInputs.r);
-    let oodd = pow(d,-2.0);
-
-    let amplitude = 1.0;
-    let area = elm.phasor.y;
-    // elm.phasor.x is a phase shift [rad]. Keep it in phase space so a
-    // zero excitation frequency does not require dividing by omega.
-    let argz = (d*uniforms.k + elm.phasor.x - uniforms.globalPhase);
-    elongation += vec2(cos(argz), sin(argz))*amplitude*area*oodd;
+  for (var j = 0; j < shaderUniforms.numElements; j++) {
+    let element = excitation[j];
+    let distanceToElement = distance(element.position.xyz, input.r);
+    let inverseDistanceSquared = pow(distanceToElement, -2.0);
+    let argument = distanceToElement * shaderUniforms.k + element.phasor.x - shaderUniforms.globalPhase;
+    elongation += vec2<f32>(cos(argument), sin(argument)) * element.phasor.y * inverseDistanceSquared;
   }
 
-  // glFragColor = vec4(.5 + elongation.x, .5-elongation.x, 0.5,1);
-  if (uniforms.viewmode == 0) { // Elongation
-    let intensity = saturate(0.5 + (.5*elongation.x + .25) / (f32(uniforms.numElements)*uniforms.dynamicRange));
-    fragmentOutputs.color = textureSample(
-      colormapTexture,
-      colormapSampler,
-      vec2<f32>(intensity, uniforms.elongationColormapY)
+  if (shaderUniforms.viewmode == RESULT_ASPECT_ELONGATION) {
+    let intensity = clamp(
+      0.5 + (0.5 * elongation.x + 0.25) /
+        (f32(shaderUniforms.numElements) * shaderUniforms.dynamicRange),
+      0.0,
+      1.0,
     );
-  } else if (uniforms.viewmode == 1) { // Magnitude
-    let magnitude = log(length(elongation) / f32(uniforms.numElements))/log(10.0f);
-    let intensity = saturate((magnitude + uniforms.dynamicRange) / uniforms.dynamicRange);
-    fragmentOutputs.color = textureSample(
-      colormapTexture,
-      colormapSampler,
-      vec2<f32>(intensity, uniforms.magnitudeColormapY)
-    );
-  } else if (uniforms.viewmode == 2) { // Phase
-    let intensity = fract(atan2(elongation.y, elongation.x) / (2.0 * 3.14159265358979323846) + 1.0);
-    fragmentOutputs.color = textureSample(
-      colormapTexture,
-      colormapSampler,
-      vec2<f32>(intensity, uniforms.phaseColormapY)
-    );
+    return textureSample(colormap, colormapSampler, vec2<f32>(intensity, shaderUniforms.elongationColormapY));
   }
+
+  if (shaderUniforms.viewmode == RESULT_ASPECT_AMPLITUDE) {
+    let magnitude = log(length(elongation) / f32(shaderUniforms.numElements)) / log(10.0);
+    let intensity = clamp((magnitude + shaderUniforms.dynamicRange) / shaderUniforms.dynamicRange, 0.0, 1.0);
+    return textureSample(colormap, colormapSampler, vec2<f32>(intensity, shaderUniforms.magnitudeColormapY));
+  }
+
+  let intensity = fract(atan2(elongation.y, elongation.x) / (2.0 * 3.141592653589793) + 1.0);
+  return textureSample(colormap, colormapSampler, vec2<f32>(intensity, shaderUniforms.phaseColormapY));
 }

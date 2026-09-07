@@ -3,5 +3,3 @@ allowBuilds:
   esbuild: true
   lmdb: true
   msgpackr-extract: true
-minimumReleaseAgeExclude:
-  - '@babylonjs/core@9.12.0'

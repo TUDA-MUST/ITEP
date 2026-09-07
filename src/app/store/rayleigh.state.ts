@@ -1,5 +1,5 @@
 import { signalStoreFeature, withState, withMethods, patchState } from '@ngrx/signals';
-import { ResultAspect } from 'src/app/view3d/materials/rayleigh.material';
+import { ResultAspect } from 'src/app/core/result-aspect';
 
 export type ResultSet = 'XZPlane' | 'YZPlane' | 'CutCube';
 

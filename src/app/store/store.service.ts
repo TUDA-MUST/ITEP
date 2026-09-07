@@ -1,8 +1,8 @@
 import { computed } from '@angular/core';
 import { signalStore, withMethods, withState, patchState, withComputed } from '@ngrx/signals';
 
-import type { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { presets } from '../presets';
+import type { Vector3Data } from '../core/vector';
 
 import { withViewportConfig } from './viewportConfig.state';
 import { withSelection } from './selection.state';
@@ -33,7 +33,7 @@ export type ArrayConfigType = ArrayConfig['config']['type'];
 
 export interface Transducer {
   name: string;
-  pos: Vector3;
+  pos: Vector3Data;
   enabled: boolean;
   selected: boolean;
 }
