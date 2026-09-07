@@ -1,5 +1,4 @@
 import { type Meta, type StoryObj } from '@storybook/angular';
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { ApertureViewComponent } from './aperture-view.component';
 
 const meta: Meta<ApertureViewComponent> = {
@@ -14,10 +13,10 @@ export default meta;
 type Story = StoryObj<ApertureViewComponent>;
 
 const ura2x2 = [
-  { name: 'T0', pos: new Vector3(-0.0043, -0.0043), enabled: true, selected: false },
-  { name: 'T1', pos: new Vector3(0.0043, -0.0043), enabled: true, selected: false },
-  { name: 'T2', pos: new Vector3(-0.0043, 0.0043), enabled: true, selected: false },
-  { name: 'T3', pos: new Vector3(0.0043, 0.0043), enabled: true, selected: false },
+  { name: 'T0', pos: { x: -0.0043, y: -0.0043, z: 0 }, enabled: true, selected: false },
+  { name: 'T1', pos: { x: 0.0043, y: -0.0043, z: 0 }, enabled: true, selected: false },
+  { name: 'T2', pos: { x: -0.0043, y: 0.0043, z: 0 }, enabled: true, selected: false },
+  { name: 'T3', pos: { x: 0.0043, y: 0.0043, z: 0 }, enabled: true, selected: false },
 ];
 
 export const PointSources: Story = {

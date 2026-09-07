@@ -1,74 +1,43 @@
-import { type Scene } from '@babylonjs/core/scene';
-import { ShaderMaterial } from '@babylonjs/core/Materials/shaderMaterial';
+import {
+  createShaderMaterial,
+  setShaderStorageBuffer,
+  setShaderTexture,
+  type ShaderMaterial,
+  type StorageBuffer,
+  type Texture2D,
+} from '@babylonjs/lite';
 
-import { excitationBufferMaxElementsDefine } from '../../utils/excitationbuffer';
-import { ShaderLanguage } from '@babylonjs/core/Materials/shaderLanguage';
-import { type TransducerType } from 'src/app/core/transducer';
-import { TextureSampler } from '@babylonjs/core/Materials/Textures/textureSampler';
-import { Engine } from '@babylonjs/core/Engines/engine';
-import { Constants } from '@babylonjs/core/Engines/constants';
-import { type BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture';
-import { colormapTextureSampleRows } from '../shared/colormap-texture';
-import vertexSource from './shaders/farfield.vertex.wgsl';
+import { excitationBufferMaxElements } from '../../utils/excitationbuffer';
 import fragmentSource from './shaders/farfield.fragment.wgsl';
+import vertexSource from './shaders/farfield.vertex.wgsl';
 
-export class FarfieldMaterial extends ShaderMaterial {
-  constructor(scene: Scene, texture: BaseTexture) {
-    super(
-      'FarfieldMaterial',
-      scene,
-      {
-        vertexSource,
-        fragmentSource,
-      },
-      {
-        attributes: ['position', 'normal', 'uv'],
-        uniforms: [
-          'worldViewProjection',
-          'projection',
-          'globalPhase',
-          'k',
-          'ka',
-          'kb',
-          't',
-          'dynamicRange',
-          'numElements',
-          'transducerType',
-          'colormapY',
-        ],
-        uniformBuffers: ['Scene', 'Mesh', 'excitation'],
-        samplers: ['colormapSampler'],
-        defines: ['#define INSTANCES', excitationBufferMaxElementsDefine],
-        shaderLanguage: ShaderLanguage.WGSL,
-      },
-    );
+export function createFarfieldLiteMaterial(
+  colormap: Texture2D,
+  excitation: StorageBuffer,
+): ShaderMaterial {
+  const material = createShaderMaterial({
+    name: 'FarfieldMaterial',
+    vertexSource,
+    fragmentSource,
+    attributes: ['position', 'uv'],
+    uniforms: [
+      'worldViewProjection',
+      { name: 'k', type: 'f32', defaultValue: 0 },
+      { name: 'ka', type: 'f32', defaultValue: 0 },
+      { name: 'kb', type: 'f32', defaultValue: 0 },
+      { name: 'dynamicRange', type: 'f32', defaultValue: 50 },
+      { name: 'numElements', type: 'i32', defaultValue: 0 },
+      { name: 'transducerType', type: 'i32', defaultValue: 0 },
+      { name: 'colormapY', type: 'f32', defaultValue: 0 },
+    ],
+    samplers: ['colormap'],
+    storageBuffers: [
+      { name: 'excitation', type: `array<ExcitationElement, ${excitationBufferMaxElements}>` },
+    ],
+    backFaceCulling: false,
+  });
 
-    this.backFaceCulling = false;
-    this.wireframe = false;
-
-    this.setTexture('colormapTexture', texture);
-    this.setFloat('colormapY', colormapTextureSampleRows.viridis);
-
-    const sampler = new TextureSampler();
-    sampler.setParameters(Engine.TEXTURE_CLAMP_ADDRESSMODE, Engine.TEXTURE_CLAMP_ADDRESSMODE);
-    sampler.samplingMode = Constants.TEXTURE_NEAREST_SAMPLINGMODE;
-
-    this.setTextureSampler('colormapSampler', sampler);
-  }
-
-  setTransducerModel(model: TransducerType): void {
-    switch (model.type) {
-      case 'Point':
-        this.setInt('transducerType', 0);
-        break;
-      case 'Piston':
-        this.setInt('transducerType', 1);
-        break;
-      case 'Rectangular':
-        this.setInt('transducerType', 2);
-        break;
-      default:
-        console.warn('Unknown transducer model: ', model);
-    }
-  }
+  setShaderTexture(material, 'colormap', colormap);
+  setShaderStorageBuffer(material, 'excitation', excitation);
+  return material;
 }

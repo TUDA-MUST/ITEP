@@ -1,8 +1,8 @@
 // Code to calculate element positions
 
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import type { Point } from '../store/export.state';
 import type { Transducer } from '../store/store.service';
+import { vector3, type Vector3Data } from './vector';
 
 export interface CircularConfig {
   type: 'circular';
@@ -59,7 +59,7 @@ const uraPositions = (uraConfig: UraConfig) => {
       const ypos = -sizeYH + y * pitchY;
       excitation.push({
         name: `Transducer ${y * elementsY + x}`,
-        pos: new Vector3(xpos, ypos),
+        pos: vector3(xpos, ypos),
         enabled: false,
         selected: false,
       });
@@ -83,7 +83,7 @@ const hexagonalPositions = (hexagonalConfig: HexagonalConfig) => {
   // In axialen Koordinaten ist der "Radius" k = elements - 1.
   const k = elements - 1;
 
-  const points: { name: string; pos: Vector3; enabled: boolean; selected: boolean }[] = [];
+  const points: { name: string; pos: Vector3Data; enabled: boolean; selected: boolean }[] = [];
 
   // Alle axialen Koordinaten (q,r) mit max(|q|,|r|,|s|) <= k, s=-q-r
   for (let q = -k; q <= k; q++) {
@@ -103,7 +103,7 @@ const hexagonalPositions = (hexagonalConfig: HexagonalConfig) => {
 
       points.push({
         name: `Transducer ${points.length}`,
-        pos: new Vector3(x, y),
+        pos: vector3(x, y),
         enabled: false,
         selected: false,
       });
@@ -120,7 +120,7 @@ const spiralPositions = (spiralConfig: SpiralConfig) =>
     const phi = (2 * Math.PI * arrayIndex * (1 + Math.sqrt(5))) / 2;
     return {
       name: `Transducer ${arrayIndex}`,
-      pos: new Vector3(Math.cos(phi), Math.sin(phi)).scale(radius),
+      pos: vector3(Math.cos(phi) * radius, Math.sin(phi) * radius),
       enabled: false,
       selected: false,
     };
@@ -131,7 +131,10 @@ const circularPositions = (circularConfig: CircularConfig) =>
     const phi = (i * 2 * Math.PI) / circularConfig.elementCount;
     return {
       name: `Transducer ${i}`,
-      pos: new Vector3(Math.cos(phi), Math.sin(phi)).scale(circularConfig.diameter / 2),
+      pos: vector3(
+        Math.cos(phi) * circularConfig.diameter / 2,
+        Math.sin(phi) * circularConfig.diameter / 2,
+      ),
       enabled: false,
       selected: false,
     };
@@ -150,7 +153,7 @@ export const transducerPositions = (arrayGeometry: ArrayGeometry) => {
     case 'free':
       return arrayGeometry.positions.map((e, idx) => ({
         name: `Transducer ${idx}`,
-        pos: new Vector3(e.x, e.y, 0),
+        pos: vector3(e.x, e.y),
         enabled: false,
         selected: false,
       }));
