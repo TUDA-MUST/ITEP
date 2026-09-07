@@ -132,8 +132,8 @@ const circularPositions = (circularConfig: CircularConfig) =>
     return {
       name: `Transducer ${i}`,
       pos: vector3(
-        Math.cos(phi) * circularConfig.diameter / 2,
-        Math.sin(phi) * circularConfig.diameter / 2,
+        (Math.cos(phi) * circularConfig.diameter) / 2,
+        (Math.sin(phi) * circularConfig.diameter) / 2,
       ),
       enabled: false,
       selected: false,

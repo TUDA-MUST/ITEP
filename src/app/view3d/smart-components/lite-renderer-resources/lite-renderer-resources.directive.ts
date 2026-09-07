@@ -15,10 +15,7 @@ import {
 import type { BeamformingState } from 'src/app/store/beamforming.state';
 import type { Transducer } from 'src/app/store/store.service';
 import { LiteExcitationBuffer } from '../../materials/excitation-buffer';
-import {
-  LiteViewDirective,
-  type LiteViewContext,
-} from '../lite-view/lite-view.directive';
+import { LiteViewDirective, type LiteViewContext } from '../lite-view/lite-view.directive';
 import { colormapTexturePath } from '../../shared/colormap-texture';
 
 export interface LiteRendererResourcesContext extends LiteViewContext {

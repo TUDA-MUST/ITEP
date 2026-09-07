@@ -6,10 +6,7 @@ import {
   type StorageBuffer,
 } from '@babylonjs/lite';
 
-import {
-  createExcitationBuffer,
-  setExcitationElement,
-} from '../../utils/excitationbuffer';
+import { createExcitationBuffer, setExcitationElement } from '../../utils/excitationbuffer';
 import { azElToUV } from '../../utils/uv';
 import type { BeamformingState } from '../../store/beamforming.state';
 import type { Transducer } from '../../store/store.service';
@@ -39,8 +36,7 @@ export class LiteExcitationBuffer {
       const phase =
         beamforming?.beamformingEnabled && waveNumber !== null
           ? waveNumber *
-            ((beamformingUv.u ?? 0) * transducer.pos.x +
-              (beamformingUv.v ?? 0) * transducer.pos.y)
+            ((beamformingUv.u ?? 0) * transducer.pos.x + (beamformingUv.v ?? 0) * transducer.pos.y)
           : 0;
       setExcitationElement(transducer.pos, phase, this.data, index);
     });
