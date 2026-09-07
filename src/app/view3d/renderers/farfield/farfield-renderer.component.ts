@@ -1,130 +1,142 @@
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  input,
-  type OnDestroy,
-} from '@angular/core';
+  addToScene,
+  createMeshFromData,
+  setMeshVisible,
+  setShaderUniform,
+  type Mesh,
+  type ShaderMaterial,
+} from '@babylonjs/lite';
 
-import type { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { FarfieldMaterial } from '../../materials/farfield.material';
-import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
-import { TransducerBufferComponent } from '../../shared/transducer-buffer.component';
-import { Engine } from '@babylonjs/core/Engines/engine';
-import type { Transducer } from 'src/app/store/store.service';
-import { frequencyFromBase, type Environment } from 'src/app/core/environment';
+import type { Environment } from 'src/app/core/environment';
 import type { TransducerType } from 'src/app/core/transducer';
+import type { Transducer } from 'src/app/store/store.service';
+import { createFarfieldLiteMaterial } from '../../materials/farfield.material';
+import { colormapTextureSampleRows } from '../../shared/colormap-texture';
+import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
+import { waveNumber } from '../../shared/wave-number';
 
-const uvMesh: VertexData = (() => {
-  const positions = [-1, -1, 0, 1, -1, 0, -1, 1, 0, 1, 1, 0];
-  const uv = [-1, -1, 1, -1, -1, 1, 1, 1];
-  const indices = [0, 1, 2, 1, 3, 2];
-  const vertexData = new VertexData();
-  vertexData.positions = positions;
-  vertexData.indices = indices;
-  vertexData.uvs = uv;
-  return vertexData;
-})();
+// Babylon's legacy increaseVertices(400) produced 401 segments per source
+// triangle edge. This grid preserves its 321,602-triangle density.
+const farfieldGrid = createFarfieldGrid(401);
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-farfield-renderer',
-  template: '<ng-content/>',
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FarfieldRendererComponent implements OnDestroy {
-  private readonly transducerBuffer = inject(TransducerBufferComponent);
+export class FarfieldRendererComponent {
+  private readonly resources = inject(LiteRendererResourcesDirective);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
   readonly transducerModel = input.required<TransducerType>();
+  readonly enabled = input(false);
 
-  upload = effect(() => {
-    const env = this.environment();
-    const transducers = this.transducers();
-    const _model = this.transducerModel();
+  private material: ShaderMaterial | null = null;
+  private mesh: Mesh | null = null;
 
-    if (this.material) {
-      this.uploadEnvironment(env);
-      this.uploadArrayConfig(transducers);
-    }
+  private readonly initialize = effect(() => {
+    const context = this.resources.bufferContext();
+    if (!context || this.material) return;
+
+    this.material = createFarfieldLiteMaterial(context.colormap, context.excitation.storageBuffer);
+    this.material.stencil = { compare: 'always', passOp: 'increment-clamp' };
+    setShaderUniform(this.material, 'colormapY', colormapTextureSampleRows.viridis);
+
+    this.mesh = createMeshFromData(
+      context.engine,
+      'farfield',
+      farfieldGrid.positions,
+      new Float32Array(farfieldGrid.positions.length),
+      farfieldGrid.indices,
+      farfieldGrid.uvs,
+    );
+    this.mesh.material = this.material;
+    this.mesh.renderOrder = 1;
+    this.mesh.pickable = false;
+    addToScene(context.scene, this.mesh);
+    this.updateRenderer();
   });
 
-  private material: FarfieldMaterial;
-  private farfieldMesh: Mesh;
-
-  private readonly initEffect = effect(() => {
-    const ctx = this.transducerBuffer.bufferContext();
-    if (!ctx || this.material) return;
-
-    this.material = new FarfieldMaterial(ctx.scene, ctx.textures.colormaps);
-
-    this.material.stencil.enabled = true;
-    this.material.stencil.funcRef = 1;
-    this.material.stencil.func = Engine.ALWAYS;
-    this.material.stencil.opStencilDepthPass = Engine.REPLACE;
-
-    this.farfieldMesh = new Mesh('farfieldMesh', ctx.scene);
-    uvMesh.applyToMesh(this.farfieldMesh);
-    this.farfieldMesh.increaseVertices(400);
-    this.farfieldMesh.material = this.material;
-    this.farfieldMesh.isPickable = false;
-    this.farfieldMesh.renderingGroupId = 1;
-
-    this.material.onBind = (_mesh: AbstractMesh) => {
-      this.material.getEffect().bindUniformBuffer(ctx.buffer.getBuffer()!, 'excitation');
-    };
-
-    this.material.setFloat('dynamicRange', 50.0);
-    this.uploadEnvironment(this.environment());
-    this.uploadArrayConfig(this.transducers());
+  private readonly update = effect(() => {
+    this.transducers();
+    this.environment();
+    this.transducerModel();
+    this.enabled();
+    if (this.material && this.mesh) this.updateRenderer();
   });
 
-  ngOnDestroy(): void {
-    this.farfieldMesh?.dispose();
-    this.material?.dispose();
+  private updateRenderer(): void {
+    if (!this.material || !this.mesh) return;
+    const transducers = this.transducers() ?? [];
+    const environment = this.environment();
+    const model = this.transducerModel();
+
+    setMeshVisible(this.mesh, this.enabled());
+    setShaderUniform(this.material, 'numElements', transducers.length);
+    if (!environment) return;
+
+    const k = waveNumber(environment);
+    setShaderUniform(this.material, 'k', k);
+    setShaderUniform(
+      this.material,
+      'transducerType',
+      model.type === 'Point' ? 0 : model.type === 'Piston' ? 1 : 2,
+    );
+    setShaderUniform(
+      this.material,
+      'ka',
+      model.type === 'Rectangular'
+        ? k * model.width
+        : model.type === 'Piston'
+          ? k * model.diameter
+          : 0,
+    );
+    setShaderUniform(
+      this.material,
+      'kb',
+      model.type === 'Rectangular'
+        ? k * model.height
+        : model.type === 'Piston'
+          ? k * model.diameter
+          : 0,
+    );
   }
+}
 
-  private uploadEnvironment(environment: Environment | null): void {
-    if (environment) {
-      const omega =
-        2.0 *
-        Math.PI *
-        frequencyFromBase(
-          environment.excitationFrequencyBase,
-          environment.excitationFrequencyMultiplier,
-        );
+function createFarfieldGrid(subdivisions: number): {
+  positions: Float32Array;
+  uvs: Float32Array;
+  indices: Uint32Array;
+} {
+  const verticesPerSide = subdivisions + 1;
+  const positions = new Float32Array(verticesPerSide * verticesPerSide * 3);
+  const uvs = new Float32Array(verticesPerSide * verticesPerSide * 2);
+  const indices = new Uint32Array(subdivisions * subdivisions * 6);
 
-      const k = omega / environment.speedOfSound;
-      this.material.setFloat('k', k);
-
-      const model = this.transducerModel();
-
-      let ka = 0;
-      let kb = 0;
-      switch (model.type) {
-        case 'Point':
-          break;
-        case 'Piston':
-          ka = model.diameter * k;
-          kb = ka;
-          break;
-        case 'Rectangular':
-          ka = model.width * k;
-          kb = model.height * k;
-          break;
-      }
-
-      this.material.setFloat('ka', ka);
-      this.material.setFloat('kb', kb);
-      this.material.setTransducerModel(model);
+  for (let y = 0; y <= subdivisions; y++) {
+    for (let x = 0; x <= subdivisions; x++) {
+      const vertex = y * verticesPerSide + x;
+      const u = x / subdivisions;
+      const v = y / subdivisions;
+      positions.set([2 * u - 1, 2 * v - 1, 0], vertex * 3);
+      // The legacy mesh uses UVs in the same -1..1 domain as its positions.
+      uvs.set([2 * u - 1, 2 * v - 1], vertex * 2);
     }
   }
 
-  private uploadArrayConfig(transducers: Transducer[] | null): void {
-    if (transducers) {
-      this.material.setInt('numElements', transducers.length);
+  let index = 0;
+  for (let y = 0; y < subdivisions; y++) {
+    for (let x = 0; x < subdivisions; x++) {
+      const topLeft = y * verticesPerSide + x;
+      const topRight = topLeft + 1;
+      const bottomLeft = topLeft + verticesPerSide;
+      const bottomRight = bottomLeft + 1;
+      indices.set([topLeft, topRight, bottomLeft, topRight, bottomRight, bottomLeft], index);
+      index += 6;
     }
   }
+
+  return { positions, uvs, indices };
 }

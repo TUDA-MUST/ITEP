@@ -1,4 +1,4 @@
-import { type Vector3 } from '@babylonjs/core/Maths/math.vector';
+import type { Vector3Data } from '../core/vector';
 import excitationBufferInclude from './excitation-buffer.wgsl';
 
 export const excitationBufferMaxElements = 2048;
@@ -6,7 +6,7 @@ export const excitationBufferMaxElementsDefine = `#define MAX_ELEMENTS ${excitat
 export const excitationBufferElementSize = 8;
 
 export interface ExcitationElement {
-  pos: Vector3;
+  pos: Vector3Data;
   phase: number;
   amplitude: number;
 }
@@ -18,13 +18,16 @@ export function createExcitationBuffer() {
 }
 
 export function setExcitationElement(
-  position: Vector3,
+  position: Vector3Data,
   phase: number,
   buffer: Float32Array,
   index: number,
 ) {
   const elementOffset = excitationBufferElementSize * index;
-  position.toArray(buffer, elementOffset);
+  buffer[elementOffset] = position.x;
+  buffer[elementOffset + 1] = position.y;
+  buffer[elementOffset + 2] = position.z;
+  buffer[elementOffset + 3] = 0;
 
   buffer[elementOffset + 4] = phase; // phase shift [rad]
   buffer[elementOffset + 5] = 1; // area

@@ -1,18 +1,15 @@
-#include<sceneUboDeclaration>
-#include<meshUboDeclaration>
-#include<instancesDeclaration>
-
-attribute position : vec3<f32>;
-attribute uv : vec2<f32>;
-attribute selected : f32;
-
-varying vUV : vec2<f32>;
-varying vSelected : f32;
+struct VertexOutput {
+  @builtin(position) position: vec4<f32>,
+  @location(0) uv: vec2<f32>,
+  @location(1) selected: f32,
+};
 
 @vertex
-fn main(input : VertexInputs) -> FragmentInputs {
-#include<instancesVertex>
-  vertexOutputs.position = scene.viewProjection * finalWorld * vec4<f32>(vertexInputs.position, 1.0);
-  vertexOutputs.vUV = vertexInputs.uv;
-  vertexOutputs.vSelected = vertexInputs.selected;
+fn mainVertex(input: VertexInput) -> VertexOutput {
+  var out: VertexOutput;
+  let instanceWorld = mat4x4<f32>(input.world0, input.world1, input.world2, input.world3);
+  out.position = shaderSystem.worldViewProjection * instanceWorld * vec4<f32>(input.position, 1.0);
+  out.uv = input.uv;
+  out.selected = input.color.x;
+  return out;
 }
