@@ -124,8 +124,8 @@ importers:
         specifier: ^8.69.0
         version: 8.69.0(eslint@10.10.0(jiti@2.7.0))(typescript@6.0.3)
       chromatic:
-        specifier: ^18.7.2
-        version: 18.7.2
+        specifier: ^18.8.1
+        version: 18.8.1
       eslint:
         specifier: ^10.10.0
         version: 10.10.0(jiti@2.7.0)
@@ -4155,8 +4155,8 @@ packages:
       '@chromatic-com/vitest':
         optional: true
 
-  chromatic@18.7.2:
-    resolution: {integrity: sha512-e6YsVD1c97hF2Fz/IxmHiLSK6Di8PV6edc6lKql20Wp5ZUWxluBXC8ZHKgpqJMr6u3vhn708BqOEnZntOgiTOA==}
+  chromatic@18.8.1:
+    resolution: {integrity: sha512-ATJyUUuUrK1GA3bPNHPHgwQtqw/cSapC/hReF53EBO0HT0yYCl5jEeWBQP64+bAlZTK7zTSjzKe4109qbdKTvQ==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -11016,7 +11016,7 @@ snapshots:
     dependencies:
       semver: 7.8.5
 
-  chromatic@18.7.2:
+  chromatic@18.8.1:
     dependencies:
       semver: 7.8.5
 
