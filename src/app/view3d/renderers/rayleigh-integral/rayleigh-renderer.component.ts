@@ -15,6 +15,7 @@ import type { Transducer } from 'src/app/store/store.service';
 import { createRayleighLiteMaterial, LiteResultAspect } from '../../materials/rayleigh.material';
 import { colormapTextureSampleRows } from '../../shared/colormap-texture';
 import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
+import { LiteViewDirective } from '../../smart-components/lite-view/lite-view.directive';
 import { waveNumber } from '../../shared/wave-number';
 import { rayleighGeometry } from './rayleigh.geometry';
 
@@ -27,6 +28,7 @@ const resultSets: ResultSet[] = ['XZPlane', 'YZPlane', 'CutCube'];
 })
 export class RayleighIntegralRendererComponent implements OnDestroy {
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly view = inject(LiteViewDirective);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
@@ -67,6 +69,7 @@ export class RayleighIntegralRendererComponent implements OnDestroy {
     }
 
     this.updateRenderer();
+    this.view.requestRender();
   });
 
   private readonly update = effect(() => {
@@ -77,7 +80,10 @@ export class RayleighIntegralRendererComponent implements OnDestroy {
     this.globalPhase();
     this.enabled();
     this.vectorModeEnabled();
-    if (this.material) this.updateRenderer();
+    if (this.material) {
+      this.updateRenderer();
+      this.view.requestRender();
+    }
   });
 
   private updateRenderer(): void {

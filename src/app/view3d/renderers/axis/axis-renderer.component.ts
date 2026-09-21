@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/cor
 import { addToScene, createLineSystem } from '@babylonjs/lite';
 
 import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
+import { LiteViewDirective } from '../../smart-components/lite-view/lite-view.directive';
 
 const axisLength = 0.005;
 const headLength = axisLength * 0.25;
@@ -14,6 +15,7 @@ const headWidth = axisLength * 0.12;
 })
 export class AxisRendererComponent {
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly view = inject(LiteViewDirective);
   private initialized = false;
 
   private readonly initialize = effect(() => {
@@ -75,5 +77,6 @@ export class AxisRendererComponent {
       mesh.pickable = false;
       addToScene(context.scene, mesh);
     }
+    this.view.requestRender();
   });
 }
