@@ -51,13 +51,17 @@ export class ExcitationRendererComponent implements OnDestroy {
     const context = this.resources.bufferContext();
     if (!context || this.surfaceMesh) return;
     this.initializeMeshes(context);
+    this.view.requestRender();
   });
 
   private readonly update = effect(() => {
     const transducers = this.transducers() ?? [];
     const model = this.transducerModel();
     const selection = this.selection();
-    if (this.surfaceMesh) this.updateTransducers(transducers, model, selection);
+    if (this.surfaceMesh) {
+      this.updateTransducers(transducers, model, selection);
+      this.view.requestRender();
+    }
   });
 
   private readonly initializePicking = effect(() => {
