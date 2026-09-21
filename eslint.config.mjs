@@ -1,78 +1,28 @@
 // @ts-check
-import angularPlugin from '@angular-eslint/eslint-plugin';
-import angularTemplatePlugin from '@angular-eslint/eslint-plugin-template';
-import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
-import templateParser from '@angular-eslint/template-parser';
+import eslint from '@eslint/js';
+import angular from 'angular-eslint';
+import prettierConfig from 'eslint-config-prettier/flat';
 import storybookPlugin from 'eslint-plugin-storybook';
-import prettierPlugin from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 
-// @angular-eslint/template-parser creates a module scope (not a GlobalScope).
-// ESLint v10 (eslint-scope v9) calls scopeManager.addGlobals() — a method only
-// present on GlobalScope — which crashes because the template scope manager has
-// globalScope === null.  Since Angular templates are type-checked by the
-// Angular compiler (not ESLint scope analysis), we override addGlobals to
-// simply register placeholder variable entries so that ESLint v10's
-// addDeclaredGlobals() helper can safely annotate them afterwards.
-// Track upstream fix: https://github.com/angular-eslint/angular-eslint/issues/2896
-const templateParserEslint10Compatible = {
-  ...templateParser,
-  parseForESLint(code, options) {
-    const result = templateParser.parseForESLint(code, options);
-    const sm = result.scopeManager;
-    if (sm && !sm.globalScope) {
-      sm.addGlobals = (names) => {
-        const scope = sm.scopes[0];
-        if (!scope) return;
-        for (const name of names) {
-          if (!scope.set.has(name)) {
-            scope.set.set(name, { name, references: [], defs: [] });
-          }
-        }
-      };
-    }
-    return result;
-  },
-};
-
-export default [
+export default tseslint.config(
   {
     ignores: ['projects/**/*'],
   },
-
-  // TypeScript source files
   {
     files: ['**/*.ts'],
-    plugins: {
-      '@angular-eslint': angularPlugin,
-      '@typescript-eslint': typescriptEslintPlugin,
-      prettier: prettierPlugin,
-    },
+    extends: [
+      eslint.configs.recommended,
+      ...tseslint.configs.recommended,
+      ...angular.configs.tsRecommended,
+    ],
+    processor: angular.processInlineTemplates,
     languageOptions: {
-      parser: typescriptParser,
       parserOptions: {
         project: ['tsconfig.json', 'tsconfig.spec.json'],
       },
     },
-    processor: angularTemplatePlugin.processors['extract-inline-html'],
     rules: {
-      // Angular recommended rules (inlined from angular-eslint v22 ts-recommended config,
-      // as @angular-eslint/eslint-plugin v22 no longer exports configs.recommended)
-      '@angular-eslint/contextual-lifecycle': 'error',
-      '@angular-eslint/no-empty-lifecycle-method': 'error',
-      '@angular-eslint/no-input-rename': 'error',
-      '@angular-eslint/no-inputs-metadata-property': 'error',
-      '@angular-eslint/no-output-native': 'error',
-      '@angular-eslint/no-output-on-prefix': 'error',
-      '@angular-eslint/no-output-rename': 'error',
-      '@angular-eslint/no-outputs-metadata-property': 'error',
-      '@angular-eslint/prefer-inject': 'error',
-      '@angular-eslint/prefer-standalone': 'error',
-      '@angular-eslint/use-pipe-transform-interface': 'error',
-      '@angular-eslint/use-lifecycle-interface': 'warn',
-
-      // Angular component/directive selectors
       '@angular-eslint/component-selector': [
         'error',
         { prefix: 'app', style: 'kebab-case', type: 'element' },
@@ -81,8 +31,6 @@ export default [
         'error',
         { prefix: 'app', style: 'camelCase', type: 'attribute' },
       ],
-
-      // Modern Angular: prefer signals and inject() API
       '@angular-eslint/no-async-lifecycle-method': 'error',
       '@angular-eslint/prefer-output-readonly': 'error',
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
@@ -91,11 +39,6 @@ export default [
       '@angular-eslint/no-uncalled-signals': 'error',
       '@angular-eslint/prefer-signals': 'error',
       '@angular-eslint/prefer-output-emitter-ref': 'error',
-
-      // TypeScript recommended rules
-      ...typescriptEslintPlugin.configs.recommended.rules,
-
-      // TypeScript best practices
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -105,52 +48,26 @@ export default [
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
-
-      // Arrow-function shorthand: prefer concise bodies and arrow callbacks
       'arrow-body-style': ['error', 'as-needed'],
       'prefer-arrow-callback': 'error',
-
-      // Disable ESLint formatting rules that conflict with Prettier
-      ...prettierConfig.rules,
-
-      // Prettier formatting as warnings (auto-fixed on save, no need to block)
-      'prettier/prettier': 'warn',
     },
   },
-
-  // TypeScript declaration files: relax rules not applicable to ambient declarations
   {
-    files: ['**/*.d.ts'],
+    files: ['src/global.d.ts'],
     rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
-
-  // Angular HTML templates
   {
     files: ['**/*.html'],
-    plugins: {
-      '@angular-eslint/template': angularTemplatePlugin,
-    },
-    languageOptions: {
-      parser: templateParserEslint10Compatible,
-    },
+    extends: [...angular.configs.templateRecommended],
     rules: {
-      // Angular template recommended rules (inlined from angular-eslint v22 template-recommended
-      // config, as @angular-eslint/eslint-plugin-template v22 no longer exports configs.recommended)
-      '@angular-eslint/template/banana-in-box': 'error',
-      '@angular-eslint/template/eqeqeq': 'error',
-      '@angular-eslint/template/no-negated-async': 'error',
-      '@angular-eslint/template/prefer-control-flow': 'error',
-
-      // Template best practices
       '@angular-eslint/template/prefer-self-closing-tags': 'error',
       '@angular-eslint/template/button-has-type': 'error',
       '@angular-eslint/template/use-track-by-function': 'warn',
       '@angular-eslint/template/no-any': 'warn',
     },
   },
-
-  // Storybook story files
   ...storybookPlugin.configs['flat/recommended'],
-];
+  prettierConfig,
+);
