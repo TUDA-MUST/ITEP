@@ -51,6 +51,7 @@ export class RayleighProbeRendererComponent implements OnDestroy {
     this.resources.rayleighProbeMesh.set(this.mesh);
     onBeforeRender(context.scene, () => this.updateScale());
     this.updateProbe();
+    this.view.requestRender();
   });
 
   private readonly update = effect(() => {
@@ -58,7 +59,10 @@ export class RayleighProbeRendererComponent implements OnDestroy {
     this.enabled();
     this.resultSet();
     this.point();
-    if (this.mesh) this.updateProbe();
+    if (this.mesh) {
+      this.updateProbe();
+      this.view.requestRender();
+    }
   });
 
   private readonly initializePicking = effect(() => {
