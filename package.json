@@ -46,7 +46,7 @@
     "@angular/cli": "22.1.8",
     "@angular/compiler-cli": "22.1.7",
     "@babel/core": "^7.28.5",
-    "@chromatic-com/storybook": "^5.1.2",
+    "@chromatic-com/storybook": "^5.3.1",
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.60.0",
     "@storybook/addon-docs": "^10.6.0",
