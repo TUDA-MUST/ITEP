@@ -37,11 +37,7 @@ export interface FreeConfig {
 }
 
 export type ArrayGeometry =
-  | CircularConfig
-  | SpiralConfig
-  | UraConfig
-  | HexagonalConfig
-  | FreeConfig;
+  CircularConfig | SpiralConfig | UraConfig | HexagonalConfig | FreeConfig;
 
 const uraPositions = (uraConfig: UraConfig) => {
   const { elementsX, elementsY, pitchX, pitchY } = uraConfig;
