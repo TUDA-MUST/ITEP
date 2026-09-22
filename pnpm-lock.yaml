@@ -42,8 +42,8 @@ importers:
         specifier: 1.30.0
         version: 1.30.0
       '@ngrx/signals':
-        specifier: 22.0.0
-        version: 22.0.0(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: 22.0.1
+        version: 22.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2))(rxjs@7.8.2)
       '@stdlib/math-base-special-besselj1':
         specifier: ^0.3.1
         version: 0.3.1
@@ -1888,8 +1888,8 @@ packages:
   '@neoconfetti/react@1.0.0':
     resolution: {integrity: sha512-klcSooChXXOzIm+SE5IISIAn3bYzYfPjbX7D7HoqZL84oAfgREeSg5vSIaSFH+DaGzzvImTyWe1OyrJ67vik4A==}
 
-  '@ngrx/signals@22.0.0':
-    resolution: {integrity: sha512-jW/JqU/FuOXsC7pUufx3pfEvb1ZIVD+AlETdB5hatHkF1bW9gMFTL0L001Mht8awvr3SJUXoRcxfnhBGBWgjEQ==}
+  '@ngrx/signals@22.0.1':
+    resolution: {integrity: sha512-R62VsPrnH54LgA3LAqw+GWA9FHii526CH1aqah8aiK1RZocp+3N9rS3g5wrrXU655eVH65jhN4k/k+EFyxO/RA==}
     peerDependencies:
       '@angular/core': ^22.0.0
       rxjs: ^6.5.3 || ^7.4.0
@@ -8771,7 +8771,7 @@ snapshots:
 
   '@neoconfetti/react@1.0.0': {}
 
-  '@ngrx/signals@22.0.0(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2))(rxjs@7.8.2)':
+  '@ngrx/signals@22.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
       '@angular/core': 22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)
       tslib: 2.8.1

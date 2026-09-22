@@ -30,7 +30,7 @@
     "@angular/router": "22.1.7",
     "@angular/service-worker": "22.1.7",
     "@babylonjs/lite": "1.30.0",
-    "@ngrx/signals": "22.0.0",
+    "@ngrx/signals": "22.0.1",
     "@stdlib/math-base-special-besselj1": "^0.3.1",
     "complex.js": "^2.4.3",
     "echarts": "^6.0.0",
