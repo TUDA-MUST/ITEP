@@ -11,7 +11,8 @@ import {
   disposeScene,
   enableMaterialStencil,
   registerScene,
-  startEngine,
+  renderFrame,
+  resizeEngine,
   type ArcRotateCamera,
   type EngineContext,
   type SceneContext,
@@ -32,7 +33,13 @@ export class LiteViewDirective implements OnInit, OnDestroy {
   readonly canvas = inject<ElementRef<HTMLCanvasElement>>(ElementRef).nativeElement;
   readonly context = signal<LiteViewContext | null>(null);
   private detachControls: (() => void) | null = null;
+  private removeInteractionListeners: (() => void) | null = null;
+  private resizeObserver: ResizeObserver | null = null;
+  private renderFrameId: number | null = null;
+  private lastFrameTime = performance.now();
   private started = false;
+  private destroyed = false;
+  private firstFrameRendered = false;
 
   ngOnInit(): void {
     void this.initialize();
@@ -45,7 +52,14 @@ export class LiteViewDirective implements OnInit, OnDestroy {
     addToScene(scene, createHemisphericLight([0, 1, 0]));
     // Lite keeps stencil tree-shakeable. This must happen before scene registration.
     enableMaterialStencil();
+    if (this.destroyed) {
+      disposeScene(scene);
+      disposeEngine(engine);
+      return;
+    }
     this.context.set({ engine, scene, camera: null });
+    this.observeCanvasSize();
+    this.listenForCameraInteraction();
   }
 
   initializeCamera(): void {
@@ -73,12 +87,33 @@ export class LiteViewDirective implements OnInit, OnDestroy {
 
   async start(): Promise<void> {
     const context = this.context();
-    if (!context || !context.camera || this.started) return;
-    this.started = true;
+    if (!context || !context.camera || this.started || this.destroyed) return;
+
     await registerScene(context.scene);
-    await startEngine(context.engine);
-    requestAnimationFrame(() => {
-      if (this.started) this.canvas.classList.add('lite-view-ready');
+    if (this.destroyed) return;
+
+    this.started = true;
+    this.lastFrameTime = performance.now();
+    this.requestRender();
+  }
+
+  requestRender(): void {
+    if (!this.started || this.destroyed || this.renderFrameId !== null) return;
+
+    this.renderFrameId = requestAnimationFrame((now) => {
+      this.renderFrameId = null;
+      const context = this.context();
+      if (!context || !this.started || this.destroyed) return;
+
+      const deltaMs = now - this.lastFrameTime;
+      this.lastFrameTime = now;
+      resizeEngine(context.engine);
+      renderFrame(context.engine, deltaMs);
+
+      if (!this.firstFrameRendered) {
+        this.firstFrameRendered = true;
+        this.canvas.classList.add('lite-view-ready');
+      }
     });
   }
 
@@ -95,8 +130,48 @@ export class LiteViewDirective implements OnInit, OnDestroy {
     }
   }
 
+  private observeCanvasSize(): void {
+    if (typeof ResizeObserver === 'undefined') return;
+    this.resizeObserver = new ResizeObserver(() => this.requestRender());
+    this.resizeObserver.observe(this.canvas);
+  }
+
+  private listenForCameraInteraction(): void {
+    let pointerDown = false;
+    const onPointerDown = () => {
+      pointerDown = true;
+      this.requestRender();
+    };
+    const onPointerMove = () => {
+      if (pointerDown) this.requestRender();
+    };
+    const onPointerUp = () => {
+      pointerDown = false;
+      this.requestRender();
+    };
+    const onWheel = () => this.requestRender();
+
+    this.canvas.addEventListener('pointerdown', onPointerDown, { passive: true });
+    this.canvas.addEventListener('pointermove', onPointerMove, { passive: true });
+    this.canvas.addEventListener('pointerup', onPointerUp, { passive: true });
+    this.canvas.addEventListener('pointercancel', onPointerUp, { passive: true });
+    this.canvas.addEventListener('wheel', onWheel, { passive: true });
+    this.removeInteractionListeners = () => {
+      this.canvas.removeEventListener('pointerdown', onPointerDown);
+      this.canvas.removeEventListener('pointermove', onPointerMove);
+      this.canvas.removeEventListener('pointerup', onPointerUp);
+      this.canvas.removeEventListener('pointercancel', onPointerUp);
+      this.canvas.removeEventListener('wheel', onWheel);
+    };
+  }
+
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.started = false;
+    if (this.renderFrameId !== null) cancelAnimationFrame(this.renderFrameId);
+    this.renderFrameId = null;
+    this.resizeObserver?.disconnect();
+    this.removeInteractionListeners?.();
     this.detachControls?.();
     const context = this.context();
     if (context) {

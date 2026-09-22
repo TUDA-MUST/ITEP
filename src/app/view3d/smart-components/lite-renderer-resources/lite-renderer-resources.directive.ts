@@ -57,7 +57,10 @@ export class LiteRendererResourcesDirective implements OnDestroy {
     const transducers = this.transducers() ?? [];
     const beamforming = this.beamforming();
     const k = this.k();
-    if (context) context.excitation.update(transducers, beamforming, k);
+    if (context) {
+      context.excitation.update(transducers, beamforming, k);
+      this.view.requestRender();
+    }
   });
 
   async pick(
