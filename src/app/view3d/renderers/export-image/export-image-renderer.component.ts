@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import {
   addToScene,
   captureScreenshot,
@@ -187,5 +194,4 @@ export class ExportImageRendererComponent {
       URL.revokeObjectURL(link.href);
     }, 'image/png');
   }
-
 }

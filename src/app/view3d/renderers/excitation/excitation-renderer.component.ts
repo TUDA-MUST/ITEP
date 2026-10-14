@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import {
   addToScene,
   createLineMaterial,
@@ -321,5 +329,4 @@ export class ExcitationRendererComponent {
       this.picking = false;
     }
   }
-
 }

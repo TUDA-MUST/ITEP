@@ -113,5 +113,4 @@ export class LiteRendererResourcesDirective {
     enableDetailedPicking(this.picker);
     this.pickerReady.set(true);
   }
-
 }

@@ -180,5 +180,4 @@ export class LiteViewDirective implements OnInit {
       this.canvas.removeEventListener('wheel', onWheel);
     };
   }
-
 }

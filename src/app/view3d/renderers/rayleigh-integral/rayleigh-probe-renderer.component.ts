@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import {
   addToScene,
   createSphere,
@@ -204,5 +212,4 @@ export class RayleighProbeRendererComponent {
       z: clamp(point.z, 0, 1),
     };
   }
-
 }

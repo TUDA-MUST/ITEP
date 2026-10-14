@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import {
   addToScene,
   createMeshFromData,
@@ -119,5 +126,4 @@ export class RayleighIntegralRendererComponent {
     }
     if (environment) setShaderUniform(this.material, 'k', waveNumber(environment));
   }
-
 }
