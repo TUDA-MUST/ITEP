@@ -1,5 +1,4 @@
-import { Directive, effect, inject, input, signal } from '@angular/core';
-import type { OnDestroy } from '@angular/core';
+import { DestroyRef, Directive, effect, inject, input, signal } from '@angular/core';
 import {
   createGpuPicker,
   disposePicker,
@@ -26,8 +25,9 @@ export interface LiteRendererResourcesContext extends LiteViewContext {
 @Directive({
   selector: 'canvas[appLiteRendererResources]',
 })
-export class LiteRendererResourcesDirective implements OnDestroy {
+export class LiteRendererResourcesDirective {
   private readonly view = inject(LiteViewDirective);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly beamforming = input<BeamformingState | null>(null);
@@ -41,9 +41,16 @@ export class LiteRendererResourcesDirective implements OnDestroy {
   readonly draggingRayleighProbe = signal(false);
 
   private initializing = false;
-  private destroyed = false;
   private picker: ReturnType<typeof createGpuPicker> | null = null;
   private pickTail: Promise<void> = Promise.resolve();
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.pickerReady.set(false);
+      if (this.picker) disposePicker(this.picker);
+      this.bufferContext()?.excitation.dispose();
+    });
+  }
 
   private readonly initialize = effect(() => {
     const viewContext = this.view.context();
@@ -88,7 +95,7 @@ export class LiteRendererResourcesDirective implements OnDestroy {
       invertY: false,
       mipMaps: false,
     });
-    if (this.destroyed) return;
+    if (this.destroyRef.destroyed) return;
 
     const excitation = new LiteExcitationBuffer(viewContext.engine);
     this.bufferContext.set({ ...viewContext, colormap, excitation });
@@ -96,21 +103,14 @@ export class LiteRendererResourcesDirective implements OnDestroy {
     // Let projected renderer effects create their scene resources before the
     // first registered frame. Lite also supports later dynamic additions.
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-    if (this.destroyed) return;
+    if (this.destroyRef.destroyed) return;
 
     this.view.initializeCamera();
     await this.view.start();
-    if (this.destroyed) return;
+    if (this.destroyRef.destroyed) return;
 
     this.picker = createGpuPicker(viewContext.scene);
     enableDetailedPicking(this.picker);
     this.pickerReady.set(true);
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed = true;
-    this.pickerReady.set(false);
-    if (this.picker) disposePicker(this.picker);
-    this.bufferContext()?.excitation.dispose();
   }
 }

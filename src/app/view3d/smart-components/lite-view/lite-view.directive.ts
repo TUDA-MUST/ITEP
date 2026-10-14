@@ -1,5 +1,5 @@
-import { Directive, ElementRef, inject, signal } from '@angular/core';
-import type { OnDestroy, OnInit } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
+import type { OnInit } from '@angular/core';
 import {
   addToScene,
   attachControl,
@@ -29,17 +29,33 @@ export interface LiteViewContext {
   selector: 'canvas[liteview]',
   exportAs: 'liteView',
 })
-export class LiteViewDirective implements OnInit, OnDestroy {
+export class LiteViewDirective implements OnInit {
   readonly canvas = inject<ElementRef<HTMLCanvasElement>>(ElementRef).nativeElement;
   readonly context = signal<LiteViewContext | null>(null);
+  private readonly destroyRef = inject(DestroyRef);
   private detachControls: (() => void) | null = null;
   private removeInteractionListeners: (() => void) | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private renderFrameId: number | null = null;
   private lastFrameTime = performance.now();
   private started = false;
-  private destroyed = false;
   private firstFrameRendered = false;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.started = false;
+      if (this.renderFrameId !== null) cancelAnimationFrame(this.renderFrameId);
+      this.renderFrameId = null;
+      this.resizeObserver?.disconnect();
+      this.removeInteractionListeners?.();
+      this.detachControls?.();
+      const context = this.context();
+      if (context) {
+        disposeScene(context.scene);
+        disposeEngine(context.engine);
+      }
+    });
+  }
 
   ngOnInit(): void {
     void this.initialize();
@@ -52,7 +68,7 @@ export class LiteViewDirective implements OnInit, OnDestroy {
     addToScene(scene, createHemisphericLight([0, 1, 0]));
     // Lite keeps stencil tree-shakeable. This must happen before scene registration.
     enableMaterialStencil();
-    if (this.destroyed) {
+    if (this.destroyRef.destroyed) {
       disposeScene(scene);
       disposeEngine(engine);
       return;
@@ -87,10 +103,10 @@ export class LiteViewDirective implements OnInit, OnDestroy {
 
   async start(): Promise<void> {
     const context = this.context();
-    if (!context || !context.camera || this.started || this.destroyed) return;
+    if (!context || !context.camera || this.started || this.destroyRef.destroyed) return;
 
     await registerScene(context.scene);
-    if (this.destroyed) return;
+    if (this.destroyRef.destroyed) return;
 
     this.started = true;
     this.lastFrameTime = performance.now();
@@ -98,12 +114,12 @@ export class LiteViewDirective implements OnInit, OnDestroy {
   }
 
   requestRender(): void {
-    if (!this.started || this.destroyed || this.renderFrameId !== null) return;
+    if (!this.started || this.destroyRef.destroyed || this.renderFrameId !== null) return;
 
     this.renderFrameId = requestAnimationFrame((now) => {
       this.renderFrameId = null;
       const context = this.context();
-      if (!context || !this.started || this.destroyed) return;
+      if (!context || !this.started || this.destroyRef.destroyed) return;
 
       const deltaMs = now - this.lastFrameTime;
       this.lastFrameTime = now;
@@ -163,20 +179,5 @@ export class LiteViewDirective implements OnInit, OnDestroy {
       this.canvas.removeEventListener('pointercancel', onPointerUp);
       this.canvas.removeEventListener('wheel', onWheel);
     };
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed = true;
-    this.started = false;
-    if (this.renderFrameId !== null) cancelAnimationFrame(this.renderFrameId);
-    this.renderFrameId = null;
-    this.resizeObserver?.disconnect();
-    this.removeInteractionListeners?.();
-    this.detachControls?.();
-    const context = this.context();
-    if (context) {
-      disposeScene(context.scene);
-      disposeEngine(context.engine);
-    }
   }
 }
