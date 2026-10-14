@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
-import type { OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input } from '@angular/core';
 import {
   addToScene,
   captureScreenshot,
@@ -37,8 +36,9 @@ const quarterTurn = Math.SQRT1_2;
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExportImageRendererComponent implements OnDestroy {
+export class ExportImageRendererComponent {
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
@@ -49,6 +49,12 @@ export class ExportImageRendererComponent implements OnDestroy {
 
   private listening = false;
   private readonly handler = () => void this.exportImage();
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      window.removeEventListener('export-rayleigh', this.handler);
+    });
+  }
 
   private readonly initialize = effect(() => {
     const context = this.resources.bufferContext();
@@ -182,7 +188,4 @@ export class ExportImageRendererComponent implements OnDestroy {
     }, 'image/png');
   }
 
-  ngOnDestroy(): void {
-    window.removeEventListener('export-rayleigh', this.handler);
-  }
 }

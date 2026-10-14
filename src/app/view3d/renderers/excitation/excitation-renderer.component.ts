@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
-import type { OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output } from '@angular/core';
 import {
   addToScene,
   createLineMaterial,
@@ -29,9 +28,10 @@ const quadIndices = new Uint32Array([0, 1, 2, 1, 3, 2]);
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExcitationRendererComponent implements OnDestroy {
+export class ExcitationRendererComponent {
   private readonly view = inject(LiteViewDirective);
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly transducerModel = input.required<TransducerType>();
@@ -46,6 +46,15 @@ export class ExcitationRendererComponent implements OnDestroy {
   private removePointerListeners: (() => void) | null = null;
   private pendingPointer: { x: number; y: number } | null = null;
   private picking = false;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.removePointerListeners?.();
+      if (this.resources.transducerMesh() === this.surfaceMesh) {
+        this.resources.transducerMesh.set(null);
+      }
+    });
+  }
 
   private readonly initialize = effect(() => {
     const context = this.resources.bufferContext();
@@ -313,10 +322,4 @@ export class ExcitationRendererComponent implements OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.removePointerListeners?.();
-    if (this.resources.transducerMesh() === this.surfaceMesh) {
-      this.resources.transducerMesh.set(null);
-    }
-  }
 }
