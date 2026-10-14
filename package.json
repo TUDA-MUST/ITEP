@@ -48,7 +48,7 @@
     "@babel/core": "^7.28.5",
     "@chromatic-com/storybook": "^5.3.1",
     "@eslint/js": "10.0.1",
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.64.0",
     "@storybook/addon-docs": "^10.6.1",
     "@storybook/addon-links": "^10.6.1",
     "@storybook/angular": "^10.6.1",
