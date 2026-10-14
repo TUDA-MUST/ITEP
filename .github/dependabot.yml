@@ -19,6 +19,7 @@ updates:
           - '@storybook/*'
           - 'eslint-plugin-storybook'
           - 'chromatic'
+          - '@chromatic-com/*'
       angular:
         patterns:
           - '@angular/*'
