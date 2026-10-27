@@ -39,8 +39,8 @@ importers:
         specifier: 22.2.3
         version: 22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2))(rxjs@7.8.2)
       '@babylonjs/lite':
-        specifier: 1.34.0
-        version: 1.34.0
+        specifier: 1.36.0
+        version: 1.36.0
       '@ngrx/signals':
         specifier: 22.0.1
         version: 22.0.1(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -1014,16 +1014,13 @@ packages:
     resolution: {integrity: sha512-c+xgSWboV2pdwXP67BUWDVRHi2BO5Q3KwxyFVs7taVTY+fsK47/L51ZXQoV9rozHJDNHvJ4v4WEsI/IlxV2l2A==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@babylonjs/lite@1.34.0':
-    resolution: {integrity: sha512-UdUoEMnRCUpCZI8v3DaKl7uwVAbNUx+6i9Qj5qAOuzRWwxsiTzO0cJ2BpxFt9wL35616Yd50OstiR5lhHYBwWA==}
+  '@babylonjs/lite@1.36.0':
+    resolution: {integrity: sha512-GrXseQnLetxCVvAGfDAE0KJtpcHsll38W5uabWI/yeu2/0QbD7KuHtLzR3f2QNHqv8+FthAcXA78rJrXfqfxJw==}
     peerDependencies:
       '@babylonjs/havok': ^1.3.0
-      '@types/webxr': ^0.5.0
       '@webgpu/types': ^0.1.52
     peerDependenciesMeta:
       '@babylonjs/havok':
-        optional: true
-      '@types/webxr':
         optional: true
       '@webgpu/types':
         optional: true
@@ -3526,6 +3523,9 @@ packages:
 
   '@types/serve-static@2.2.0':
     resolution: {integrity: sha512-8mam4H1NHLtu7nmtalF7eyBH14QyOASmcxHhSfEoRyr0nP/YdoesEtU+uSRvMe96TW/HPTtkoKqQLl53N7UXMQ==}
+
+  '@types/webxr@0.5.24':
+    resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
 
   '@types/ws@8.18.2':
     resolution: {integrity: sha512-67MQl+fpWKVTT1NYdnmo3U4sc/xPo/zQBncVnI74qmQa0z/b+1g6iYqNmGCPbxO+zz2aklb08a0oHfegiVd0/w==}
@@ -7807,7 +7807,9 @@ snapshots:
       '@babel/helper-string-parser': 8.0.6
       '@babel/helper-validator-identifier': 8.0.6
 
-  '@babylonjs/lite@1.34.0': {}
+  '@babylonjs/lite@1.36.0':
+    dependencies:
+      '@types/webxr': 0.5.24
 
   '@bramus/specificity@2.4.2':
     dependencies:
@@ -10062,6 +10064,8 @@ snapshots:
     dependencies:
       '@types/http-errors': 2.0.5
       '@types/node': 26.6.5
+
+  '@types/webxr@0.5.24': {}
 
   '@types/ws@8.18.2':
     dependencies:
