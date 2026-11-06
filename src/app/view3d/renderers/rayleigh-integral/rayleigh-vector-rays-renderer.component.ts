@@ -13,6 +13,7 @@ import type { RayleighProbePoint } from 'src/app/store/rayleigh.state';
 import type { Transducer } from 'src/app/store/store.service';
 import { rayleighVectorColor } from 'src/app/utils/rayleigh-vector-colors';
 import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
+import { LiteViewDirective } from '../../smart-components/lite-view/lite-view.directive';
 
 @Component({
   selector: 'app-rayleigh-vector-rays-renderer',
@@ -21,6 +22,7 @@ import { LiteRendererResourcesDirective } from '../../smart-components/lite-rend
 })
 export class RayleighVectorRaysRendererComponent {
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly view = inject(LiteViewDirective);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly point = input<RayleighProbePoint>({ x: 0, y: 0, z: 0.5 });
@@ -37,7 +39,10 @@ export class RayleighVectorRaysRendererComponent {
     if (!context) return;
 
     if (!enabled) {
-      if (this.mesh) setMeshVisible(this.mesh, false);
+      if (this.mesh) {
+        setMeshVisible(this.mesh, false);
+        this.view.requestRender();
+      }
       return;
     }
 
@@ -80,5 +85,6 @@ export class RayleighVectorRaysRendererComponent {
       addToScene(context.scene, this.mesh);
     }
     setMeshVisible(this.mesh, true);
+    this.view.requestRender();
   });
 }

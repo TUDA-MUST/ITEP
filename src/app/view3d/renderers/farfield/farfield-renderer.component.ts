@@ -14,6 +14,7 @@ import type { Transducer } from 'src/app/store/store.service';
 import { createFarfieldLiteMaterial } from '../../materials/farfield.material';
 import { colormapTextureSampleRows } from '../../shared/colormap-texture';
 import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
+import { LiteViewDirective } from '../../smart-components/lite-view/lite-view.directive';
 import { waveNumber } from '../../shared/wave-number';
 
 // Babylon's legacy increaseVertices(400) produced 401 segments per source
@@ -27,6 +28,7 @@ const farfieldGrid = createFarfieldGrid(401);
 })
 export class FarfieldRendererComponent {
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly view = inject(LiteViewDirective);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
@@ -57,6 +59,7 @@ export class FarfieldRendererComponent {
     this.mesh.pickable = false;
     addToScene(context.scene, this.mesh);
     this.updateRenderer();
+    this.view.requestRender();
   });
 
   private readonly update = effect(() => {
@@ -64,7 +67,10 @@ export class FarfieldRendererComponent {
     this.environment();
     this.transducerModel();
     this.enabled();
-    if (this.material && this.mesh) this.updateRenderer();
+    if (this.material && this.mesh) {
+      this.updateRenderer();
+      this.view.requestRender();
+    }
   });
 
   private updateRenderer(): void {

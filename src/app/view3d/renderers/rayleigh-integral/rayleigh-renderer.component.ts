@@ -1,5 +1,11 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
-import type { OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import {
   addToScene,
   createMeshFromData,
@@ -15,6 +21,7 @@ import type { Transducer } from 'src/app/store/store.service';
 import { createRayleighLiteMaterial, LiteResultAspect } from '../../materials/rayleigh.material';
 import { colormapTextureSampleRows } from '../../shared/colormap-texture';
 import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
+import { LiteViewDirective } from '../../smart-components/lite-view/lite-view.directive';
 import { waveNumber } from '../../shared/wave-number';
 import { rayleighGeometry } from './rayleigh.geometry';
 
@@ -25,8 +32,10 @@ const resultSets: ResultSet[] = ['XZPlane', 'YZPlane', 'CutCube'];
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RayleighIntegralRendererComponent implements OnDestroy {
+export class RayleighIntegralRendererComponent {
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly view = inject(LiteViewDirective);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly environment = input<Environment | null>(null);
@@ -38,6 +47,14 @@ export class RayleighIntegralRendererComponent implements OnDestroy {
 
   private material: ShaderMaterial | null = null;
   private readonly meshes = new Map<ResultSet, Mesh>();
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.resources.activeRayleighMesh() && this.meshes.has(this.resultSet())) {
+        this.resources.activeRayleighMesh.set(null);
+      }
+    });
+  }
 
   private readonly initialize = effect(() => {
     const context = this.resources.bufferContext();
@@ -67,6 +84,7 @@ export class RayleighIntegralRendererComponent implements OnDestroy {
     }
 
     this.updateRenderer();
+    this.view.requestRender();
   });
 
   private readonly update = effect(() => {
@@ -77,7 +95,10 @@ export class RayleighIntegralRendererComponent implements OnDestroy {
     this.globalPhase();
     this.enabled();
     this.vectorModeEnabled();
-    if (this.material) this.updateRenderer();
+    if (this.material) {
+      this.updateRenderer();
+      this.view.requestRender();
+    }
   });
 
   private updateRenderer(): void {
@@ -104,11 +125,5 @@ export class RayleighIntegralRendererComponent implements OnDestroy {
       setShaderUniform(this.material, 'viewmode', this.aspect()!);
     }
     if (environment) setShaderUniform(this.material, 'k', waveNumber(environment));
-  }
-
-  ngOnDestroy(): void {
-    if (this.resources.activeRayleighMesh() && this.meshes.has(this.resultSet())) {
-      this.resources.activeRayleighMesh.set(null);
-    }
   }
 }

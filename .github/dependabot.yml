@@ -17,7 +17,9 @@ updates:
         patterns:
           - 'storybook'
           - '@storybook/*'
+          - 'eslint-plugin-storybook'
           - 'chromatic'
+          - '@chromatic-com/*'
       angular:
         patterns:
           - '@angular/*'
@@ -27,9 +29,14 @@ updates:
           - '@babylonjs/*'
       eslint:
         patterns:
+          - '@eslint/*'
           - '@typescript-eslint/*'
-          - 'eslint'
           - '@angular-eslint/*'
+          - 'eslint'
+          - 'eslint-config-prettier'
+          - 'typescript-eslint'
+          - 'angular-eslint'
+          - 'prettier'
       ngrx:
         patterns:
           - '@ngrx/*'

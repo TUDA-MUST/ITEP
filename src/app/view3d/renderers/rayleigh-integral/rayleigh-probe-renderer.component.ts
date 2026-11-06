@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
-import type { OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import {
   addToScene,
   createSphere,
@@ -21,9 +28,10 @@ const probeDiameter = 0.01125;
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RayleighProbeRendererComponent implements OnDestroy {
+export class RayleighProbeRendererComponent {
   private readonly view = inject(LiteViewDirective);
   private readonly resources = inject(LiteRendererResourcesDirective);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly transducers = input<Transducer[] | null>(null);
   readonly enabled = input(false);
@@ -35,6 +43,16 @@ export class RayleighProbeRendererComponent implements OnDestroy {
   private removePointerListeners: (() => void) | null = null;
   private pointerId: number | null = null;
   private pendingPointerId: number | null = null;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.endDrag();
+      this.removePointerListeners?.();
+      if (this.resources.rayleighProbeMesh() === this.mesh) {
+        this.resources.rayleighProbeMesh.set(null);
+      }
+    });
+  }
 
   private readonly initialize = effect(() => {
     const context = this.resources.bufferContext();
@@ -51,6 +69,7 @@ export class RayleighProbeRendererComponent implements OnDestroy {
     this.resources.rayleighProbeMesh.set(this.mesh);
     onBeforeRender(context.scene, () => this.updateScale());
     this.updateProbe();
+    this.view.requestRender();
   });
 
   private readonly update = effect(() => {
@@ -58,7 +77,10 @@ export class RayleighProbeRendererComponent implements OnDestroy {
     this.enabled();
     this.resultSet();
     this.point();
-    if (this.mesh) this.updateProbe();
+    if (this.mesh) {
+      this.updateProbe();
+      this.view.requestRender();
+    }
   });
 
   private readonly initializePicking = effect(() => {
@@ -189,13 +211,5 @@ export class RayleighProbeRendererComponent implements OnDestroy {
       y: clamp(point.y, -0.5, 0.5),
       z: clamp(point.z, 0, 1),
     };
-  }
-
-  ngOnDestroy(): void {
-    this.endDrag();
-    this.removePointerListeners?.();
-    if (this.resources.rayleighProbeMesh() === this.mesh) {
-      this.resources.rayleighProbeMesh.set(null);
-    }
   }
 }

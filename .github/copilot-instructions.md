@@ -3,15 +3,15 @@
 ## Build, test, lint, and related commands
 
 - Use **Node 24** to match CI (`.github/workflows/QC.yml`).
-- Install dependencies with `npm ci`.
-- Start the app locally with `npm start` (Angular dev server on **port 4202**).
-- Build with `npm run build`.
-- Lint with `npm run lint`.
-- Check formatting with `npm run format:check`.
-- Run the full unit test suite with `npm test -- --watch=false`.
-- Run a single unit spec with `npm test -- --watch=false --include=src/app/core/report.spec.ts`.
-- Run Storybook with `npm run storybook`; build it with `npm run build-storybook`.
-- Playwright specs live in `e2e/`. CI runs them with `npx playwright test --config=playwright-github.config.ts --project chromium` (or `firefox`).
+- Install dependencies with `pnpm install --frozen-lockfile`.
+- Start the app locally with `pnpm start` (Angular dev server on **port 4202**).
+- Build with `pnpm build`.
+- Lint with `pnpm lint`.
+- Check formatting with `pnpm format:check`.
+- Run the full unit test suite with `pnpm test --watch=false`.
+- Run a single unit spec with `pnpm test --watch=false --include=src/app/core/report.spec.ts`.
+- Run Storybook with `pnpm storybook`; build it with `pnpm build-storybook`.
+- Playwright specs live in `e2e/`. CI runs them with `pnpm exec playwright test --config=playwright-github.config.ts --project chromium` (or `firefox`).
 
 ## High-level architecture
 
@@ -31,4 +31,4 @@
 - Engine selection and Babylon scene setup are centralized in `src/app/view3d/smart-components/babylon-jsview/babylon-jsview.directive.ts`. Do not duplicate engine initialization elsewhere.
 - Unit tests run through Angular's Vitest builder, and `src/test-setup.ts` globally mocks `HTMLCanvasElement.getContext()` so ECharts and Babylon-related tests can run in jsdom. Reuse that setup instead of adding per-test canvas shims.
 - This repository keeps Storybook stories next to many reusable components (`*.stories.ts`). When you change or add a reusable UI component with an existing Storybook pattern nearby, update or add the adjacent story as part of the same change.
-- Playwright coverage is checked in CI with `playwright-github.config.ts`, and both Playwright configs are pinned manually to port **4202** to match `npm start`.
+- Playwright coverage is checked in CI with `playwright-github.config.ts`, and both Playwright configs are pinned manually to port **4202** to match `pnpm start`.
