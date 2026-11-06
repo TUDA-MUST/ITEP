@@ -2,59 +2,222 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  type AfterViewInit,
   type ElementRef,
-  type OnInit,
+  computed,
   effect,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-
-import { LineChart } from 'echarts/charts';
-
-// Import the title, tooltip, rectangular coordinate system, dataset and transform components
+import { LineChart, type LineSeriesOption } from 'echarts/charts';
 import {
-  TitleComponent,
   TooltipComponent,
   GridComponent,
-  DatasetComponent,
-  TransformComponent,
-  LegendComponent,
   MarkAreaComponent,
   MarkLineComponent,
+  type TooltipComponentOption,
+  type GridComponentOption,
+  type MarkAreaComponentOption,
+  type MarkLineComponentOption,
 } from 'echarts/components';
-import type { CallbackDataParams, ECBasicOption } from 'echarts/types/dist/shared';
+import type { XAxisComponentOption, YAxisComponentOption } from 'echarts';
+import type { PSFResult } from 'src/app/core/report';
+import type { HoveredKpi } from '../../pure-components/kpi/kpi.component';
 import { StoreService } from 'src/app/store/store.service';
 import { rad2deg } from 'src/app/utils/degrad';
 
-const degreeFormatter = (value: number) => `${value.toFixed(0)}°`;
-const dBFormatter = (value: number) => 20 * Math.log10(Math.abs(value));
+type ChartOption = echarts.ComposeOption<
+  | LineSeriesOption
+  | TooltipComponentOption
+  | GridComponentOption
+  | MarkAreaComponentOption
+  | MarkLineComponentOption
+>;
+type Plane = 'az' | 'el';
+type PatternPoint = [angle: number, db: number];
+type Highlight =
+  | { kind: 'none' }
+  | { kind: 'band'; left: number; right: number }
+  | { kind: 'level'; db: number };
 
-const _seriesTemplate = {
-  name: 'u',
-  type: 'line',
-  showSymbol: false,
-  lineStyle: {
-    color: 'rgba(192, 0, 0, 0.8)',
-  },
-  data: [], // Data series
-  markLine: {
-    symbol: ['none', 'none'],
-    label: { show: false },
-    data: [{ yAxis: 0.1 }],
-  },
-  markArea: {
-    itemStyle: {
-      color: 'rgba(255, 0, 0, 0.1)',
-    },
-    label: {
-      position: ['100%', '20%'],
-    },
-    data: [],
-  },
+const degreeFormatter = (value: number) => `${value.toFixed(0)}°`;
+const amplitudeToDb = (value: number) => 20 * Math.log10(Math.abs(value));
+const splitLine = {
+  show: true,
+  lineStyle: { color: '#444444', width: 1, type: 'solid' as const },
 };
+const planes = [
+  {
+    plane: 'az',
+    axisIndex: 0,
+    name: 'u',
+    lineColor: 'rgba(192, 0, 0, 0.8)',
+    markerColor: 'red',
+    areaColor: 'rgba(255, 0, 0, 0.1)',
+  },
+  {
+    plane: 'el',
+    axisIndex: 1,
+    name: 'v',
+    markerColor: 'rgba(64, 192, 64, 1.0)',
+    areaColor: 'rgba(0, 255, 0, 0.1)',
+  },
+] as const;
+
+echarts.use([
+  TooltipComponent,
+  GridComponent,
+  CanvasRenderer,
+  LineChart,
+  MarkAreaComponent,
+  MarkLineComponent,
+]);
+
+function buildAngleAxis(gridIndex: number): XAxisComponentOption {
+  return {
+    id: `angle-${gridIndex}`,
+    gridIndex,
+    type: 'value',
+    min: -90,
+    max: 90,
+    splitNumber: 4,
+    axisLabel: {
+      inside: false,
+      align: 'center',
+      verticalAlign: 'middle',
+      padding: gridIndex === 0 ? [10, 10, 10, 10] : [0, 0, 0, 0],
+      color: '#e6e1e6',
+      formatter: degreeFormatter,
+    },
+    splitLine,
+  };
+}
+
+function buildAmplitudeAxis(gridIndex: number): YAxisComponentOption {
+  return {
+    id: `amplitude-${gridIndex}`,
+    gridIndex,
+    type: 'value',
+    ...(gridIndex === 1 ? { nameLocation: 'end' as const, nameGap: 10 } : {}),
+    min: -30,
+    max: 0,
+    minorSplitLine: { show: false },
+    axisLabel: {
+      color: '#e6e1e6',
+      inside: true,
+      align: 'right',
+      verticalAlign: 'middle',
+      padding: [0, 10, 0, 0],
+    },
+    splitLine,
+  };
+}
+
+function buildBaseOptions(): ChartOption {
+  return {
+    tooltip: {
+      trigger: 'item',
+      formatter: (params) => {
+        const item = Array.isArray(params) ? params[0] : params;
+        return `${item.seriesName} <br> ${item.name} : ${item.value ?? '?'}`;
+      },
+    },
+    grid: [
+      { top: '7%', left: '3%', right: '3%', height: '40%', containLabel: true },
+      { top: '55%', left: '3%', right: '3%', height: '45%', containLabel: true },
+    ],
+    xAxis: planes.map(({ axisIndex }) => buildAngleAxis(axisIndex)),
+    yAxis: planes.map(({ axisIndex }) => buildAmplitudeAxis(axisIndex)),
+    series: planes.map(buildPatternSeries),
+    animation: false,
+  };
+}
+
+function buildPatternSeries(config: {
+  plane: Plane;
+  axisIndex: number;
+  name: string;
+  lineColor?: string;
+  markerColor: string;
+  areaColor: string;
+}): LineSeriesOption {
+  return {
+    id: config.plane,
+    name: config.name,
+    type: 'line',
+    xAxisIndex: config.axisIndex,
+    yAxisIndex: config.axisIndex,
+    showSymbol: false,
+    ...(config.lineColor ? { lineStyle: { color: config.lineColor } } : {}),
+    data: [],
+    markLine: {
+      symbol: ['none', 'none'],
+      label: { show: false },
+      lineStyle: { color: config.markerColor, width: 2, type: 'dashed' },
+      data: [],
+    },
+    markArea: {
+      silent: true,
+      itemStyle: { color: config.areaColor },
+      label: { show: false },
+      data: [],
+    },
+  };
+}
+
+function getHighlight(plane: Plane, hoveredKpi: HoveredKpi, kpis: PSFResult): Highlight {
+  const metrics = kpis[plane];
+  const suffix = plane === 'az' ? 'Az' : 'El';
+  if (
+    hoveredKpi === `Hpbw${suffix}` &&
+    metrics.hpbw !== null &&
+    metrics.leftHPBWCrossing !== null &&
+    metrics.rightHPBWCrossing !== null
+  ) {
+    return { kind: 'band', left: metrics.leftHPBWCrossing, right: metrics.rightHPBWCrossing };
+  }
+  if (
+    hoveredKpi === `Fnbw${suffix}` &&
+    metrics.fnbw !== null &&
+    metrics.leftZeroCrossing !== null &&
+    metrics.rightZeroCrossing !== null
+  ) {
+    return { kind: 'band', left: metrics.leftZeroCrossing, right: metrics.rightZeroCrossing };
+  }
+  if (
+    hoveredKpi === `Slr${suffix}` &&
+    metrics.slr !== null &&
+    metrics.sll !== null &&
+    metrics.sll > 0 &&
+    kpis.numElements > 0
+  ) {
+    return { kind: 'level', db: amplitudeToDb(metrics.sll / kpis.numElements) };
+  }
+  return { kind: 'none' };
+}
+
+export function buildHighlightOptions(
+  plane: Plane,
+  hoveredKpi: HoveredKpi,
+  kpis: PSFResult,
+): Pick<LineSeriesOption, 'markLine' | 'markArea'> {
+  const highlight = getHighlight(plane, hoveredKpi, kpis);
+  switch (highlight.kind) {
+    case 'band':
+      return {
+        markLine: { data: [{ xAxis: highlight.left }, { xAxis: highlight.right }] },
+        markArea: { data: [[{ xAxis: highlight.left }, { xAxis: highlight.right }]] },
+      };
+    case 'level':
+      return { markLine: { data: [{ yAxis: highlight.db }] }, markArea: { data: [] } };
+    case 'none':
+      return { markLine: { data: [] }, markArea: { data: [] } };
+  }
+}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,450 +226,58 @@ const _seriesTemplate = {
   styleUrl: './chart.component.scss',
   imports: [],
 })
-export class ChartComponent implements OnInit {
+export class ChartComponent implements AfterViewInit {
   private readonly store = inject(StoreService);
-  destroyRef = inject(DestroyRef);
-
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly chart = signal<echarts.ECharts | null>(null);
   readonly echartDiv = viewChild.required<ElementRef<HTMLElement>>('echartDiv');
 
-  updateChartEffect = effect(() => {
-    const hoveredKpi = this.store.hoveredKpi();
-    const plotData = this.store.crossPattern();
-
-    const kpis = this.store.kpis();
-    const bf = this.store.beamforming();
-    const bfAzEl = bf?.beamformingEnabled ? bf : { az: 0, el: 0 };
-
-    const config = {
-      yAxis: [
-        {
-          type: 'value',
-          name: `Norm. Amplit. AZ / dB @ EL = ${rad2deg(bfAzEl.el).toFixed(2)}°`,
-          min: -30,
-          max: 0,
-          minorSplitLine: {
-            show: false,
-            lineStyle: {
-              color: 'lightgray',
-              type: 'dotted',
-            },
-          },
-          axisLabel: {
-            color: '#e6e1e6',
-            formatter: (value: number) => value,
-            outside: false,
-            align: 'right',
-            verticalAlign: 'middle',
-            padding: [0, 10, 0, 0],
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444',
-              width: 1,
-              type: 'solid',
-            },
-          },
-        },
-
-        // V-Space
-        {
-          type: 'value',
-          gridIndex: 1,
-          name: `Norm. Amplit. EL / dB @ AZ = ${rad2deg(bfAzEl.az).toFixed(2)}°`,
-          nameLocation: 'end',
-          nameGap: 10,
-          min: -30,
-          max: 0,
-          minorSplitLine: {
-            show: false,
-            lineStyle: {
-              color: 'lightgray',
-              type: 'dotted',
-            },
-          },
-          axisLabel: {
-            color: '#e6e1e6',
-            formatter: (value: number) => value,
-            inside: true,
-            align: 'right',
-            verticalAlign: 'middle',
-            padding: [0, 10, 0, 0],
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444',
-              width: 1,
-              type: 'solid',
-            },
-          },
-        },
-      ],
-      xAxis: [
-        {
-          type: 'value',
-          axisLabel: {
-            inside: false,
-            align: 'center',
-            verticalAlign: 'middle',
-            padding: [10, 10, 10, 10],
-            color: '#e6e1e6',
-            formatter: degreeFormatter,
-          },
-          splitNumber: 4,
-          min: -90,
-          max: 90,
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444',
-              width: 1,
-              type: 'solid',
-            },
-          },
-        },
-        // V-Space
-        {
-          gridIndex: 1,
-          type: 'value',
-          axisLabel: {
-            inside: false,
-            align: 'center',
-            verticalAlign: 'middle',
-            padding: [0, 0, 0, 0], // Optional für Feinanpassung
-            color: '#e6e1e6',
-            formatter: degreeFormatter,
-          },
-          splitNumber: 4,
-          min: -90,
-          max: 90,
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444', // Grün für Y-Achse
-              width: 1,
-              type: 'solid',
-            },
-          },
-        },
-      ],
-      series: [
-        {
-          name: 'u',
-          type: 'line',
-          showSymbol: false,
-          lineStyle: {
-            color: 'rgba(192, 0, 0, 0.8)',
-          },
-          data: plotData.map((sample) => [
-            sample.angle,
-            dBFormatter(sample.az.abs() / kpis.numElements),
-          ]),
-          markLine: {
-            symbol: ['none', 'none'],
-            label: { show: false },
-            lineStyle: {
-              color: 'red',
-              width: 2,
-              type: 'dashed',
-            },
-            data:
-              kpis.az.hpbw !== null && hoveredKpi === 'HpbwAz'
-                ? [
-                    {
-                      grid: 1,
-                      xAxis: kpis.az.leftHPBWCrossing,
-                    },
-                    { xAxis: kpis.az.rightHPBWCrossing },
-                  ]
-                : kpis.az.fnbw !== null && hoveredKpi === 'FnbwAz'
-                  ? [
-                      {
-                        grid: 1,
-                        xAxis: kpis.az.leftZeroCrossing,
-                      },
-                      { xAxis: kpis.az.rightZeroCrossing },
-                    ]
-                  : kpis.az.slr !== null && hoveredKpi === 'SlrAz'
-                    ? [
-                        {
-                          grid: 1,
-                          yAxis: dBFormatter(kpis.az.sll! / kpis.numElements!),
-                        },
-                      ]
-                    : [],
-          },
-          markArea: {
-            silent: true,
-            itemStyle: {
-              color: 'rgba(255, 0, 0, 0.1)',
-            },
-            label: {
-              show: false,
-            },
-            data: [
-              kpis.az.hpbw !== null && hoveredKpi === 'HpbwAz'
-                ? [
-                    {
-                      xAxis: kpis.az.leftHPBWCrossing,
-                    },
-                    { xAxis: kpis.az.rightHPBWCrossing },
-                  ]
-                : kpis.az.fnbw !== null && hoveredKpi === 'FnbwAz'
-                  ? [
-                      {
-                        grid: 1,
-                        xAxis: kpis.az.leftZeroCrossing,
-                      },
-                      { xAxis: kpis.az.rightZeroCrossing },
-                    ]
-                  : [
-                      {
-                        grid: 1,
-                        xAxis: 0,
-                      },
-                      { xAxis: 0 },
-                    ],
-            ],
-          },
-        },
-        {
-          name: 'v',
-          xAxisIndex: 1,
-          yAxisIndex: 1,
-          type: 'line',
-          showSymbol: false,
-          data: plotData.map((sample) => [
-            sample.angle,
-            dBFormatter(sample.el.abs() / kpis.numElements),
-          ]),
-          markLine: {
-            symbol: ['none', 'none'],
-            label: { show: false },
-            lineStyle: {
-              color: 'rgba(64, 192, 64, 1.0)',
-              width: 2,
-              type: 'dashed',
-            },
-            data:
-              kpis.el.hpbw !== null && hoveredKpi === 'HpbwEl'
-                ? [
-                    {
-                      grid: 1,
-                      xAxis: kpis.el.leftHPBWCrossing,
-                    },
-                    { xAxis: kpis.el.rightHPBWCrossing },
-                  ]
-                : kpis.el.fnbw !== null && hoveredKpi === 'FnbwEl'
-                  ? [
-                      {
-                        grid: 1,
-                        xAxis: kpis.el.leftZeroCrossing,
-                      },
-                      { xAxis: kpis.el.rightZeroCrossing },
-                    ]
-                  : kpis.el.slr !== null && hoveredKpi === 'SlrEl'
-                    ? [
-                        {
-                          grid: 1,
-                          yAxis: dBFormatter(kpis.el.sll! / kpis.numElements!),
-                        },
-                      ]
-                    : [],
-          },
-          markArea: {
-            silent: true,
-            itemStyle: {
-              color: 'rgba(0, 255, 0, 0.1)',
-            },
-            label: {
-              show: false,
-            },
-            data: [
-              kpis.el.hpbw !== null && hoveredKpi === 'HpbwEl'
-                ? [
-                    {
-                      xAxis: kpis.el.leftHPBWCrossing,
-                    },
-                    { xAxis: kpis.el.rightHPBWCrossing },
-                  ]
-                : kpis.el.fnbw !== null && hoveredKpi === 'FnbwEl'
-                  ? [
-                      {
-                        grid: 1,
-                        xAxis: kpis.el.leftZeroCrossing,
-                      },
-                      { xAxis: kpis.el.rightZeroCrossing },
-                    ]
-                  : [
-                      {
-                        grid: 1,
-                        xAxis: 0,
-                      },
-                      { xAxis: 0 },
-                    ],
-            ],
-          },
-        },
-      ],
-    };
-    this.myChart?.setOption(config);
+  private readonly patternData = computed(() => {
+    const samples = this.store.crossPattern();
+    const { numElements } = this.store.kpis();
+    const az: PatternPoint[] = [];
+    const el: PatternPoint[] = [];
+    for (const sample of samples) {
+      az.push([sample.angle, amplitudeToDb(sample.az.abs() / numElements)]);
+      el.push([sample.angle, amplitudeToDb(sample.el.abs() / numElements)]);
+    }
+    return { az, el };
   });
 
-  myChart: echarts.ECharts;
-  ngOnInit(): void {
-    // Register the required components
-    echarts.use([
-      TitleComponent,
-      TooltipComponent,
-      GridComponent,
-      DatasetComponent,
-      TransformComponent,
-      CanvasRenderer,
-      LegendComponent,
-      LineChart,
-      MarkAreaComponent,
-      MarkLineComponent,
-    ]);
-
-    this.myChart = echarts.init(this.echartDiv().nativeElement);
-
-    const option: ECBasicOption = {
-      tooltip: {
-        trigger: 'item',
-        formatter: (params: CallbackDataParams) =>
-          `${params.seriesName} <br> ${params.name} : ${params.value ?? '?'}`,
-      },
-      // legend: {
-      //   left: 'left'
-      // },
-      grid: [
-        {
-          top: '7%',
-          left: '3%',
-          right: '3%',
-          height: '40%',
-          containLabel: true,
-        },
-        {
-          left: '3%',
-          right: '3%',
-          top: '55%',
-          height: '45%',
-          containLabel: true,
-        },
-      ],
-
-      xAxis: [
-        {
-          type: 'value',
-          axisLabel: {
-            inside: false,
-            align: 'center',
-            verticalAlign: 'middle',
-            padding: [10, 10, 10, 10],
-            color: '#e6e1e6',
-            formatter: (value: number) => `${value.toFixed(0)}°`,
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444',
-              width: 1,
-              type: 'solid',
-            },
-          },
-        },
-        {
-          gridIndex: 1,
-          type: 'value',
-          axisLabel: {
-            inside: false,
-            align: 'center',
-            verticalAlign: 'middle',
-            padding: [0, 0, 0, 0],
-            color: '#e6e1e6',
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444',
-              width: 1,
-              type: 'solid',
-            },
-          },
-        },
-      ],
-
+  private readonly updateChartEffect = effect(() => {
+    const chart = this.chart();
+    if (!chart) return;
+    const data = this.patternData();
+    const kpis = this.store.kpis();
+    const hoveredKpi = this.store.hoveredKpi();
+    const bf = this.store.beamforming();
+    const direction = bf?.beamformingEnabled ? bf : { az: 0, el: 0 };
+    const option: ChartOption = {
       yAxis: [
         {
-          type: 'value',
-          name: 'Normalized Amplitude x / dB',
-          min: 0.01,
-          max: 1.1,
-          minorSplitLine: {
-            show: true,
-            lineStyle: {
-              color: 'lightgray',
-              type: 'dotted',
-            },
-          },
-          axisLabel: {
-            color: '#e6e1e6',
-            formatter: (value: number) => (value !== 0 ? `${10 * Math.log10(value / 1)}` : ''),
-            inside: true,
-            align: 'left',
-            verticalAlign: 'middle',
-            padding: [0, 10, 0, 0],
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444',
-              width: 1,
-              type: 'solid',
-            },
-          },
+          id: 'amplitude-0',
+          name: `Norm. Amplit. AZ / dB @ EL = ${rad2deg(direction.el).toFixed(2)}°`,
         },
         {
-          type: 'value',
-          gridIndex: 1,
-          name: 'Normalized Amplitude y / dB',
-          nameLocation: 'end',
-          nameGap: 10,
-          min: 0.01,
-          max: 1.1,
-          minorSplitLine: {
-            show: true,
-            lineStyle: {
-              color: 'lightgray', // Farbe der kleinen Zwischen-Gitterlinien
-              type: 'dotted',
-            },
-          },
-          axisLabel: {
-            color: '#e6e1e6',
-            formatter: (value: number) => (value !== 0 ? `${10 * Math.log10(value / 1)}` : ''),
-            inside: true,
-            align: 'left',
-            verticalAlign: 'middle',
-            padding: [0, 10, 0, 0],
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#444444',
-              width: 1,
-              type: 'solid',
-            },
-          },
+          id: 'amplitude-1',
+          name: `Norm. Amplit. EL / dB @ AZ = ${rad2deg(direction.az).toFixed(2)}°`,
         },
       ],
-      series: [],
-      animation: false,
+      series: planes.map(
+        ({ plane }): LineSeriesOption => ({
+          id: plane,
+          data: data[plane],
+          ...buildHighlightOptions(plane, hoveredKpi, kpis),
+        }),
+      ),
     };
+    chart.setOption(option);
+  });
 
-    // Display the chart using the configuration items and data just specified.
-    this.myChart.setOption(option);
+  ngAfterViewInit(): void {
+    const chart = echarts.init(this.echartDiv().nativeElement);
+    chart.setOption(buildBaseOptions());
+    this.chart.set(chart);
+    this.destroyRef.onDestroy(() => chart.dispose());
   }
 }
