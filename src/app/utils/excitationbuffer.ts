@@ -22,6 +22,7 @@ export function setExcitationElement(
   phase: number,
   buffer: Float32Array,
   index: number,
+  amplitude = 1,
 ) {
   const elementOffset = excitationBufferElementSize * index;
   buffer[elementOffset] = position.x;
@@ -30,7 +31,7 @@ export function setExcitationElement(
   buffer[elementOffset + 3] = 0;
 
   buffer[elementOffset + 4] = phase; // phase shift [rad]
-  buffer[elementOffset + 5] = 1; // area
+  buffer[elementOffset + 5] = amplitude; // relative excitation amplitude
   buffer[elementOffset + 6] = 0; // reserved
   buffer[elementOffset + 7] = 0; // reserved
 }

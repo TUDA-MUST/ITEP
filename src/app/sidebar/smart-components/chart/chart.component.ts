@@ -41,12 +41,10 @@ type ChartOption = echarts.ComposeOption<
 type Plane = 'az' | 'el';
 type PatternPoint = [angle: number, db: number];
 type Highlight =
-  | { kind: 'none' }
-  | { kind: 'band'; left: number; right: number }
-  | { kind: 'level'; db: number };
+  { kind: 'none' } | { kind: 'band'; left: number; right: number } | { kind: 'level'; db: number };
 
 const degreeFormatter = (value: number) => `${value.toFixed(0)}°`;
-const amplitudeToDb = (value: number) => 20 * Math.log10(Math.abs(value));
+const amplitudeToDb = (value: number) => 20 * Math.log10(Math.max(Math.abs(value), 1e-12));
 const splitLine = {
   show: true,
   lineStyle: { color: '#444444', width: 1, type: 'solid' as const },
@@ -194,9 +192,10 @@ function getHighlight(plane: Plane, hoveredKpi: HoveredKpi, kpis: PSFResult): Hi
     metrics.slr !== null &&
     metrics.sll !== null &&
     metrics.sll > 0 &&
-    kpis.numElements > 0
+    metrics.maxl !== null &&
+    metrics.maxl > 0
   ) {
-    return { kind: 'level', db: amplitudeToDb(metrics.sll / kpis.numElements) };
+    return { kind: 'level', db: amplitudeToDb(metrics.sll / metrics.maxl) };
   }
   return { kind: 'none' };
 }
@@ -236,12 +235,12 @@ export class ChartComponent implements AfterViewInit {
 
   private readonly patternData = computed(() => {
     const samples = this.store.crossPattern();
-    const { numElements } = this.store.kpis();
+    const kpis = this.store.kpis();
     const az: PatternPoint[] = [];
     const el: PatternPoint[] = [];
     for (const sample of samples) {
-      az.push([sample.angle, amplitudeToDb(sample.az.abs() / numElements)]);
-      el.push([sample.angle, amplitudeToDb(sample.el.abs() / numElements)]);
+      az.push([sample.angle, amplitudeToDb(sample.az.abs() / (kpis.az.maxl || 1))]);
+      el.push([sample.angle, amplitudeToDb(sample.el.abs() / (kpis.el.maxl || 1))]);
     }
     return { az, el };
   });
@@ -267,13 +266,11 @@ export class ChartComponent implements AfterViewInit {
           name: `Norm. Amplit. EL / dB @ AZ = ${rad2deg(direction.az).toFixed(2)}°`,
         },
       ],
-      series: planes.map(
-        ({ plane }): LineSeriesOption => ({
-          id: plane,
-          data: data[plane],
-          ...buildHighlightOptions(plane, hoveredKpi, kpis),
-        }),
-      ),
+      series: planes.map(({ plane }): LineSeriesOption => ({
+        id: plane,
+        data: data[plane],
+        ...buildHighlightOptions(plane, hoveredKpi, kpis),
+      })),
     };
     chart.setOption(option);
   });

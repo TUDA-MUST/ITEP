@@ -1,3 +1,4 @@
+import { TaperComponent } from '../../smart-components/taper/taper.component';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -13,6 +14,7 @@ import { StoreService } from 'src/app/store/store.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-excitation',
   imports: [
+    TaperComponent,
     MatButtonToggle,
     MatButtonToggleGroup,
     MatInput,

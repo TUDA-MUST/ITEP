@@ -38,7 +38,7 @@ export class LiteExcitationBuffer {
           ? waveNumber *
             ((beamformingUv.u ?? 0) * transducer.pos.x + (beamformingUv.v ?? 0) * transducer.pos.y)
           : 0;
-      setExcitationElement(transducer.pos, phase, this.data, index);
+      setExcitationElement(transducer.pos, phase, this.data, index, transducer.amplitude ?? 1);
     });
 
     updateStorageBuffer(this.engine, this.storageBuffer, this.data);
