@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import type { VoronoiCell } from 'src/app/core/voronoi';
 import type { TransducerType } from 'src/app/core/transducer';
 import type { Transducer } from 'src/app/store/store.service';
 
@@ -9,6 +10,14 @@ import type { Transducer } from 'src/app/store/store.service';
   styleUrl: './aperture-view.component.scss',
 })
 export class ApertureViewComponent {
+  readonly cells = input<readonly VoronoiCell[]>([]);
+  readonly highlightedCellIndices = input<ReadonlySet<number> | null>(null);
+  readonly cellPaths = computed(() =>
+    this.cells().map((cell) => ({
+      points: cell.polygon.map((p) => `${p.x},${-p.y}`).join(' '),
+      label: `${cell.indices.map((i) => this.transducers()[i]?.name).join(', ')}: ${(cell.area * 1e6).toPrecision(4)} mm²`,
+    })),
+  );
   readonly transducers = input<Transducer[]>([]);
   readonly transducerModel = input<TransducerType>();
 
