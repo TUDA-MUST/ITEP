@@ -1,4 +1,4 @@
-<svg [attr.viewBox]="bb()">
+<svg [attr.viewBox]="bb()" role="img" aria-label="Aperture layout and element positions">
   <defs>
     <symbol id="cross" viewBox="-1 -1 2 2">
       <line
@@ -25,6 +25,19 @@
   @let arrayDia = arrayDiameter();
   @if (arrayDia !== null) {
     <circle class="outline" [attr.r]="arrayDia / 2" />
+  }
+
+  @for (cell of cellPaths(); track $index) {
+    <polygon
+      [attr.points]="cell.points"
+      [class.highlighted]="highlightedCellIndices()?.has($index)"
+      fill="transparent"
+      stroke="currentColor"
+      stroke-width="1"
+      vector-effect="non-scaling-stroke"
+    >
+      <title>{{ cell.label }}</title>
+    </polygon>
   }
 
   @switch (transducerModel()?.type) {

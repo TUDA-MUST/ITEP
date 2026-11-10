@@ -1,13 +1,41 @@
 <mat-accordion multi>
-  <mat-expansion-panel hideToggle>
+  <mat-expansion-panel #aperturePanel hideToggle (closed)="previewedBin.set(null)">
     <mat-expansion-panel-header>
       <mat-panel-title data-testid="section-environment"> Aperture </mat-panel-title>
     </mat-expansion-panel-header>
+    @let partition = aperturePanel.expanded ? aperturePartition() : null;
+    @let cellCount = partition?.cells?.length ?? 0;
     <app-aperture-view
       [transducers]="transducers()"
       [arrayDiameter]="arrayDiameter()"
       [transducerModel]="transducerModel()"
+      [cells]="showVoronoi() ? (partition?.cells ?? []) : []"
+      [highlightedCellIndices]="highlightedCellIndices()"
     />
+    <mat-checkbox
+      [checked]="showVoronoi()"
+      (change)="showVoronoi.set($event.checked); previewedBin.set(null)"
+    >
+      <span #partitionLabel id="voronoi-partition-label">
+        Show Voronoi partition ({{ cellCount }} {{ cellCount === 1 ? 'cell' : 'cells' }})
+      </span>
+    </mat-checkbox>
+    @if (showVoronoi() && partition) {
+      @if (partition.message; as message) {
+        <p class="aperture-note">{{ message }}</p>
+      } @else {
+        @defer (on immediate) {
+          <app-aperture-area-chart
+            [bins]="areaBins()"
+            [labelledBy]="partitionLabel.id"
+            (binPreview)="previewedBin.set($event)"
+          />
+        }
+        @if (hasSharedCells()) {
+          <p class="aperture-note">Elements at the same position share a cell.</p>
+        }
+      }
+    }
     <mat-action-row>
       <button type="button" mat-icon-button color="primary" (click)="exportAperture()">
         <mat-icon>content_copy</mat-icon>
