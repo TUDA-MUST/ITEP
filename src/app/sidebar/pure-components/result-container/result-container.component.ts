@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FarfieldComponent } from '../../smart-components/farfield/farfield.component';
 import { RayleighComponent } from '../../smart-components/rayleigh/rayleigh.component';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -10,6 +10,9 @@ import { version } from '../../../../../package.json';
 import { type HoveredKpi, KPIComponent } from '../kpi/kpi.component';
 import { ApertureViewComponent } from '../aperture-view/aperture-view.component';
 import { StoreService } from 'src/app/store/store.service';
+import { ApertureAreaChartComponent } from '../aperture-area-chart/aperture-area-chart.component';
+import { areaHistogram, partitionAperture, type AreaBin } from 'src/app/core/voronoi';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RayleighVectorDiagramComponent } from '../../smart-components/rayleigh-vector-diagram/rayleigh-vector-diagram.component';
@@ -26,6 +29,8 @@ import { RayleighVectorDiagramComponent } from '../../smart-components/rayleigh-
     MatIconModule,
     KPIComponent,
     ApertureViewComponent,
+    ApertureAreaChartComponent,
+    MatCheckboxModule,
     RayleighComponent,
     RayleighVectorDiagramComponent,
     MatButtonModule,
@@ -49,6 +54,26 @@ export class ResultContainerComponent {
     }
     return null;
   });
+  readonly showVoronoi = signal(false);
+  readonly aperturePartition = computed(() =>
+    partitionAperture(
+      this.transducers().map((t) => t.pos),
+      this.arrayDiameter(),
+    ),
+  );
+  readonly areaBins = computed(() =>
+    areaHistogram(this.aperturePartition().cells.map((cell) => cell.area)),
+  );
+  readonly previewedBin = signal<AreaBin | null>(null);
+  readonly highlightedCellIndices = computed(() => {
+    const bin = this.previewedBin();
+    return bin && this.areaBins().includes(bin) ? new Set(bin.areaIndices) : null;
+  });
+
+  readonly hasSharedCells = computed(() =>
+    this.aperturePartition().cells.some((cell) => cell.indices.length > 1),
+  );
+
   public readonly transducerModel = computed(() => this.store.arrayConfig().transducerModel);
   public readonly transducersCount = computed(() => this.transducers().length);
   public readonly rayleighVisible = computed(() =>

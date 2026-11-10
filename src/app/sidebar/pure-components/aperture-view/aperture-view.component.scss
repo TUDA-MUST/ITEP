@@ -13,3 +13,9 @@ circle.outline {
   stroke: gray;
   stroke-width: 0.0001;
 }
+
+polygon.highlighted {
+  fill: rgb(189 168 255 / 45%);
+  stroke: #bda8ff;
+  stroke-width: 2px;
+}

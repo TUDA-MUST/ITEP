@@ -78,7 +78,8 @@ export const StoreService = signalStore(
       const env = store.arrayConfig().environment;
       return calcK(env);
     });
-    const transducers = computed(() => transducerPositions(store.arrayConfig().config));
+    const geometry = computed(() => store.arrayConfig().config);
+    const transducers = computed(() => transducerPositions(geometry()));
     const crossPattern = computed(() =>
       calcCrossPattern(
         transducers(),
