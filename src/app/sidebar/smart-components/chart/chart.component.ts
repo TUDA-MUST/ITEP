@@ -7,6 +7,7 @@ import {
   computed,
   effect,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -231,6 +232,7 @@ export class ChartComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly chart = signal<echarts.ECharts | null>(null);
   readonly echartDiv = viewChild.required<ElementRef<HTMLElement>>('echartDiv');
+  readonly dynamicRange = input(30);
 
   private readonly patternData = computed(() => {
     const samples = this.store.crossPattern();
@@ -256,10 +258,12 @@ export class ChartComponent implements AfterViewInit {
       yAxis: [
         {
           id: 'amplitude-0',
+          min: -this.dynamicRange(),
           name: `Norm. Amplit. AZ / dB @ EL = ${rad2deg(direction.el).toFixed(2)}°`,
         },
         {
           id: 'amplitude-1',
+          min: -this.dynamicRange(),
           name: `Norm. Amplit. EL / dB @ AZ = ${rad2deg(direction.az).toFixed(2)}°`,
         },
       ],

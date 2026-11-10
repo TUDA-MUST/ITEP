@@ -14,6 +14,8 @@ import { ApertureAreaChartComponent } from '../aperture-area-chart/aperture-area
 import { areaHistogram, partitionAperture, type AreaBin } from 'src/app/core/voronoi';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RayleighVectorDiagramComponent } from '../../smart-components/rayleigh-vector-diagram/rayleigh-vector-diagram.component';
 
@@ -34,6 +36,8 @@ import { RayleighVectorDiagramComponent } from '../../smart-components/rayleigh-
     RayleighComponent,
     RayleighVectorDiagramComponent,
     MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
 })
 export class ResultContainerComponent {
@@ -42,6 +46,13 @@ export class ResultContainerComponent {
   private readonly snackBar = inject(MatSnackBar);
 
   readonly kpis = computed(() => this.store.kpis());
+  readonly dynamicRange = signal(30);
+
+  setDynamicRange(input: HTMLInputElement): void {
+    if (input.validity.valid && Number.isFinite(input.valueAsNumber)) {
+      this.dynamicRange.set(input.valueAsNumber);
+    }
+  }
 
   public readonly farfieldVisible = computed(() =>
     this.store.enabledResults().includes(Results.Farfield),
