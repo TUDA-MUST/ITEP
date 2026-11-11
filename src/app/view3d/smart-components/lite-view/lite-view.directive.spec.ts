@@ -1,16 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import type * as BabylonLite from '@babylonjs/lite';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const lite = vi.hoisted(() => ({
-  registerScene: vi.fn(async () => undefined),
-  renderFrame: vi.fn(),
-  resizeEngine: vi.fn(),
-}));
-
-vi.mock('@babylonjs/lite', async (importOriginal) => ({
-  ...(await importOriginal<typeof BabylonLite>()),
   addToScene: vi.fn(),
   attachControl: vi.fn(() => vi.fn()),
   createArcRotateCamera: vi.fn(() => ({
@@ -25,10 +17,12 @@ vi.mock('@babylonjs/lite', async (importOriginal) => ({
   disposeEngine: vi.fn(),
   disposeScene: vi.fn(),
   enableMaterialStencil: vi.fn(),
-  registerScene: lite.registerScene,
-  renderFrame: lite.renderFrame,
-  resizeEngine: lite.resizeEngine,
+  registerScene: vi.fn(async () => undefined),
+  renderFrame: vi.fn(),
+  resizeEngine: vi.fn(),
 }));
+
+vi.mock('@babylonjs/lite', () => lite);
 
 import { LiteViewDirective } from './lite-view.directive';
 

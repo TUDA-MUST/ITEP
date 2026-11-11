@@ -128,6 +128,15 @@ describe('chart highlights', () => {
       });
     });
 
+    it(`normalizes ${plane} sidelobe markers to the weighted peak`, () => {
+      const kpis = makeKpis();
+      kpis[plane].maxl = 5;
+      expect(buildHighlightOptions(plane, `Slr${suffix}`, kpis)).toEqual({
+        markLine: { data: [{ yAxis: 20 * Math.log10(2 / 5) }] },
+        markArea: { data: [] },
+      });
+    });
+
     it(`clears ${plane} markers for no hover or the other plane`, () => {
       for (const hover of [
         '',

@@ -1,6 +1,7 @@
 import { computed } from '@angular/core';
 import { signalStore, withMethods, withState, patchState, withComputed } from '@ngrx/signals';
 
+import { defaultTaper, taperWeights, validTaper, type TaperConfig } from '../core/taper';
 import { presets } from '../presets';
 import type { Vector3Data } from '../core/vector';
 
@@ -23,6 +24,7 @@ export interface RangeKpi {
 
 export interface ArrayConfig {
   name: string;
+  taper?: TaperConfig;
   environment: Environment;
   citation: Citation | null;
   config: ArrayGeometry;
@@ -32,6 +34,7 @@ export interface ArrayConfig {
 export type ArrayConfigType = ArrayConfig['config']['type'];
 
 export interface Transducer {
+  amplitude?: number;
   name: string;
   pos: Vector3Data;
   enabled: boolean;
@@ -49,6 +52,14 @@ export const StoreService = signalStore(
   }),
   withBeamforming(),
   withMethods((store) => ({
+    setTaper: (update: Partial<TaperConfig>) => {
+      const taper = {
+        ...(store.arrayConfig().taper ?? defaultTaper(store.arrayConfig().config)),
+        ...update,
+      };
+      if (validTaper(taper)) patchState(store, { arrayConfig: { ...store.arrayConfig(), taper } });
+    },
+    loadConfig: (arrayConfig: ArrayConfig) => patchState(store, { arrayConfig }),
     setGlobalPhase: (globalPhase: number) => patchState(store, { globalPhase }),
     setConfig: (newConfig: Partial<ArrayConfig>) => {
       patchState(store, { arrayConfig: { ...store.arrayConfig(), ...newConfig } });
@@ -79,7 +90,13 @@ export const StoreService = signalStore(
       return calcK(env);
     });
     const geometry = computed(() => store.arrayConfig().config);
-    const transducers = computed(() => transducerPositions(geometry()));
+    const positions = computed(() => transducerPositions(geometry()));
+    const taper = computed(() => store.arrayConfig().taper ?? defaultTaper(geometry()));
+    const transducers = computed(() => {
+      const elements = positions();
+      const weights = taperWeights(elements, geometry(), taper());
+      return elements.map((element, i) => ({ ...element, amplitude: weights[i] }));
+    });
     const crossPattern = computed(() =>
       calcCrossPattern(
         transducers(),
@@ -95,7 +112,7 @@ export const StoreService = signalStore(
       return result;
     });
 
-    return { k, transducers, crossPattern, kpis };
+    return { k, taper, transducers, crossPattern, kpis };
   }),
   withViewportConfig(),
   withSelection(),
