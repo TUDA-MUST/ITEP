@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import {
   addToScene,
+  createLineSystem,
   createMeshFromData,
   setMeshVisible,
   setShaderUniform,
@@ -13,13 +14,16 @@ import type { TransducerType } from 'src/app/core/transducer';
 import type { Transducer } from 'src/app/store/store.service';
 import { createFarfieldLiteMaterial } from '../../materials/farfield.material';
 import { colormapTextureSampleRows } from '../../shared/colormap-texture';
+import { uvHexagon } from '../../shared/hexagonal.geometry';
+import { triangleEdges, wireframePreview } from '../../shared/mesh-preview';
+import { subdivideGeometry } from '../../shared/subdivide.geometry';
 import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
 import { LiteViewDirective } from '../../smart-components/lite-view/lite-view.directive';
 import { waveNumber } from '../../shared/wave-number';
 
-// Babylon's legacy increaseVertices(400) produced 401 segments per source
-// triangle edge. This grid preserves its 321,602-triangle density.
-const farfieldGrid = createFarfieldGrid(401);
+// 216 segments give nearly the same triangle area as the former 401 x 401
+// square grid, with 279,936 triangles instead of 321,602 before disk masking.
+const farfieldGrid = subdivideGeometry(uvHexagon, 216);
 
 @Component({
   selector: 'app-farfield-renderer',
@@ -40,7 +44,21 @@ export class FarfieldRendererComponent {
 
   private readonly initialize = effect(() => {
     const context = this.resources.bufferContext();
-    if (!context || this.material) return;
+    if (!context || this.mesh) return;
+
+    if (wireframePreview !== null) {
+      const grid = wireframePreview === 'full' ? farfieldGrid : uvHexagon;
+      this.mesh = createLineSystem(context.engine, {
+        name: 'farfield-wireframe',
+        lines: triangleEdges(grid.positions, grid.indices, 0.02),
+        color: { r: 0.3, g: 0.85, b: 1, a: 1 },
+      });
+      this.mesh.pickable = false;
+      addToScene(context.scene, this.mesh);
+      this.updateRenderer();
+      this.view.requestRender();
+      return;
+    }
 
     this.material = createFarfieldLiteMaterial(context.colormap, context.excitation.storageBuffer);
     this.material.stencil = { compare: 'always', passOp: 'increment-clamp' };
@@ -67,19 +85,20 @@ export class FarfieldRendererComponent {
     this.environment();
     this.transducerModel();
     this.enabled();
-    if (this.material && this.mesh) {
+    if (this.mesh) {
       this.updateRenderer();
       this.view.requestRender();
     }
   });
 
   private updateRenderer(): void {
-    if (!this.material || !this.mesh) return;
+    if (!this.mesh) return;
+    setMeshVisible(this.mesh, this.enabled());
+    if (!this.material) return;
     const transducers = this.transducers() ?? [];
     const environment = this.environment();
     const model = this.transducerModel();
 
-    setMeshVisible(this.mesh, this.enabled());
     setShaderUniform(this.material, 'numElements', transducers.length);
     if (!environment) return;
 
@@ -109,40 +128,4 @@ export class FarfieldRendererComponent {
           : 0,
     );
   }
-}
-
-function createFarfieldGrid(subdivisions: number): {
-  positions: Float32Array;
-  uvs: Float32Array;
-  indices: Uint32Array;
-} {
-  const verticesPerSide = subdivisions + 1;
-  const positions = new Float32Array(verticesPerSide * verticesPerSide * 3);
-  const uvs = new Float32Array(verticesPerSide * verticesPerSide * 2);
-  const indices = new Uint32Array(subdivisions * subdivisions * 6);
-
-  for (let y = 0; y <= subdivisions; y++) {
-    for (let x = 0; x <= subdivisions; x++) {
-      const vertex = y * verticesPerSide + x;
-      const u = x / subdivisions;
-      const v = y / subdivisions;
-      positions.set([2 * u - 1, 2 * v - 1, 0], vertex * 3);
-      // The legacy mesh uses UVs in the same -1..1 domain as its positions.
-      uvs.set([2 * u - 1, 2 * v - 1], vertex * 2);
-    }
-  }
-
-  let index = 0;
-  for (let y = 0; y < subdivisions; y++) {
-    for (let x = 0; x < subdivisions; x++) {
-      const topLeft = y * verticesPerSide + x;
-      const topRight = topLeft + 1;
-      const bottomLeft = topLeft + verticesPerSide;
-      const bottomRight = bottomLeft + 1;
-      indices.set([topLeft, topRight, bottomLeft, topRight, bottomRight, bottomLeft], index);
-      index += 6;
-    }
-  }
-
-  return { positions, uvs, indices };
 }

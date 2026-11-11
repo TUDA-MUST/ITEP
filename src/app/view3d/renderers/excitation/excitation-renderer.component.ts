@@ -12,6 +12,7 @@ import {
   createLineMaterial,
   createLineSystem,
   createMeshFromData,
+  resizeMeshGeometry,
   setMeshVisible,
   setShaderUniform,
   setThinInstanceColors,
@@ -24,6 +25,8 @@ import type { TransducerType } from 'src/app/core/transducer';
 import type { SelectionState } from 'src/app/store/selection.state';
 import type { Transducer } from 'src/app/store/store.service';
 import { createTransducerLiteMaterial } from '../../materials/transducer.material';
+import { triangleEdges, wireframePreview } from '../../shared/mesh-preview';
+import { apertureHexagon } from '../../shared/hexagonal.geometry';
 import { LiteRendererResourcesDirective } from '../../smart-components/lite-renderer-resources/lite-renderer-resources.directive';
 import { LiteViewDirective } from '../../smart-components/lite-view/lite-view.directive';
 
@@ -47,7 +50,9 @@ export class ExcitationRendererComponent {
   readonly hovered = output<number>();
 
   private material: ShaderMaterial | null = null;
+  private apertureWireframes: Mesh[] = [];
   private surfaceMesh: Mesh | null = null;
+  private circularSurface = false;
   private pointMesh: Mesh | null = null;
   private circularOutlineMesh: Mesh | null = null;
   private rectangularOutlineMesh: Mesh | null = null;
@@ -107,6 +112,22 @@ export class ExcitationRendererComponent {
     this.surfaceMesh.renderOrder = 2;
     addToScene(context.scene, this.surfaceMesh);
     this.resources.transducerMesh.set(this.surfaceMesh);
+
+    if (wireframePreview !== null) {
+      this.apertureWireframes = [
+        triangleEdges(squarePositions, quadIndices),
+        triangleEdges(apertureHexagon.positions, apertureHexagon.indices),
+      ].map((lines) => {
+        const mesh = createLineSystem(context.engine, {
+          lines,
+          useThinInstances: true,
+          color: { r: 1, g: 0.8, b: 0.2, a: 1 },
+        });
+        mesh.pickable = false;
+        addToScene(context.scene, mesh);
+        return mesh;
+      });
+    }
 
     const circularMaterial = createLineMaterial({
       color: { r: 1, g: 1, b: 1, a: 0.99 },
@@ -196,6 +217,25 @@ export class ExcitationRendererComponent {
     )
       return;
 
+    const circularSurface = model.type === 'Piston';
+    if (circularSurface !== this.circularSurface) {
+      const context = this.resources.bufferContext();
+      if (!context) return;
+      const geometry = circularSurface
+        ? apertureHexagon
+        : { positions: squarePositions, uvs: squareUvs, indices: quadIndices };
+      // Preserve the mesh identity used by the picker and shared resources.
+      resizeMeshGeometry(
+        context.engine,
+        this.surfaceMesh,
+        geometry.positions,
+        new Float32Array(geometry.positions.length),
+        geometry.indices,
+        geometry.uvs,
+      );
+      this.circularSurface = circularSurface;
+    }
+
     const matrices = new Float32Array(transducers.length * 16);
     const pointMatrices = new Float32Array(transducers.length * 16);
     const colors = new Float32Array(transducers.length * 4);
@@ -274,9 +314,22 @@ export class ExcitationRendererComponent {
 
     const hasTransducers = transducers.length > 0;
     setMeshVisible(this.pointMesh, hasTransducers && model.type === 'Point');
-    setMeshVisible(this.surfaceMesh, hasTransducers && model.type !== 'Point');
-    setMeshVisible(this.circularOutlineMesh, hasTransducers && model.type === 'Piston');
-    setMeshVisible(this.rectangularOutlineMesh, hasTransducers && model.type === 'Rectangular');
+    for (const [i, mesh] of this.apertureWireframes.entries()) {
+      setThinInstances(mesh, matrices, transducers.length);
+      setMeshVisible(mesh, hasTransducers && model.type === (i === 0 ? 'Rectangular' : 'Piston'));
+    }
+    setMeshVisible(
+      this.surfaceMesh,
+      wireframePreview === null && hasTransducers && model.type !== 'Point',
+    );
+    setMeshVisible(
+      this.circularOutlineMesh,
+      wireframePreview === null && hasTransducers && model.type === 'Piston',
+    );
+    setMeshVisible(
+      this.rectangularOutlineMesh,
+      wireframePreview === null && hasTransducers && model.type === 'Rectangular',
+    );
   }
 
   private enableHoverPicking(): void {

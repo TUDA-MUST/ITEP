@@ -9,6 +9,7 @@ import { FarfieldRendererComponent } from '../../renderers/farfield/farfield-ren
 import { RayleighProbeRendererComponent } from '../../renderers/rayleigh-integral/rayleigh-probe-renderer.component';
 import { RayleighIntegralRendererComponent } from '../../renderers/rayleigh-integral/rayleigh-renderer.component';
 import { RayleighVectorRaysRendererComponent } from '../../renderers/rayleigh-integral/rayleigh-vector-rays-renderer.component';
+import { wireframePreview } from '../../shared/mesh-preview';
 import { waveNumber } from '../../shared/wave-number';
 import { LiteRendererResourcesDirective } from '../lite-renderer-resources/lite-renderer-resources.directive';
 import { LiteViewDirective } from '../lite-view/lite-view.directive';
@@ -98,10 +99,13 @@ import { LiteViewDirective } from '../lite-view/lite-view.directive';
 })
 export class LiteRendererViewComponent {
   readonly store = inject(StoreService);
-  readonly rayleighEnabled = computed(() =>
-    this.store.enabledResults().includes(Results.RayleighIntegral),
+  readonly rayleighEnabled = computed(
+    () =>
+      wireframePreview === null && this.store.enabledResults().includes(Results.RayleighIntegral),
   );
-  readonly farfieldEnabled = computed(() => this.store.enabledResults().includes(Results.Farfield));
+  readonly farfieldEnabled = computed(
+    () => wireframePreview !== null || this.store.enabledResults().includes(Results.Farfield),
+  );
   readonly transducerModel = computed(() => this.store.arrayConfig().transducerModel);
   readonly k = computed(() => waveNumber(this.store.arrayConfig().environment));
 
