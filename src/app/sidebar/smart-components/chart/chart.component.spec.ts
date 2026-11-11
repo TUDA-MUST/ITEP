@@ -68,6 +68,20 @@ describe('ChartComponent', () => {
     );
   });
 
+  it('updates both plot ranges', () => {
+    const chart = getInstanceByDom(component.echartDiv().nativeElement)!;
+    fixture.componentRef.setInput('dynamicRange', 60);
+    fixture.detectChanges();
+    expect(chart.getOption()['yAxis']).toMatchObject([
+      { min: -60, max: 0 },
+      { min: -60, max: 0 },
+    ]);
+
+    fixture.componentRef.setInput('dynamicRange', 30);
+    fixture.detectChanges();
+    expect(chart.getOption()['yAxis']).toMatchObject([{ min: -30 }, { min: -30 }]);
+  });
+
   it('disposes the chart when destroyed', () => {
     const chart = getInstanceByDom(component.echartDiv().nativeElement)!;
     fixture.destroy();

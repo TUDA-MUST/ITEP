@@ -47,9 +47,38 @@
       <mat-panel-title> Results </mat-panel-title>
     </mat-expansion-panel-header>
     <app-kpi [kpis]="kpis()" (hoveredKpi)="setHoveredKpi($event)" />
-    <app-chart />
-    <mat-action-row>
-      <button type="button" mat-icon-button color="primary" (click)="exportChart()">
+    <app-chart [dynamicRange]="dynamicRange()" />
+    <mat-action-row class="results-actions">
+      <mat-form-field subscriptSizing="dynamic" class="dynamic-range">
+        <mat-label>Dynamic range (dB)</mat-label>
+        <input
+          #rangeInput
+          matInput
+          type="number"
+          min="10"
+          max="100"
+          step="5"
+          [value]="dynamicRange()"
+          (input)="setDynamicRange(rangeInput)"
+        />
+      </mat-form-field>
+      <button
+        type="button"
+        mat-icon-button
+        aria-label="Reset dynamic range"
+        title="Reset dynamic range"
+        (click)="dynamicRange.set(30); rangeInput.value = '30'"
+      >
+        <mat-icon>restart_alt</mat-icon>
+      </button>
+      <button
+        type="button"
+        mat-icon-button
+        color="primary"
+        class="copy-chart"
+        aria-label="Copy chart data"
+        (click)="exportChart()"
+      >
         <mat-icon>content_copy</mat-icon>
       </button>
     </mat-action-row>
