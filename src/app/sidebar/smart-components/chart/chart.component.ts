@@ -41,12 +41,14 @@ type ChartOption = echarts.ComposeOption<
 type Plane = 'az' | 'el';
 type PatternPoint = [angle: number, db: number];
 type Highlight =
-  | { kind: 'none' }
-  | { kind: 'band'; left: number; right: number }
-  | { kind: 'level'; db: number };
+  { kind: 'none' } | { kind: 'band'; left: number; right: number } | { kind: 'level'; db: number };
+
+const designSllColor = () =>
+  getComputedStyle(document.documentElement).getPropertyValue('--mat-sys-primary').trim() ||
+  '#d0bcff';
 
 const degreeFormatter = (value: number) => `${value.toFixed(0)}°`;
-const amplitudeToDb = (value: number) => 20 * Math.log10(Math.abs(value));
+const amplitudeToDb = (value: number) => 20 * Math.log10(Math.max(Math.abs(value), 1e-12));
 const splitLine = {
   show: true,
   lineStyle: { color: '#444444', width: 1, type: 'solid' as const },
@@ -194,9 +196,10 @@ function getHighlight(plane: Plane, hoveredKpi: HoveredKpi, kpis: PSFResult): Hi
     metrics.slr !== null &&
     metrics.sll !== null &&
     metrics.sll > 0 &&
-    kpis.numElements > 0
+    metrics.maxl !== null &&
+    metrics.maxl > 0
   ) {
-    return { kind: 'level', db: amplitudeToDb(metrics.sll / kpis.numElements) };
+    return { kind: 'level', db: amplitudeToDb(metrics.sll / metrics.maxl) };
   }
   return { kind: 'none' };
 }
@@ -233,15 +236,45 @@ export class ChartComponent implements AfterViewInit {
   private readonly chart = signal<echarts.ECharts | null>(null);
   readonly echartDiv = viewChild.required<ElementRef<HTMLElement>>('echartDiv');
   readonly dynamicRange = input(30);
+  readonly taper = this.store.taper;
+  readonly taperActive = computed(() => this.taper().type !== 'uniform');
+  private readonly plotFloor = computed(() =>
+    this.taperActive()
+      ? Math.min(-this.dynamicRange(), this.taper().sll, -20)
+      : -this.dynamicRange(),
+  );
+  readonly sllMax = computed(() =>
+    this.taper().allowHigherSidelobes ? -1 : this.store.uniformSll(),
+  );
+  readonly sllMin = computed(() => Math.max(-80, this.plotFloor()));
+  readonly sllSliders = signal<{ plane: string; x: number; y: number; width: number }[]>([]);
+
+  setDesignSll(input: HTMLInputElement): void {
+    this.store.setTaper({ sll: input.valueAsNumber });
+  }
+
+  private positionSliders(chart: echarts.ECharts): void {
+    if (!this.taperActive()) {
+      this.sllSliders.set([]);
+      return;
+    }
+    this.sllSliders.set(
+      planes.map(({ plane, axisIndex }) => {
+        const [x, top] = chart.convertToPixel({ gridIndex: axisIndex }, [76, this.sllMax()]);
+        const [, bottom] = chart.convertToPixel({ gridIndex: axisIndex }, [76, this.sllMin()]);
+        return { plane: plane.toUpperCase(), x, y: (top + bottom) / 2, width: bottom - top + 20 };
+      }),
+    );
+  }
 
   private readonly patternData = computed(() => {
     const samples = this.store.crossPattern();
-    const { numElements } = this.store.kpis();
+    const kpis = this.store.kpis();
     const az: PatternPoint[] = [];
     const el: PatternPoint[] = [];
     for (const sample of samples) {
-      az.push([sample.angle, amplitudeToDb(sample.az.abs() / numElements)]);
-      el.push([sample.angle, amplitudeToDb(sample.el.abs() / numElements)]);
+      az.push([sample.angle, amplitudeToDb(sample.az.abs() / (kpis.az.maxl || 1))]);
+      el.push([sample.angle, amplitudeToDb(sample.el.abs() / (kpis.el.maxl || 1))]);
     }
     return { az, el };
   });
@@ -258,30 +291,61 @@ export class ChartComponent implements AfterViewInit {
       yAxis: [
         {
           id: 'amplitude-0',
-          min: -this.dynamicRange(),
+          min: this.plotFloor(),
           name: `Norm. Amplit. AZ / dB @ EL = ${rad2deg(direction.el).toFixed(2)}°`,
         },
         {
           id: 'amplitude-1',
-          min: -this.dynamicRange(),
+          min: this.plotFloor(),
           name: `Norm. Amplit. EL / dB @ AZ = ${rad2deg(direction.az).toFixed(2)}°`,
         },
       ],
-      series: planes.map(
-        ({ plane }): LineSeriesOption => ({
+      series: planes.map(({ plane }): LineSeriesOption => {
+        const highlight = buildHighlightOptions(plane, hoveredKpi, kpis);
+        return {
           id: plane,
           data: data[plane],
-          ...buildHighlightOptions(plane, hoveredKpi, kpis),
-        }),
-      ),
+          ...highlight,
+          markLine: {
+            silent: true,
+            tooltip: { show: false },
+            emphasis: { disabled: true, label: { show: true } },
+            data: [
+              ...(highlight.markLine?.data ?? []),
+              ...(this.taperActive()
+                ? [
+                    {
+                      yAxis: this.taper().sll,
+                      lineStyle: { color: designSllColor(), type: 'dashed' as const },
+                      label: {
+                        show: true,
+                        formatter: `Design ${this.taper().sll.toFixed(1)} dB`,
+                        position: 'insideStartTop' as const,
+                      },
+                    },
+                  ]
+                : []),
+            ],
+          },
+        };
+      }),
     };
     chart.setOption(option);
+    this.positionSliders(chart);
   });
 
   ngAfterViewInit(): void {
     const chart = echarts.init(this.echartDiv().nativeElement);
     chart.setOption(buildBaseOptions());
     this.chart.set(chart);
-    this.destroyRef.onDestroy(() => chart.dispose());
+    const observer = new ResizeObserver(() => {
+      chart.resize();
+      this.positionSliders(chart);
+    });
+    observer.observe(this.echartDiv().nativeElement);
+    this.destroyRef.onDestroy(() => {
+      observer.disconnect();
+      chart.dispose();
+    });
   }
 }

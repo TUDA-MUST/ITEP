@@ -17,3 +17,10 @@ const canvasMock = new Proxy(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 HTMLCanvasElement.prototype.getContext = () => canvasMock as any;
+
+// jsdom has no layout engine; component lifecycle tests still need this API.
+globalThis.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

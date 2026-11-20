@@ -26,7 +26,7 @@ export class LibraryContainerComponent {
 
     const preset = this.presets[index!];
     if (preset) {
-      this.store.setConfig(preset);
+      this.store.loadConfig(preset);
     }
   });
   public readonly citation = computed(() => this.store.arrayConfig().citation);

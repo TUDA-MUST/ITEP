@@ -1,1 +1,20 @@
-<div #echartDiv class="chart"></div>
+<div class="chart-container">
+  <div #echartDiv class="chart"></div>
+  @for (slider of sllSliders(); track slider.plane) {
+    <input
+      #sll
+      class="sll-slider"
+      type="range"
+      [attr.aria-label]="slider.plane + ' Design SLL'"
+      [attr.aria-valuetext]="taper().sll.toFixed(1) + ' dB'"
+      [min]="sllMin()"
+      [max]="sllMax()"
+      step="0.1"
+      [value]="taper().sll"
+      [style.left.px]="slider.x"
+      [style.top.px]="slider.y"
+      [style.width.px]="slider.width"
+      (input)="setDesignSll(sll)"
+    />
+  }
+</div>

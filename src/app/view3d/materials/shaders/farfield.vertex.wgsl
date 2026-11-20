@@ -53,7 +53,7 @@ fn mainVertex(input: VertexInput) -> VertexOutput {
     let element = excitation[i];
     let argumentVector = element.position.xy * input.uv;
     let argument = shaderUniforms.k * (argumentVector.x + argumentVector.y) - element.phasor.x;
-    result += vec2<f32>(cos(argument), sin(argument));
+    result += element.phasor.y * vec2<f32>(cos(argument), sin(argument));
   }
 
   let amplitude = length(result);

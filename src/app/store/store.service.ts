@@ -1,6 +1,7 @@
 import { computed } from '@angular/core';
 import { signalStore, withMethods, withState, patchState, withComputed } from '@ngrx/signals';
 
+import { defaultTaper, taperWeights, validTaper, type TaperConfig } from '../core/taper';
 import { presets } from '../presets';
 import type { Vector3Data } from '../core/vector';
 
@@ -23,6 +24,7 @@ export interface RangeKpi {
 
 export interface ArrayConfig {
   name: string;
+  taper?: TaperConfig;
   environment: Environment;
   citation: Citation | null;
   config: ArrayGeometry;
@@ -32,6 +34,7 @@ export interface ArrayConfig {
 export type ArrayConfigType = ArrayConfig['config']['type'];
 
 export interface Transducer {
+  amplitude?: number;
   name: string;
   pos: Vector3Data;
   enabled: boolean;
@@ -49,6 +52,7 @@ export const StoreService = signalStore(
   }),
   withBeamforming(),
   withMethods((store) => ({
+    loadConfig: (arrayConfig: ArrayConfig) => patchState(store, { arrayConfig }),
     setGlobalPhase: (globalPhase: number) => patchState(store, { globalPhase }),
     setConfig: (newConfig: Partial<ArrayConfig>) => {
       patchState(store, { arrayConfig: { ...store.arrayConfig(), ...newConfig } });
@@ -79,7 +83,36 @@ export const StoreService = signalStore(
       return calcK(env);
     });
     const geometry = computed(() => store.arrayConfig().config);
-    const transducers = computed(() => transducerPositions(geometry()));
+    const positions = computed(() => transducerPositions(geometry()));
+    const uniformKpis = computed(() => {
+      const pattern = calcCrossPattern(
+        positions(),
+        store.arrayConfig().transducerModel,
+        store.beamforming(),
+        k(),
+      );
+      return analyzePSF(pattern, positions().length);
+    });
+    const uniformSll = computed(() => {
+      const { az, el } = uniformKpis();
+      const levels = [az.slr, el.slr].filter(
+        (level): level is number => level !== null && Number.isFinite(level),
+      );
+      return levels.length
+        ? Math.max(-80, Math.min(-1, Math.floor(Math.max(...levels) * 10) / 10))
+        : -1;
+    });
+    const taper = computed(() => {
+      const config = store.arrayConfig().taper ?? defaultTaper(geometry());
+      return config.type !== 'uniform' && !config.allowHigherSidelobes
+        ? { ...config, sll: Math.min(config.sll, uniformSll()) }
+        : config;
+    });
+    const transducers = computed(() => {
+      const elements = positions();
+      const weights = taperWeights(elements, geometry(), taper());
+      return elements.map((element, i) => ({ ...element, amplitude: weights[i] }));
+    });
     const crossPattern = computed(() =>
       calcCrossPattern(
         transducers(),
@@ -95,8 +128,18 @@ export const StoreService = signalStore(
       return result;
     });
 
-    return { k, transducers, crossPattern, kpis };
+    return { k, taper, uniformSll, transducers, crossPattern, kpis };
   }),
+  withMethods((store) => ({
+    setTaper: (update: Partial<TaperConfig>) => {
+      const taper = { ...store.taper(), ...update };
+      if (!validTaper(taper)) return;
+      if (taper.type !== 'uniform' && !taper.allowHigherSidelobes) {
+        taper.sll = Math.min(taper.sll, store.uniformSll());
+      }
+      patchState(store, { arrayConfig: { ...store.arrayConfig(), taper } });
+    },
+  })),
   withViewportConfig(),
   withSelection(),
   withRayleigh(),
