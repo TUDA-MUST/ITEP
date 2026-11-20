@@ -14,6 +14,15 @@ describe('taper state', () => {
     expect(store.taper().type).toBe('uniform');
     expect(store.transducers().every((t) => t.amplitude === 1)).toBe(true);
   });
+  it('requires opt-in for a Design SLL higher than uniform and clamps it when disabled', () => {
+    const store = TestBed.inject(StoreService);
+    store.setTaper({ type: 'taylor', sll: -1 });
+    expect(store.taper().sll).toBe(store.uniformSll());
+    store.setTaper({ allowHigherSidelobes: true, sll: -1 });
+    expect(store.taper().sll).toBe(-1);
+    store.setTaper({ allowHigherSidelobes: false });
+    expect(store.taper().sll).toBe(store.uniformSll());
+  });
   it('rejects invalid settings without contaminating derived amplitudes', () => {
     const store = TestBed.inject(StoreService);
     const initial = store.taper();

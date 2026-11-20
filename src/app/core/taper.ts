@@ -6,6 +6,7 @@ export interface TaperConfig {
   strategy: 'rectangular' | 'radial';
   sll: number;
   nbar: number;
+  allowHigherSidelobes?: boolean;
 }
 
 export const defaultTaper = (geometry: ArrayGeometry): TaperConfig => ({
@@ -21,7 +22,7 @@ export function validTaper(config: TaperConfig): boolean {
     ['rectangular', 'radial'].includes(config.strategy) &&
     Number.isFinite(config.sll) &&
     config.sll >= -80 &&
-    config.sll <= -15 &&
+    config.sll <= -1 &&
     Number.isInteger(config.nbar) &&
     config.nbar >= 2 &&
     config.nbar <= 10

@@ -1,6 +1,6 @@
 :host {
   display: grid;
-  grid-template-columns: fr fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: baseline;
   gap: 1ex;
 }
@@ -11,4 +11,8 @@
 
 mat-form-field {
   align-self: stretch;
+}
+
+mat-button-toggle-group {
+  justify-self: end;
 }

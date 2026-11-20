@@ -3,9 +3,9 @@
 Issue: https://github.com/TUDA-MUST/ITEP/issues/230
 
 Excitation offers Uniform (the legacy default), Taylor and Dolph–Chebyshev windows.
-Design SLL is a negative window parameter, from −80 to −15 dB; Taylor nbar is an
+Design SLL is a negative window parameter, from −80 to −1 dB; Taylor nbar is an
 integer from 2 to 10, initially 4. It is not an optimization constraint on the
-actual array. The preview and Results use the same weighted pattern and measure
+actual array. The Results use the weighted pattern and measure
 achieved SLL relative to each cut's peak. Element amplitudes are normalized so the
 largest weight is 1; no total-power compensation is applied to field calculations.
 
@@ -33,11 +33,16 @@ resets to Uniform, while presets with taper settings restore those settings.
 
 ## Graphs and measurements
 
-The excitation graph has an AZ/EL selector, numeric Design SLL input, and a native
-ECharts graphic handle over a markLine. Numeric entry remains available below the
-unchanged −30 dB chart floor; the corresponding marker is outside the visible
-range. Dragging is restricted to the visible supported interval, −30 to −15 dB.
-The separate chart-floor ticket owns changing this range and its UI.
+The AZ and EL Results plots share a Design SLL setting. Each plot has a
+vertical slider when a taper is selected. Increase the Results dynamic range
+to select lower Design SLL values, down to −80 dB. Enabling tapering starts at
+the larger available AZ/EL uniform-pattern SLL, rounded to one decimal and
+clamped to the supported range. Switching between taper windows preserves it. By default Design SLL is limited
+to this uniform reference. The Allow higher sidelobes checkbox enables values
+above that reference. Geometry and steering changes recompute the reference.
+The 2D aperture elements show their relative amplitude magnitude on a Viridis
+scale from 0 to 1, with a vertical legend beside the plot. The 3D aperture uses
+a neutral surface color and highlights hovered elements.
 
 Cross sections are sampled every 0.25 degrees. First magnitude minima bound the
 main lobe, with parabolic refinement of their squared magnitudes. This avoids
@@ -58,7 +63,7 @@ export shader consume the same relative amplitude stored in phasor.y. Existing
 lengths 1, 2, 5, 6, 16 and 129, and suppression 15, 30, 60 and 80 dB (nbar=4).
 Tests also cover parameter bounds, mapping/order invariance, translation,
 degenerate apertures, ring behavior, normalized SLL, state lifecycle, amplitude
-buffer packing and the chart drag/input synchronization.
+buffer packing and the synchronization between the two Results sliders.
 
 References:
 

@@ -1,4 +1,8 @@
-<svg [attr.viewBox]="bb()" role="img" aria-label="Aperture layout and element positions">
+<svg
+  [attr.viewBox]="bb()"
+  role="img"
+  [attr.aria-label]="'Aperture layout colored by ' + visualization().label"
+>
   <defs>
     <symbol id="cross" viewBox="-1 -1 2 2">
       <line
@@ -6,7 +10,7 @@
         y1="-1"
         x2="1"
         y2="1"
-        stroke="crimson"
+        stroke="currentColor"
         [attr.stroke-width]="2"
         vector-effect="non-scaling-stroke"
       />
@@ -15,7 +19,7 @@
         y1="-1"
         x2="-1"
         y2="1"
-        stroke="crimson"
+        stroke="currentColor"
         [attr.stroke-width]="2"
         vector-effect="non-scaling-stroke"
       />
@@ -44,34 +48,60 @@
     @case ('Point') {
       @for (point of transducersMapped(); track $index) {
         <use
+          (mouseenter)="hoveredValue.set(point.value)"
+          (mouseleave)="hoveredValue.set(null)"
           href="#cross"
+          [style.color]="point.color"
           [attr.x]="point.pos.x - crossSize() / 2"
           [attr.y]="point.pos.y - crossSize() / 2"
           [attr.width]="crossSize()"
           [attr.height]="crossSize()"
-        />
+        >
+          <title>{{ point.label }}</title>
+        </use>
       }
     }
     @case ('Piston') {
       @for (point of transducersMapped(); track $index) {
         <circle
+          (mouseenter)="hoveredValue.set(point.value)"
+          (mouseleave)="hoveredValue.set(null)"
           [attr.cx]="point.pos.x"
           [attr.cy]="point.pos.y"
           [attr.r]="pistonRadius()"
-          fill="#888888"
-        />
+          [attr.fill]="point.color"
+        >
+          <title>{{ point.label }}</title>
+        </circle>
       }
     }
     @case ('Rectangular') {
       @for (point of transducersMapped(); track $index) {
         <rect
+          (mouseenter)="hoveredValue.set(point.value)"
+          (mouseleave)="hoveredValue.set(null)"
           [attr.x]="point.pos.x - transducerDimensions().width / 2"
           [attr.y]="point.pos.y - transducerDimensions().height / 2"
           [attr.width]="transducerDimensions().width"
           [attr.height]="transducerDimensions().height"
-          fill="#888888"
-        />
+          [attr.fill]="point.color"
+        >
+          <title>{{ point.label }}</title>
+        </rect>
       }
     }
   }
 </svg>
+
+<div class="color-legend">
+  <span>{{ visualization().label }}</span>
+  <span>{{ visualization().max }}</span>
+  <span class="color-ramp" [style.background]="visualization().gradient" aria-hidden="true">
+    @if (hoveredPosition() !== null) {
+      <span class="legend-marker" [style.bottom.%]="hoveredPosition()">
+        <span class="legend-value">{{ hoveredValue()?.toFixed(3) }}</span>
+      </span>
+    }
+  </span>
+  <span>{{ visualization().min }}</span>
+</div>

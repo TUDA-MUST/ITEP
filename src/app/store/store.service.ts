@@ -52,13 +52,6 @@ export const StoreService = signalStore(
   }),
   withBeamforming(),
   withMethods((store) => ({
-    setTaper: (update: Partial<TaperConfig>) => {
-      const taper = {
-        ...(store.arrayConfig().taper ?? defaultTaper(store.arrayConfig().config)),
-        ...update,
-      };
-      if (validTaper(taper)) patchState(store, { arrayConfig: { ...store.arrayConfig(), taper } });
-    },
     loadConfig: (arrayConfig: ArrayConfig) => patchState(store, { arrayConfig }),
     setGlobalPhase: (globalPhase: number) => patchState(store, { globalPhase }),
     setConfig: (newConfig: Partial<ArrayConfig>) => {
@@ -91,7 +84,30 @@ export const StoreService = signalStore(
     });
     const geometry = computed(() => store.arrayConfig().config);
     const positions = computed(() => transducerPositions(geometry()));
-    const taper = computed(() => store.arrayConfig().taper ?? defaultTaper(geometry()));
+    const uniformKpis = computed(() => {
+      const pattern = calcCrossPattern(
+        positions(),
+        store.arrayConfig().transducerModel,
+        store.beamforming(),
+        k(),
+      );
+      return analyzePSF(pattern, positions().length);
+    });
+    const uniformSll = computed(() => {
+      const { az, el } = uniformKpis();
+      const levels = [az.slr, el.slr].filter(
+        (level): level is number => level !== null && Number.isFinite(level),
+      );
+      return levels.length
+        ? Math.max(-80, Math.min(-1, Math.floor(Math.max(...levels) * 10) / 10))
+        : -1;
+    });
+    const taper = computed(() => {
+      const config = store.arrayConfig().taper ?? defaultTaper(geometry());
+      return config.type !== 'uniform' && !config.allowHigherSidelobes
+        ? { ...config, sll: Math.min(config.sll, uniformSll()) }
+        : config;
+    });
     const transducers = computed(() => {
       const elements = positions();
       const weights = taperWeights(elements, geometry(), taper());
@@ -112,8 +128,18 @@ export const StoreService = signalStore(
       return result;
     });
 
-    return { k, taper, transducers, crossPattern, kpis };
+    return { k, taper, uniformSll, transducers, crossPattern, kpis };
   }),
+  withMethods((store) => ({
+    setTaper: (update: Partial<TaperConfig>) => {
+      const taper = { ...store.taper(), ...update };
+      if (!validTaper(taper)) return;
+      if (taper.type !== 'uniform' && !taper.allowHigherSidelobes) {
+        taper.sll = Math.min(taper.sll, store.uniformSll());
+      }
+      patchState(store, { arrayConfig: { ...store.arrayConfig(), taper } });
+    },
+  })),
   withViewportConfig(),
   withSelection(),
   withRayleigh(),

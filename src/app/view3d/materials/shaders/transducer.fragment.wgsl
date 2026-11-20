@@ -11,10 +11,6 @@ fn mainFragment(input: VertexOutput) -> @location(0) vec4<f32> {
   let delta = fwidth(radiusSquared);
   let circleAlpha = smoothstep(1.0 + delta, 1.0 - delta, radiusSquared);
   let alpha = select(circleAlpha, 1.0, shaderUniforms.transducerType > 0.5);
-  return vec4<f32>(
-    0.5 * (1.0 + sin(shaderUniforms.globalPhase)),
-    input.selected,
-    0.5 * (1.0 - sin(shaderUniforms.globalPhase)),
-    alpha,
-  );
+  let color = mix(vec3<f32>(0.55), vec3<f32>(0.74, 0.66, 1.0), input.selected);
+  return vec4<f32>(color, alpha);
 }

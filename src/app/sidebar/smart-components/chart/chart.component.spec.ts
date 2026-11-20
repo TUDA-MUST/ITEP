@@ -2,6 +2,7 @@ import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChartComponent, buildHighlightOptions } from './chart.component';
 import type { PSFResult } from 'src/app/core/report';
+import { StoreService } from 'src/app/store/store.service';
 import { getInstanceByDom } from 'echarts/core';
 
 import { describe, beforeEach, it, expect } from 'vitest';
@@ -80,6 +81,55 @@ describe('ChartComponent', () => {
     fixture.componentRef.setInput('dynamicRange', 30);
     fixture.detectChanges();
     expect(chart.getOption()['yAxis']).toMatchObject([{ min: -30 }, { min: -30 }]);
+  });
+
+  it('synchronizes both Design SLL sliders and shows them only for a taper', () => {
+    const store = TestBed.inject(StoreService);
+    const sliders = () =>
+      Array.from(
+        fixture.nativeElement.querySelectorAll(
+          'input[type="range"]',
+        ) as NodeListOf<HTMLInputElement>,
+      );
+    expect(sliders()).toHaveLength(0);
+    store.setTaper({ type: 'taylor' });
+    fixture.detectChanges();
+    const [az, el] = sliders();
+    az.value = '-24';
+    az.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(store.taper().sll).toBe(-24);
+    expect(el.value).toBe('-24');
+    const chart = getInstanceByDom(component.echartDiv().nativeElement)!;
+    expect(chart.getOption()['series']).toMatchObject([
+      { markLine: { data: [{ yAxis: -24 }] } },
+      { markLine: { data: [{ yAxis: -24 }] } },
+    ]);
+    store.setTaper({ type: 'uniform' });
+    fixture.detectChanges();
+    expect(sliders()).toHaveLength(0);
+  });
+
+  it('keeps the SLL label visible and disables marker hover tooltips', () => {
+    TestBed.inject(StoreService).setTaper({ type: 'taylor' });
+    fixture.detectChanges();
+    const chart = getInstanceByDom(component.echartDiv().nativeElement)!;
+    expect(chart.getOption()['series']).toMatchObject([
+      {
+        markLine: {
+          silent: true,
+          tooltip: { show: false },
+          emphasis: { disabled: true, label: { show: true } },
+        },
+      },
+      {
+        markLine: {
+          silent: true,
+          tooltip: { show: false },
+          emphasis: { disabled: true, label: { show: true } },
+        },
+      },
+    ]);
   });
 
   it('disposes the chart when destroyed', () => {

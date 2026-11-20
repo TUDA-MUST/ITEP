@@ -3,7 +3,7 @@
     <th></th>
     <th>HPBW</th>
     <th>FNBW</th>
-    <th>SLR</th>
+    <th>SLL (dB)</th>
   </tr>
   @if (kpis()) {
     @let res = kpis()!;
@@ -28,7 +28,7 @@
         (mouseout)="hoveredKpi.emit('')"
         (click)="copyToClipboard(res.az.slr)"
       >
-        {{ res.az.fnbw ? `${(res.az.slr | number: '1.2-2')}` : 'N/A' }}
+        {{ res.az.slr !== null ? `${(res.az.slr | number: '1.2-2')}` : 'N/A' }}
       </td>
     </tr>
     <tr>
@@ -52,7 +52,7 @@
         (mouseout)="hoveredKpi.emit('')"
         (click)="copyToClipboard(res.el.slr)"
       >
-        {{ res.el.fnbw ? `${(res.el.slr | number: '1.2-2')}` : 'N/A' }}
+        {{ res.el.slr !== null ? `${(res.el.slr | number: '1.2-2')}` : 'N/A' }}
       </td>
     </tr>
   }
