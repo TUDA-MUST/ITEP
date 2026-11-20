@@ -1,11 +1,14 @@
 :host {
-  display: block;
-  text-align: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 svg {
-  height: 150px;
-  width: 150px;
+  display: block;
+  inline-size: 100%;
+  block-size: 180px;
 }
 
 circle.outline {
@@ -18,4 +21,52 @@ polygon.highlighted {
   fill: rgb(189 168 255 / 45%);
   stroke: #bda8ff;
   stroke-width: 2px;
+}
+
+.color-legend {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  gap: 0.25rem;
+  block-size: 180px;
+  font-size: 0.8rem;
+}
+
+.color-ramp {
+  position: relative;
+  align-self: stretch;
+  inline-size: 0.65rem;
+  min-block-size: 2rem;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+}
+
+.color-legend > span:first-child {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+}
+
+.color-legend > span:not(:first-child) {
+  grid-column: 1;
+}
+
+.legend-marker {
+  position: absolute;
+  inset-inline: -0.3rem;
+  border-block-start: 2px solid var(--mat-sys-on-surface);
+  pointer-events: none;
+}
+
+.legend-value {
+  position: absolute;
+  inset-inline-end: calc(100% + 0.25rem);
+  transform: translateY(-50%);
+  padding-inline: 0.2rem;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font-variant-numeric: tabular-nums;
 }

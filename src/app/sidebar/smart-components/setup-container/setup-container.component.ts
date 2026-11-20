@@ -35,6 +35,14 @@ import { StoreService } from 'src/app/store/store.service';
 export class SetupContainerComponent {
   private store = inject(StoreService);
   public readonly beamformingEnabled = computed(() => this.store.beamforming().beamformingEnabled);
+  readonly taperLabel = computed(
+    () =>
+      ({
+        uniform: 'Uniform',
+        taylor: 'Taylor',
+        chebyshev: 'Dolph–Cheb.',
+      })[this.store.taper().type],
+  );
   public readonly environment = computed(() => this.store.arrayConfig().environment);
   public readonly arrayConfig = computed(() => this.store.arrayConfig());
 }

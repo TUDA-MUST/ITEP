@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { viridis, viridisGradient } from 'src/app/view3d/shared/viridis';
 import type { VoronoiCell } from 'src/app/core/voronoi';
 import type { TransducerType } from 'src/app/core/transducer';
 import type { Transducer } from 'src/app/store/store.service';
@@ -10,6 +11,26 @@ import type { Transducer } from 'src/app/store/store.service';
   styleUrl: './aperture-view.component.scss',
 })
 export class ApertureViewComponent {
+  // A visualization supplies both its value mapping and legend metadata.
+  readonly visualization = input({
+    label: 'Relative amplitude',
+    min: '0',
+    max: '1',
+    gradient: viridisGradient,
+    value: (element: Transducer) => Math.abs(element.amplitude ?? 1),
+    color: (value: number) =>
+      `rgb(${viridis(value)
+        .map((channel) => Math.round(channel * 255))
+        .join(', ')})`,
+  });
+  readonly hoveredValue = signal<number | null>(null);
+  readonly hoveredPosition = computed(() => {
+    const value = this.hoveredValue();
+    const { min, max } = this.visualization();
+    return value === null
+      ? null
+      : Math.max(0, Math.min(100, (100 * (value - Number(min))) / (Number(max) - Number(min))));
+  });
   readonly cells = input<readonly VoronoiCell[]>([]);
   readonly highlightedCellIndices = input<ReadonlySet<number> | null>(null);
   readonly cellPaths = computed(() =>
@@ -72,6 +93,9 @@ export class ApertureViewComponent {
     this.transducers().map((t) => ({
       ...t,
       pos: { x: t.pos.x, y: -t.pos.y },
+      value: this.visualization().value(t),
+      color: this.visualization().color(this.visualization().value(t)),
+      label: `${t.name}: ${this.visualization().label} ${this.visualization().value(t).toFixed(3)}`,
     })),
   );
   readonly crossSize = computed(() => {

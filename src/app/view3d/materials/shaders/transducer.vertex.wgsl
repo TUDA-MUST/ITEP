@@ -10,6 +10,6 @@ fn mainVertex(input: VertexInput) -> VertexOutput {
   let instanceWorld = mat4x4<f32>(input.world0, input.world1, input.world2, input.world3);
   out.position = shaderSystem.worldViewProjection * instanceWorld * vec4<f32>(input.position, 1.0);
   out.uv = input.uv;
-  out.selected = input.color.x;
+  out.selected = input.instanceColor.x;
   return out;
 }

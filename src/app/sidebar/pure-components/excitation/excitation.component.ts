@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { TaperComponent } from '../../smart-components/taper/taper.component';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
-import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import type { Environment, FrequencyMultiplier } from 'src/app/core/environment';
 
 import { StoreService } from 'src/app/store/store.service';
@@ -13,11 +14,11 @@ import { StoreService } from 'src/app/store/store.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-excitation',
   imports: [
+    TaperComponent,
     MatButtonToggle,
     MatButtonToggleGroup,
     MatInput,
     MatFormField,
-    MatSuffix,
     MatLabel,
     ReactiveFormsModule,
   ],
@@ -41,6 +42,4 @@ export class ExcitationComponent {
     excitationFrequencyMultiplier: ['kHz' as FrequencyMultiplier],
     excitationFrequencyBase: [0],
   });
-
-  public readonly environment = computed(() => this.store.arrayConfig().environment);
 }

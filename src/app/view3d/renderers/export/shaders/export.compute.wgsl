@@ -37,12 +37,12 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
       let argvu = element.position.xy*vec2<f32>(u,0.0);
       //float argument = k*(argv.x+argv.y) + element.delay*omega;
       let argumentu = uniforms.k*(argvu.x+argvu.y) + element.phasor.x;
-      resultu += vec2<f32>(cos(argumentu), sin(argumentu));
+      resultu += element.phasor.y * vec2<f32>(cos(argumentu), sin(argumentu));
 
       let argvv = element.position.xy*vec2<f32>(0.0, u);
       //float argument = k*(argv.x+argv.y) + element.delay*omega;
       let argumentv = uniforms.k*(argvv.x+argvv.y) + element.phasor.x;
-      resultv += vec2<f32>(cos(argumentv), sin(argumentv));
+      resultv += element.phasor.y * vec2<f32>(cos(argumentv), sin(argumentv));
   }
   resultBuffer[global_id.x] = u;
   resultBuffer[global_id.x + u32(uniforms.numPoints)] = abs(f32(resultu.x));

@@ -9,7 +9,8 @@
   <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header>
       <mat-panel-title data-testid="section-environment"> Excitation </mat-panel-title>
-      {{ environment().excitationFrequencyBase }} {{ environment().excitationFrequencyMultiplier }}
+      {{ environment().excitationFrequencyBase }}
+      {{ environment().excitationFrequencyMultiplier }} · {{ taperLabel() }}
     </mat-expansion-panel-header>
     <app-excitation />
   </mat-expansion-panel>

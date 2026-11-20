@@ -66,31 +66,63 @@ const findCrossing = (
 
 export const patternUV = (k: number, bf: BeamformingState, transducers: Transducer[]) => {
   const bfuv = azElToUV(bf);
-  return (uv: UVCoordinates) =>
-    transducers.reduce((acc, t) => {
-      const phase = bf?.beamformingEnabled
-        ? k * ((bfuv.u ?? 0) * t.pos.x + (bfuv.v ?? 0) * t.pos.y)
-        : 0;
-      const argv = { x: t.pos.x * uv.u, y: t.pos.y * uv.v };
-      const arg = k * (argv.x + argv.y) - phase;
-      return acc.add(Complex({ abs: 1, arg }));
-    }, Complex.ZERO);
+  const sources = transducers.map((t) => ({
+    x: k * t.pos.x,
+    y: k * t.pos.y,
+    phase: bf?.beamformingEnabled ? k * ((bfuv.u ?? 0) * t.pos.x + (bfuv.v ?? 0) * t.pos.y) : 0,
+    amplitude: t.amplitude ?? 1,
+  }));
+  return (uv: UVCoordinates) => {
+    let real = 0;
+    let imaginary = 0;
+    for (const source of sources) {
+      const arg = source.x * uv.u + source.y * uv.v - source.phase;
+      real += source.amplitude * Math.cos(arg);
+      imaginary += source.amplitude * Math.sin(arg);
+    }
+    return new Complex(real, imaginary);
+  };
 };
 
-const analyzeOneAxis = (angles: number[], psf: Complex[], numElements: number): LobeMetrics => {
+const analyzeOneAxis = (angles: number[], psf: Complex[]): LobeMetrics => {
+  if (psf.length === 0 || psf.every((value) => value.abs() === 0)) {
+    return {
+      leftHPBWCrossing: null,
+      rightHPBWCrossing: null,
+      leftZeroCrossing: null,
+      rightZeroCrossing: null,
+      hpbw: null,
+      fnbw: null,
+      sll: null,
+      slr: null,
+      maxl: null,
+    };
+  }
   const maxIdx = findMaxIndex(psf);
   const maxVal = psf[maxIdx];
   const halfPower = maxVal.abs() / Math.sqrt(2);
 
-  const reals = psf.map((c) => c.re);
-  //   const imgs = psf.map((c) => c.im);
   const magnitudes = psf.map((c) => c.abs());
 
   const leftHPBWCrossing = findCrossing(angles, magnitudes, halfPower, maxIdx, -1);
   const rightHPBWCrossing = findCrossing(angles, magnitudes, halfPower, maxIdx, 1);
 
-  const leftZeroCrossing = findCrossing(angles, reals, 0, maxIdx, -1);
-  const rightZeroCrossing = findCrossing(angles, reals, 0, maxIdx, 1);
+  // Magnitude minima are invariant under translation of the aperture; zeros
+  // of the real part are not. Refine each sampled minimum with a parabola.
+  const firstMinimum = (direction: -1 | 1): number | null => {
+    for (let i = maxIdx + direction; i > 0 && i < magnitudes.length - 1; i += direction) {
+      const left = magnitudes[i - 1] ** 2;
+      const mid = magnitudes[i] ** 2;
+      const right = magnitudes[i + 1] ** 2;
+      if (mid < left && mid <= right) {
+        const offset = (0.5 * (left - right)) / (left - 2 * mid + right);
+        return angles[i] + offset * (angles[i + 1] - angles[i]);
+      }
+    }
+    return null;
+  };
+  const leftZeroCrossing = firstMinimum(-1);
+  const rightZeroCrossing = firstMinimum(1);
 
   const hpbw: number | null =
     rightHPBWCrossing !== null && leftHPBWCrossing !== null
@@ -113,7 +145,7 @@ const analyzeOneAxis = (angles: number[], psf: Complex[], numElements: number): 
 
   const maxSidelobe = sidelobeVals.length > 0 ? Math.max(...sidelobeVals) : null;
   const sll = maxSidelobe !== null ? maxSidelobe : null;
-  const slr = sll != null ? 20 * Math.log10(sll! / numElements!) : null;
+  const slr = sll != null ? 20 * Math.log10(sll / maxVal.abs()) : null;
 
   return {
     leftHPBWCrossing,
@@ -133,6 +165,7 @@ export const calcCrossPattern = (
   transducerModel: TransducerType,
   bf: BeamformingState,
   k: number,
+  angleStep = 0.25,
 ) => {
   const steeringAzEl = bf?.beamformingEnabled ? bf : { az: 0, el: 0 };
   const steeringUV = azElToUV(steeringAzEl);
@@ -141,7 +174,7 @@ export const calcCrossPattern = (
   const ef = patternElement(transducerModel, k);
 
   // Do not cascade multiple computeds!
-  return range(-90, 90, 1).map((angle) => {
+  return range(-90, 90, angleStep).map((angle) => {
     const rad = (angle * Math.PI) / 180;
 
     // Amplitude for the az axis
@@ -169,7 +202,7 @@ export const analyzePSF = (data: PSFPoint[], numElements: number): PSFResult => 
 
   return {
     numElements,
-    az: analyzeOneAxis(angles, azValues, numElements),
-    el: analyzeOneAxis(angles, elValues, numElements),
+    az: analyzeOneAxis(angles, azValues),
+    el: analyzeOneAxis(angles, elValues),
   };
 };
