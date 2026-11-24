@@ -36,7 +36,7 @@
     "echarts": "^6.0.0",
     "rxjs": "~7.8.2",
     "tslib": "^2.9.1",
-    "webpack": "5.112.2"
+    "webpack": "5.113.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "22.2.7",
